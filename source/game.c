@@ -2163,7 +2163,7 @@ void typemode(void)
 
                 if( KB_KeyWaiting() )
                 {
-                     i = KB_GetCh();
+                     i = KB_Getch();
 
                      if(i == 'A' || i == 'a' || i == 13)
                           sendmessagecommand = ud.multimode;
