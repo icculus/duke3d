@@ -24,7 +24,10 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 */
 //-------------------------------------------------------------------------
 
+#if PLATFORM_DOS
 #include <conio.h>
+#endif
+
 #include <stdio.h>
 #include <string.h>
 #include "types.h"
@@ -619,7 +622,7 @@ void pan3dsound(void)
     }
 }
 
-void TestCallBack(long num)
+void TestCallBack(unsigned long num)
 {
     short tempi,tempj,tempk;
 

@@ -24,6 +24,11 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 */
 //-------------------------------------------------------------------------
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdarg.h>
+
 #include "duke3d.h"
 
 char *mymembuf;
@@ -36,7 +41,13 @@ long gc,neartaghitdist,lockclock,max_player_health,max_armour_amount,max_ammo_am
 
 // long temp_data[MAXSPRITES][6];
 struct weaponhit hittype[MAXSPRITES];
-short spriteq[1024],spriteqloc,spriteqamount=64,moustat;
+short spriteq[1024],spriteqloc,spriteqamount=64;
+
+// ported build engine has this, too.  --ryan.
+#if PLATFORM_DOS
+short moustat = 0;
+#endif
+
 struct animwalltype animwall[MAXANIMWALLS];
 short numanimwalls;
 long *animateptr[MAXANIMATES], animategoal[MAXANIMATES], animatevel[MAXANIMATES], animatecnt;
@@ -392,4 +403,75 @@ void _dos_getdate(struct dosdate_t *date)
 	}
 }
 #endif
+
+
+// Ripped from GPL'd Rise of the Triad.  --ryan.
+int FindDistance2D(int ix, int iy)
+{
+  int   t;
+
+  ix= abs(ix);        /* absolute values */
+  iy= abs(iy);
+
+  if (ix<iy)
+  {
+     int tmp = ix;
+     ix = iy;
+     iy = tmp;
+  }
+
+  t = iy + (iy>>1);
+
+  return (ix - (ix>>5) - (ix>>7)  + (t>>2) + (t>>6));
+}
+
+// Ripped from GPL'd Rise of the Triad.  --ryan.
+int FindDistance3D(int ix, int iy, int iz)
+{
+   int   t;
+
+   ix= abs(ix);           /* absolute values */
+   iy= abs(iy);
+   iz= abs(iz);
+
+   if (ix<iy)
+   {
+     int tmp = ix;
+     ix = iy;
+     iy = tmp;
+   }
+
+   if (ix<iz)
+   {
+     int tmp = ix;
+     ix = iz;
+     iz = tmp;
+   }
+
+   t = iy + iz;
+
+   return (ix - (ix>>4) + (t>>2) + (t>>3));
+}
+
+// Ripped from GPL'd Rise of the Triad.  --ryan.
+void Error (char *error, ...)
+{
+   char msgbuf[300];
+   va_list argptr;
+   static int inerror = 0;
+
+   inerror++;
+   if (inerror > 1)
+      return;
+
+   #if USE_SDL
+   SDL_Quit();
+   #endif
+
+   va_start (argptr, error);
+   vfprintf(stderr, error, argptr);
+   va_end (argptr);
+
+   exit (1);
+}
 

@@ -1,5 +1,5 @@
 #-----------------------------------------------------------------------------#
-# ROTT makefile.
+# Duke3D makefile.
 #-----------------------------------------------------------------------------#
 
 
@@ -45,14 +45,29 @@ else
   EXTRACFLAGS += -DUSE_EXECINFO=1
 endif
 
+# check out buildengine in this directory:
+#  cvs -z3 -d:pserver:anonymous@cvs.icculus.org:/cvs/cvsroot login
+#   (password is "anonymous", without the quotes.)
+#  cvs -z3 -d:pserver:anonymous@cvs.icculus.org:/cvs/cvsroot co buildengine
+#  cd buildengine
+#  make
+#  cd ..
+#  This sucks. We'll figure out something better.
+BUILDOBJS := \
+	buildengine/a_gnu.o \
+	buildengine/a_nasm.o \
+	buildengine/cache1d.o \
+	buildengine/engine.o \
+	buildengine/sdl_driver.o \
+	buildengine/unix_compat.o
 
 CC = gcc
-CFLAGS = -g $(SDL_CFLAGS) -DUSE_SDL=1 -DPLATFORM_UNIX=1 -W -Wall -Wno-unused $(EXTRACFLAGS)
+CFLAGS = -g $(SDL_CFLAGS) -DUSE_SDL=1 -DPLATFORM_UNIX=1 -DUSE_I386_ASM=1 -W -Wall -Wno-unused $(EXTRACFLAGS)
 LDLIBS = $(SDL_LDFLAGS) -lSDL -lSDL_mixer $(EXTRALDFLAGS) -Wl,-E
 
-all: rott
+all: duke3d
 
-rott: 	\
+duke3d: 	\
 	actors.o \
 	animlib.o \
 	config.o \
@@ -65,8 +80,9 @@ rott: 	\
 	rts.o \
 	sector.o \
 	sounds.o \
+	fx_man.o \
 	pragmas_gnu.o
-	$(CC) $^ $(LDLIBS) -o $@
+	$(CC) $^ $(BUILDOBJS) $(LDLIBS) -o $@
 
 clean:
 	rm -rf *.o

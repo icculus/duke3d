@@ -1,34 +1,18 @@
-//-------------------------------------------------------------------------
 /*
-Copyright (C) 1996, 2003 - 3D Realms Entertainment
+ * "Build Engine & Tools" Copyright (c) 1993-1997 Ken Silverman
+ * Ken Silverman's official web site: "http://www.advsys.net/ken"
+ * See the included license file "BUILDLIC.TXT" for license info.
+ * This file has been modified from Ken Silverman's original release
+ */
 
-This file is part of Duke Nukem 3D version 1.5 - Atomic Edition
-
-Duke Nukem 3D is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-Original Source: 1996 - Todd Replogle
-Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
-*/
-//-------------------------------------------------------------------------
+#ifndef _INCLUDE_BUILD_H_
+#define _INCLUDE_BUILD_H_
 
 #define MAXSECTORS 1024
 #define MAXWALLS 8192
 #define MAXSPRITES 4096
 
-#define MAXTILES 6144
+#define MAXTILES 9216
 #define MAXSTATUS 1024
 #define MAXPLAYERS 16
 #define MAXXDIM 1600
@@ -40,25 +24,43 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #define CLIPMASK0 (((1L)<<16)+1L)
 #define CLIPMASK1 (((256L)<<16)+64L)
 
-	//Make all variables in BUILD.H defined in the ENGINE,
-	//and externed in GAME
+
+	/*
+     * Make all variables in BUILD.H defined in the ENGINE,
+	 *  and externed in GAME
+     * (dear lord.  --ryan.)
+     */
 #ifdef ENGINE
 	#define EXTERN
 #else
 	#define EXTERN extern
 #endif
 
-//ceilingstat/floorstat:
-//   bit 0: 1 = parallaxing, 0 = not                                 "P"
-//   bit 1: 1 = groudraw, 0 = not
-//   bit 2: 1 = swap x&y, 0 = not                                    "F"
-//   bit 3: 1 = double smooshiness                                   "E"
-//   bit 4: 1 = x-flip                                               "F"
-//   bit 5: 1 = y-flip                                               "F"
-//   bit 6: 1 = Align texture to first wall of sector                "R"
-//   bits 7-15: reserved
 
-	//40 bytes
+#ifdef PLATFORM_DOS
+#pragma pack(push,1);
+#else
+#pragma pack(1)
+#endif
+
+/*
+ * ceilingstat/floorstat:
+ *   bit 0: 1 = parallaxing, 0 = not                                 "P"
+ *   bit 1: 1 = groudraw, 0 = not
+ *   bit 2: 1 = swap x&y, 0 = not                                    "F"
+ *   bit 3: 1 = double smooshiness                                   "E"
+ *   bit 4: 1 = x-flip                                               "F"
+ *   bit 5: 1 = y-flip                                               "F"
+ *   bit 6: 1 = Align texture to first wall of sector                "R"
+ *   bits 7-8:                                                       "T"
+ *          00 = normal floors
+ *          01 = masked floors
+ *          10 = transluscent masked floors
+ *          11 = reverse transluscent masked floors
+ *   bits 9-15: reserved
+ */
+
+	/* 40 bytes */
 typedef struct
 {
 	short wallptr, wallnum;
@@ -66,28 +68,30 @@ typedef struct
 	short ceilingstat, floorstat;
 	short ceilingpicnum, ceilingheinum;
 	signed char ceilingshade;
-	char ceilingpal, ceilingxpanning, ceilingypanning;
+	unsigned char ceilingpal, ceilingxpanning, ceilingypanning;
 	short floorpicnum, floorheinum;
 	signed char floorshade;
-	char floorpal, floorxpanning, floorypanning;
-	char visibility, filler;
+	unsigned char floorpal, floorxpanning, floorypanning;
+	unsigned char visibility, filler;
 	short lotag, hitag, extra;
 } sectortype;
 
-//cstat:
-//   bit 0: 1 = Blocking wall (use with clipmove, getzrange)         "B"
-//   bit 1: 1 = bottoms of invisible walls swapped, 0 = not          "2"
-//   bit 2: 1 = align picture on bottom (for doors), 0 = top         "O"
-//   bit 3: 1 = x-flipped, 0 = normal                                "F"
-//   bit 4: 1 = masking wall, 0 = not                                "M"
-//   bit 5: 1 = 1-way wall, 0 = not                                  "1"
-//   bit 6: 1 = Blocking wall (use with hitscan / cliptype 1)        "H"
-//   bit 7: 1 = Transluscence, 0 = not                               "T"
-//   bit 8: 1 = y-flipped, 0 = normal                                "F"
-//   bit 9: 1 = Transluscence reversing, 0 = normal                  "T"
-//   bits 10-15: reserved
+/*
+ * cstat:
+ *   bit 0: 1 = Blocking wall (use with clipmove, getzrange)         "B"
+ *   bit 1: 1 = bottoms of invisible walls swapped, 0 = not          "2"
+ *   bit 2: 1 = align picture on bottom (for doors), 0 = top         "O"
+ *   bit 3: 1 = x-flipped, 0 = normal                                "F"
+ *   bit 4: 1 = masking wall, 0 = not                                "M"
+ *   bit 5: 1 = 1-way wall, 0 = not                                  "1"
+ *   bit 6: 1 = Blocking wall (use with hitscan / cliptype 1)        "H"
+ *   bit 7: 1 = Transluscence, 0 = not                               "T"
+ *   bit 8: 1 = y-flipped, 0 = normal                                "F"
+ *   bit 9: 1 = Transluscence reversing, 0 = normal                  "T"
+ *   bits 10-15: reserved
+ */
 
-	//32 bytes
+	/* 32 bytes */
 typedef struct
 {
 	long x, y;
@@ -98,34 +102,43 @@ typedef struct
 	short lotag, hitag, extra;
 } walltype;
 
-//cstat:
-//   bit 0: 1 = Blocking sprite (use with clipmove, getzrange)       "B"
-//   bit 1: 1 = transluscence, 0 = normal                            "T"
-//   bit 2: 1 = x-flipped, 0 = normal                                "F"
-//   bit 3: 1 = y-flipped, 0 = normal                                "F"
-//   bits 5-4: 00 = FACE sprite (default)                            "R"
-//             01 = WALL sprite (like masked walls)
-//             10 = FLOOR sprite (parallel to ceilings&floors)
-//   bit 6: 1 = 1-sided sprite, 0 = normal                           "1"
-//   bit 7: 1 = Real centered centering, 0 = foot center             "C"
-//   bit 8: 1 = Blocking sprite (use with hitscan / cliptype 1)      "H"
-//   bit 9: 1 = Transluscence reversing, 0 = normal                  "T"
-//   bits 10-14: reserved
-//   bit 15: 1 = Invisible sprite, 0 = not invisible
 
-	//44 bytes
+/*
+ * cstat:
+ *   bit 0: 1 = Blocking sprite (use with clipmove, getzrange)       "B"
+ *   bit 1: 1 = transluscence, 0 = normal                            "T"
+ *   bit 2: 1 = x-flipped, 0 = normal                                "F"
+ *   bit 3: 1 = y-flipped, 0 = normal                                "F"
+ *   bits 5-4: 00 = FACE sprite (default)                            "R"
+ *             01 = WALL sprite (like masked walls)
+ *             10 = FLOOR sprite (parallel to ceilings&floors)
+ *   bit 6: 1 = 1-sided sprite, 0 = normal                           "1"
+ *   bit 7: 1 = Real centered centering, 0 = foot center             "C"
+ *   bit 8: 1 = Blocking sprite (use with hitscan / cliptype 1)      "H"
+ *   bit 9: 1 = Transluscence reversing, 0 = normal                  "T"
+ *   bits 10-14: reserved
+ *   bit 15: 1 = Invisible sprite, 0 = not invisible
+ */
+
+	/* 44 bytes */
 typedef struct
 {
 	long x, y, z;
 	short cstat, picnum;
 	signed char shade;
-	char pal, clipdist, filler;
+	unsigned char pal, clipdist, filler;
 	unsigned char xrepeat, yrepeat;
 	signed char xoffset, yoffset;
 	short sectnum, statnum;
 	short ang, owner, xvel, yvel, zvel;
 	short lotag, hitag, extra;
 } spritetype;
+
+#ifdef PLATFORM_DOS
+#pragma pack(pop);
+#else
+#pragma pack()
+#endif
 
 EXTERN sectortype sector[MAXSECTORS];
 EXTERN walltype wall[MAXWALLS];
@@ -138,11 +151,15 @@ EXTERN char vidoption;
 EXTERN long xdim, ydim, ylookup[MAXYDIM+1], numpages;
 EXTERN long yxaspect, viewingrange;
 
+EXTERN long validmodecnt;
+EXTERN short validmode[256];
+EXTERN long validmodexdim[256], validmodeydim[256];
+
 EXTERN short numsectors, numwalls;
 EXTERN volatile long totalclock;
 EXTERN long numframes, randomseed;
 EXTERN short sintable[2048];
-EXTERN char palette[768];
+EXTERN unsigned char palette[768];
 EXTERN short numpalookups;
 EXTERN char *palookup[MAXPALOOKUPS];
 EXTERN char parallaxtype, showinvisibility;
@@ -162,20 +179,21 @@ EXTERN short tilesizx[MAXTILES], tilesizy[MAXTILES];
 EXTERN char walock[MAXTILES];
 EXTERN long numtiles, picanm[MAXTILES], waloff[MAXTILES];
 
-	//These variables are for auto-mapping with the draw2dscreen function.
-	//When you load a new board, these bits are all set to 0 - since
-	//you haven't mapped out anything yet.  Note that these arrays are
-	//bit-mapped.
-	//If you want draw2dscreen() to show sprite #54 then you say:
-	//   spritenum = 54;
-	//   show2dsprite[spritenum>>3] |= (1<<(spritenum&7));
-	//And if you want draw2dscreen() to not show sprite #54 then you say:
-	//   spritenum = 54;
-	//   show2dsprite[spritenum>>3] &= ~(1<<(spritenum&7));
-	//Automapping defaults to 0 (do nothing).  If you set automapping to 1,
-	//   then in 3D mode, the walls and sprites that you see will show up the
-	//   next time you flip to 2D mode.
-
+    /*
+	 * These variables are for auto-mapping with the draw2dscreen function.
+	 * When you load a new board, these bits are all set to 0 - since
+	 * you haven't mapped out anything yet.  Note that these arrays are
+	 * bit-mapped.
+	 * If you want draw2dscreen() to show sprite #54 then you say:
+	 *    spritenum = 54;
+	 *    show2dsprite[spritenum>>3] |= (1<<(spritenum&7));
+	 * And if you want draw2dscreen() to not show sprite #54 then you say:
+	 *    spritenum = 54;
+	 *    show2dsprite[spritenum>>3] &= ~(1<<(spritenum&7));
+	 * Automapping defaults to 0 (do nothing).  If you set automapping to 1,
+	 *    then in 3D mode, the walls and sprites that you see will show up the
+	 *    next time you flip to 2D mode.
+     */
 EXTERN char show2dsector[(MAXSECTORS+7)>>3];
 EXTERN char show2dwall[(MAXWALLS+7)>>3];
 EXTERN char show2dsprite[(MAXSPRITES+7)>>3];
@@ -285,3 +303,12 @@ OTHER VARIABLES:
 		NUMSECTORS - the total number of existing sectors.  Modified every time
 			you call the loadboard function.
 ***************************************************************************/
+
+#define PORTSIG  "Port by Ryan C. Gordon, Andrew Henderson, Dan Olson, and a cast of thousands."
+
+#endif  /* defined _INCLUDE_BUILD_H_ */
+
+/* end of build.h ... */
+
+
+
