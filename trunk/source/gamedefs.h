@@ -56,7 +56,7 @@ extern "C" {
 
 // Number of Mouse buttons
 
-#define MAXMOUSEBUTTONS 3
+#define MAXMOUSEBUTTONS 7
 
 // Number of JOY buttons
 
