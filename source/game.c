@@ -1955,9 +1955,12 @@ void binscreen(void)
 }
 
 
-void gameexit(char *t)
+void gameexit(char *msg)
 {
     short i;
+    char t[256];
+    
+    strncpy(t,msg,256); t[255] = 0;
 
     if(*t != 0) ps[myconnectindex].palette = (char *) &palette[0];
 
@@ -1983,7 +1986,11 @@ void gameexit(char *t)
     }
 #ifdef ONELEVELDEMO
     doorders();
-    t = "You have been playing a ONE LEVEL demo of Duke Nukem 3D.";
+    // DDOI
+    //t = "You have been playing a ONE LEVEL demo of Duke Nukem 3D.";
+    strncpy(t, "You have been playing a ONE LEVEL demo of Duke Nukem 3D.", 256);
+    t[255] = 0;
+    // DDOI
 #endif
 
 // CTW - MODIFICATION
