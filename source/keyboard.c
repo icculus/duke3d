@@ -201,7 +201,7 @@ static struct {
 	{ ",",		sc_Comma	},
 	{ ".",		sc_Period	},
 	{ "Enter",	sc_Return	},
-//	{ "Escape",	sc_Escape	},
+	{ "Escape",	sc_Escape	},
 	{ "Space",	sc_Space	},
 	{ "BakSpc",	sc_BackSpace	},
 	{ "Tab",	sc_Tab		},
@@ -229,7 +229,7 @@ static struct {
 	{ "/",		sc_Slash	},
 	{ ";",		sc_SemiColon	},
 	{ "'",		sc_Quote	},
-	{ "~",		sc_Tilde	},
+	{ "`",		sc_Tilde	},
 	{ "\\",		sc_BackSlash	},
 	{ "(",		sc_OpenBracket	},
 	{ ")",		sc_CloseBracket	},
@@ -299,7 +299,7 @@ static struct {
 	{ "RCtrl",	sc_RightControl	},
 	{ "Kpad/",	sc_kpad_Slash	},
 	{ "KpdEnt",	sc_kpad_Enter	},
-	{ "PrtScr",	sc_PrintScreen	},
+	{ "PrtScn",	sc_PrintScreen	},
 	{ NULL,		0		}
 };
 
