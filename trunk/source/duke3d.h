@@ -66,7 +66,7 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #include "SDL_mixer.h"
 #endif
 
-#include "pragmas.h"
+#include "buildengine/pragmas.h"
 #include "function.h"
 #include "build.h"
 

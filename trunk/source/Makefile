@@ -64,7 +64,7 @@ BUILDOBJS := \
 	buildengine/unix_compat.o
 
 CC = gcc
-CFLAGS = -g $(SDL_CFLAGS) -DUSE_SDL=1 -DPLATFORM_UNIX=1 -DUSE_I386_ASM=1 -W -Wall -Wno-unused $(EXTRACFLAGS) -O2 -funsigned-char
+CFLAGS = -g $(SDL_CFLAGS) -DUSE_SDL=1 -DPLATFORM_UNIX=1 -W -Wall -Wno-unused $(EXTRACFLAGS) -O2 -funsigned-char
 
 # Uncomment this to compile with the Intel compiler (v6.0)
 #CC = icc
