@@ -78,6 +78,16 @@ static int maxReverbDelay = 256;
 static int mixerIsStereo = 1;
 static duke_channel_info *chaninfo = NULL;
 
+// This...is not ideal.  --ryan.
+#define CHUNK_CACHE_SIZE 128
+typedef struct __DUKECHUNKCACHE
+{
+    Mix_Chunk *chunk;
+    void *dataptr;
+} duke_chunk_cache;
+static duke_chunk_cache chunkCache[CHUNK_CACHE_SIZE];
+
+
 #define HandleOffset       1
 
 /* these come from the real ASS */
@@ -140,7 +150,7 @@ static void MV_CalcPanTable
 //  We use this for state management and calling the application's callback.
 static void channelDoneCallback(int channel)
 {
-    Mix_FreeChunk(Mix_GetChunk(channel));
+    //Mix_FreeChunk(Mix_GetChunk(channel));
     if (callback)
     {
         callback(chaninfo[channel].callbackval);
@@ -475,9 +485,35 @@ int FX_Init(int SoundCard, int numvoices, int numchannels,
     Mix_QuerySpec(NULL, NULL, &mixerIsStereo);
     mixerIsStereo = (mixerIsStereo == 2);
 
+    memset(chunkCache, '\0', sizeof (chunkCache));
+
     fx_initialized = 1;
     return(FX_Ok);
 } // FX_Init
+
+
+void FX_CleanCache(void)
+{
+    int total = 0;
+    int i;
+
+    snddebug("FX_CleanCache halting all channels.");
+    Mix_HaltChannel(-1);  // stop everything.
+
+    snddebug("freeing cached chunks.");
+    for (i = 0; i < CHUNK_CACHE_SIZE; i++)
+    {
+        if (chunkCache[i].chunk != NULL)
+        {
+            total++;
+            Mix_FreeChunk(chunkCache[i].chunk);
+            chunkCache[i].chunk = NULL;
+        } // if
+        chunkCache[i].dataptr = NULL;
+    } // for
+
+    snddebug("cached chunks deallocation complete. (%d) were deleted.", total);
+} // FX_CleanCache
 
 
 int FX_Shutdown( void )
@@ -490,6 +526,7 @@ int FX_Shutdown( void )
         return(FX_Error);
     } // if
 
+    FX_CleanCache();  // stops all channels and music.
     Mix_CloseAudio();
     callback = NULL;
     free(chaninfo);
@@ -672,6 +709,39 @@ int FX_SetFrequency(int handle, int frequency)
 } // FX_SetFrequency
 
 
+static Mix_Chunk *findChunkInCache(void *ptr)
+{
+    // !!! FIXME: Optimize!  --ryan.
+    int i;
+    for (i = 0; i < CHUNK_CACHE_SIZE; i++)
+    {
+        if (chunkCache[i].dataptr == ptr)
+            return(chunkCache[i].chunk);
+        else if (chunkCache[i].dataptr == NULL)
+            return(NULL);
+    } // for
+    return(NULL);
+} // findChunkInCache
+
+
+static void addChunkToCache(Mix_Chunk *chunk, void *ptr)
+{
+    // !!! FIXME: Optimize!  --ryan.
+    int i;
+    for (i = 0; i < CHUNK_CACHE_SIZE; i++)
+    {
+        if (chunkCache[i].dataptr == NULL)
+        {
+            chunkCache[i].dataptr = ptr;
+            chunkCache[i].chunk = chunk;
+            return;
+        } // if
+    } // for
+
+    snddebug("overflowed chunk cache!");
+    assert(0);  // !!! FIXME.
+} // addChunkToCache
+
 
 // If this returns FX_Ok, then chunk and chan will be filled with the
 //  the block of audio data in the format desired by the audio device
@@ -691,32 +761,37 @@ static int setupVocPlayback(char *ptr, int size, int priority, unsigned long cal
         return(FX_Error);
     } // if
 
-    if (size == -1) {
-        // !!! FIXME: This could be a problem...SDL/SDL_mixer wants a RWops, which
-        // !!! FIXME:  is an i/o abstraction. Since we already have the VOC data
-        // !!! FIXME:  in memory, we fake it with a memory-based RWops. None of
-        // !!! FIXME:  this is a problem, except the RWops wants to know how big
-        // !!! FIXME:  its memory block is (so it can do things like seek on an
-        // !!! FIXME:  offset from the end of the block), and since we don't have
-        // !!! FIXME:  this information, we have to give it SOMETHING. My VOC
-        // !!! FIXME:  decoder never does seeks from EOF, nor checks for
-        // !!! FIXME:  end-of-file, so we should be fine. However, we've got a
-        // !!! FIXME:  limit of 10 megs for one file. I hope that'll cover it. :)
-
-        rw = SDL_RWFromMem((void *) ptr, (10 * 1024) * 1024);  /* yikes. */
-    } else {
-        // A valid file size! Excellent.
-        rw = SDL_RWFromMem((void *) ptr, size);
-    }
-    
-    *chunk = Mix_LoadWAV_RW(rw, 1);
+    *chunk = findChunkInCache(ptr);
     if (*chunk == NULL)
     {
-        setErrorMessage("Couldn't decode voice sample.");
-        chaninfo[*chan].in_use = 0;
-        return(FX_Error);
-    } // if
+        if (size == -1) {
+            // !!! FIXME: This could be a problem...SDL/SDL_mixer wants a RWops, which
+            // !!! FIXME:  is an i/o abstraction. Since we already have the VOC data
+            // !!! FIXME:  in memory, we fake it with a memory-based RWops. None of
+            // !!! FIXME:  this is a problem, except the RWops wants to know how big
+            // !!! FIXME:  its memory block is (so it can do things like seek on an
+            // !!! FIXME:  offset from the end of the block), and since we don't have
+            // !!! FIXME:  this information, we have to give it SOMETHING. My VOC
+            // !!! FIXME:  decoder never does seeks from EOF, nor checks for
+            // !!! FIXME:  end-of-file, so we should be fine. However, we've got a
+            // !!! FIXME:  limit of 10 megs for one file. I hope that'll cover it. :)
+    
+            rw = SDL_RWFromMem((void *) ptr, (10 * 1024) * 1024);  /* yikes. */
+        } else {
+            // A valid file size! Excellent.
+            rw = SDL_RWFromMem((void *) ptr, size);
+        }
+    
+        *chunk = Mix_LoadWAV_RW(rw, 1);
+        if (*chunk == NULL)
+        {
+            setErrorMessage("Couldn't decode voice sample.");
+            chaninfo[*chan].in_use = 0;
+            return(FX_Error);
+        } // if
 
+        addChunkToCache(*chunk, (void *) ptr);
+    } // if
     chaninfo[*chan].callbackval = callbackval;
     return(FX_Ok);
 } // setupVocPlayback
