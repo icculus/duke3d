@@ -225,7 +225,7 @@ static void SCRIPT_parseline (char *curline, scriptnode_t *node)
 
 		/* Found one of possibly two strings */
 		strcpy (workbuf, token);
-		while (token != NULL && workbuf[strlen(workbuf)-2] != '"')
+		while (token != NULL && workbuf[strlen(workbuf)-1] != '"')
 		{
 			i = SCRIPT_getnexttoken (curline, token, i);
 			strcat (workbuf, " ");
@@ -240,7 +240,7 @@ static void SCRIPT_parseline (char *curline, scriptnode_t *node)
 		i = SCRIPT_getnexttoken (curline, token, i);
 		if (token[0] == '"') {
 			strcpy (workbuf, token);
-			while (token != NULL && workbuf[strlen(workbuf)-2] != '"')
+			while (token != NULL && workbuf[strlen(workbuf)-1] != '"')
 			{
 				i = SCRIPT_getnexttoken (curline, token, i);
 				strcat (workbuf, " ");
