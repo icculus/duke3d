@@ -74,6 +74,9 @@ LDLIBS = $(SDL_LDFLAGS) -lSDL -lSDL_mixer $(EXTRALDFLAGS) -Wl,-E
 
 all: duke3d
 
+audiolib/audiolib.a:
+	$(MAKE) -C audiolib CC="$(CC)" CFLAGS="$(CFLAGS)" LDLIBS="$(LDLIBS)"
+
 duke3d: 	\
 	actors.o \
 	animlib.o \
@@ -90,11 +93,14 @@ duke3d: 	\
 	scriplib.o \
 	sector.o \
 	sounds.o \
-	fx_man.o
+	dukemusc.o \
+	audiolib/audiolib.a
 	$(CC) $^ $(BUILDOBJS) $(LDLIBS) -o $@
 
 clean:
+	$(MAKE) -C audiolib clean
 	rm -rf duke3d *.o
 
 distclean: clean
+	$(MAKE) -C audiolib distclean
 	rm -rf *~
