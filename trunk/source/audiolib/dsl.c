@@ -156,9 +156,10 @@ int   DSL_BeginBufferedPlayback( char *BufferStart,
 
 /*
 	23ms is typically ideal (11025,22050,44100)
+	46ms isn't bad
 */
 	
-	chunksize = 256;
+	chunksize = 512;
 	
 	if (SampleRate >= 16000) chunksize *= 2;
 	if (SampleRate >= 32000) chunksize *= 2;
