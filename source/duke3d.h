@@ -74,7 +74,7 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #endif
 
 #include "buildengine/pragmas.h"
-#undef getch	// quick hack
+//#undef getch	// quick hack
 #include "buildengine/build.h"
 #include "function.h"
 

@@ -592,7 +592,7 @@ void MV_ServiceRightGus( char **ptr, unsigned long *length )
 
    Interperate the information of a VOC format sound file.
 ---------------------------------------------------------------------*/
-static inline unsigned int get_le32(void *p0)
+static __inline unsigned int get_le32(void *p0)
 {
 	//unsigned char *p = p0;
 	//return p[0] | (p[1]<<8) | (p[2]<<16) | (p[3]<<24);
@@ -600,7 +600,7 @@ static inline unsigned int get_le32(void *p0)
 	return(BUILDSWAP_INTEL32(val));
 }
 
-static inline unsigned int get_le16(void *p0)
+static __inline unsigned int get_le16(void *p0)
 {
 	//unsigned char *p = p0;
 	//return p[0] | (p[1]<<8);

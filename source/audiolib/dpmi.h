@@ -70,10 +70,10 @@ int  DPMI_UnlockMemory( void *address, unsigned length );
 int  DPMI_UnlockMemoryRegion( void *start, void *end );
 
 #define DPMI_Lock( variable ) \
-   ( DPMI_LockMemory( &( variable ), sizeof( variable ) ) )
+   ( DPMI_LockMemory( (void *) &( variable ), sizeof( variable ) ) )
 
 #define DPMI_Unlock( variable ) \
-   ( DPMI_UnlockMemory( &( variable ), sizeof( variable ) ) )
+   ( DPMI_UnlockMemory( (void *) &( variable ), sizeof( variable ) ) )
 
 #ifdef PLAT_DOS
 #pragma aux DPMI_GetDOSMemory = \

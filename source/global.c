@@ -844,11 +844,6 @@ char *ultoa(unsigned long value, char *string, int radix)
 }
 #endif
 
-char getch(void)
-{
-	getchar();
-	return 0;
-}
 
 int setup_homedir (void)
 {
