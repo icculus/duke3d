@@ -98,6 +98,47 @@ static void SCRIPT_freenode (scriptnode_t *node)
 	node = NULL;
 }
 
+static void SCRIPT_writenode (scriptnode_t *node, FILE *fp)
+{
+	switch (node->type)
+	{
+		case SCRIPTFLAG_UNKNOWN:
+			return;
+			break;
+		case SCRIPTFLAG_CATEGORY:
+			fprintf (fp, "\n[%s]\n", node->key);
+			break;
+		case SCRIPTFLAG_ONESTRING:
+			fprintf (fp, "%s = \"%s\"\n", node->key, node->data.string[0]);
+			break;
+		case SCRIPTFLAG_TWOSTRING:
+			fprintf (fp, "%s = \"%s\" \"%s\"\n", node->key, node->data.string[0], node->data.string[1]);
+			break;
+		case SCRIPTFLAG_HEX:
+			fprintf (fp, "%s = 0x%X\n", node->key, node->data.number);
+			break;
+		case SCRIPTFLAG_DECIMAL:
+			fprintf (fp, "%s = %d\n", node->key, (unsigned short)node->data.number);
+			break;
+	}
+}
+
+static void SCRIPT_recursivewrite (scriptnode_t *node, FILE *fp)
+{
+	if (node == NULL) return;
+
+	SCRIPT_writenode (node, fp);
+
+	/* Free dependant nodes first */
+	if (node->child) {
+		SCRIPT_recursivewrite (node->child, fp);
+	}
+
+	if (node->sibling) {
+		SCRIPT_recursivewrite (node->sibling, fp);
+	}
+}
+
 static void SCRIPT_recursivefree (scriptnode_t *node)
 {
 	assert (node != NULL);
@@ -425,7 +466,20 @@ int32 SCRIPT_Load ( char * filename )
 */
 void SCRIPT_Save (int32 scripthandle, char * filename)
 {
-	STUBBED("Save");
+	FILE *fp;
+	scriptnode_t *head;
+
+	if(scripthandle >= MAX_SCRIPTS || scripthandle < 0)
+		return;
+
+	fp = fopen (filename, "w");
+	if (fp == NULL) return;
+
+	head = script_headnode[scripthandle];
+	SCRIPT_recursivewrite (head, fp);
+
+	fclose (fp);
+
 }
 
 
@@ -796,7 +850,7 @@ void SCRIPT_PutString
 		node = SCRIPT_constructnode ();
 		node->type = SCRIPTFLAG_ONESTRING;
 		node->key = SCRIPT_copystring (entryname);
-		SCRIPT_addchild (node, section);
+		SCRIPT_addchild (section, node);
 	} else {
 		free (node->data.string[0]);
 	}
@@ -869,7 +923,7 @@ void SCRIPT_PutNumber
 		/* Add the section if it does not exist */
 		node = SCRIPT_constructnode ();
 		node->key = SCRIPT_copystring (entryname);
-		SCRIPT_addchild (node, section);
+		SCRIPT_addchild (section, node);
 	}
 
 	if (hexadecimal)
