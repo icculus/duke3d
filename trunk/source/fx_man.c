@@ -397,7 +397,7 @@ int FX_Init(int SoundCard, int numvoices, int numchannels,
 
     if (fx_initialized)
     {
-        setErrorMessage("Sound system is already initialized.");
+        setErrorMessage("Sound system is already initialized.\n");
         return(FX_Error);
     } // if
 
@@ -482,7 +482,7 @@ int FX_Shutdown( void )
 
     if (!fx_initialized)
     {
-        setErrorMessage("Sound system is not currently initialized.");
+        setErrorMessage("Sound system is not currently initialized.\n");
         return(FX_Error);
     } // if
 

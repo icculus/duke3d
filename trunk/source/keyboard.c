@@ -57,7 +57,7 @@ void KB_KeyEvent( int scancode, boolean keypressed )
 boolean KB_KeyWaiting( void )
 {
 	STUBBED("KB_KeyWaiting");
-	return false;
+	return true;
 }
 
 char KB_Getch( void )
