@@ -48,16 +48,92 @@ FUNCTIONS
 
 void keyhandler(void)
 {
+    static boolean gotextended = false;
+    
     int rawkey = _readlastkeyhit();
     int lastkey = rawkey & 0x7f;
     
     // 128 bit means key was released.
     int pressed = !(rawkey & 0x80);
     
-    if (rawkey == 0xe0)
+    if (rawkey == 0xe0 && !gotextended)
     {
-        STUBBED("Extended scancode!");
+    	gotextended = true;
         return;
+    }
+
+    if (rawkey == 0xe1)
+    {
+    	STUBBED("Another extended key!");
+    	return;
+    }
+        
+    if (gotextended) {
+    	gotextended = false;
+    	
+    	switch (lastkey) {
+    	    case 0x35: /* kp divide */
+    	        /* no suitable mapping */
+    	        return;
+    	    case 0x47: /* home */
+    	        lastkey = sc_Home;
+    	        break;
+    	    case 0x48: /* up */
+    	        lastkey = sc_UpArrow;
+    	        break;
+    	    case 0x49: /* page up */
+    	        lastkey = sc_PgUp;
+    	        // SBF - SEE BUILDENGINE'S sdl_driver.c
+    	        // scancodes[SDLK_PAGEUP]          = 0xE0C9;
+    	        pressed = !pressed; /* invert */
+    	        
+    	        break;
+    	    case 0x4A: /* kpad minus */
+    	        lastkey = sc_kpad_Minus;
+    	        break;
+    	    case 0x4B: /* left */
+    	        lastkey = sc_LeftArrow;
+    	        break;
+    	    case 0x4D: /* right */
+    	        lastkey = sc_RightArrow;
+    	        break;
+    	    case 0x4E: /* kpad plus */
+    	        lastkey = sc_kpad_Plus;
+    	        break;
+    	    case 0x4F: /* end */
+    	    	lastkey = sc_End;
+    	    	break;
+    	    case 0x50: /* down */
+    	        lastkey = sc_DownArrow;
+    	        break;
+    	    case 0x51: /* page down */
+    	    	lastkey = sc_PgDn;
+    	    	// SBF - SEE BUILDENGINE'S sdl_driver.c
+    	    	// scancodes[SDLK_PAGEDOWN]        = 0xE0D1;
+    	    	pressed = !pressed; /* invert */
+    	    	
+    	    	// printf("PAGE DOWN: last: 0x%x raw: 0x%x pressed: %d\n",
+    	    	//	lastkey, rawkey, pressed);
+    	    	break;
+    	    case 0x53: /* delete */
+    	    	lastkey = sc_Delete;
+    	    	// SBF - SEE BUILDENGINE'S sdl_driver.c
+    	    	// scancodes[SDLK_DELETE]          = 0xE0D3;
+    	    	pressed = !pressed; /* invert */
+    	    	
+    	    	//printf("DELETE: last: 0x%x raw: 0x%x pressed: %d\n",
+    	    	//	lastkey, rawkey, pressed);
+    	    	break;
+    	    case 0x52: /* kpad 0 */
+    	    	lastkey = sc_kpad_0;
+    	    	break;
+    	    case 0x1C: /* kpad enter */
+    	    	lastkey = sc_kpad_Enter;
+    	    	break;
+    	    default:
+    	    	STUBBED("Unknown extended key!");
+    	    	return;
+    	}
     }
     
     if (lastkey >= MAXKEYBOARDSCAN)
