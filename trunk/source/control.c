@@ -45,6 +45,8 @@ uint32   CONTROL_ButtonHeldState1;
 uint32   CONTROL_ButtonState2;
 uint32   CONTROL_ButtonHeldState2;
 
+static short mouseButtons = 0;
+static short lastmousebuttons = 0;
 
 //***************************************************************************
 //
@@ -60,6 +62,8 @@ struct _KeyMapping
 	
 	/* other mappings go here */
 } KeyMapping[MAXGAMEBUTTONS];
+
+static int32 MouseMapping[MAXMOUSEBUTTONS];
 
 static void SETBUTTON(int i)
 {
@@ -132,7 +136,13 @@ void CONTROL_MapButton
         boolean doubleclicked
         )
 {
-	STUBBED("CONTROL_MapButton");
+    if(doubleclicked)
+	return; // TODO
+
+    if(whichbutton < 0 || whichbutton >= MAXMOUSEBUTTONS)
+	    return;
+
+    MouseMapping[whichbutton] = whichfunction;
 }
 
 void CONTROL_DefineFlag( int32 which, boolean toggle )
@@ -158,8 +168,29 @@ void CONTROL_GetUserInput( UserInput *info )
 
 void CONTROL_GetInput( ControlInfo *info )
 {
-	STUBBED("CONTROL_GetInput");
+    int32 sens = CONTROL_GetMouseSensitivity() >> 9;
+    int32 mx, my;
+    int i;
     memset(info, '\0', sizeof (ControlInfo));
+
+    MOUSE_GetDelta(&mx,&my);
+
+    info->dyaw = mx * sens;
+    info->dz = my * sens*2;
+
+    // TODO: releasing the mouse button does not honor if a keyboard key with
+    // the same function is still pressed. how should it?
+    for(i=0; i<MAXMOUSEBUTTONS;++i)
+    {
+	if( MouseMapping[i] != -1 )
+	{
+	    if(!(lastmousebuttons & (1<<i)) && mouseButtons & (1<<i))
+		SETBUTTON(MouseMapping[i]);
+	    else if(lastmousebuttons & (1<<i) && !(mouseButtons & (1<<i)))
+		RESBUTTON(MouseMapping[i]);
+	}
+    }
+    lastmousebuttons = mouseButtons;
 }
 
 void CONTROL_ClearButton( int32 whichbutton )
@@ -257,7 +288,7 @@ void CONTROL_PrintAxes( void )
 
 boolean MOUSE_Init( void )
 {
-	//STUBBED("MOUSE_Init");  // buildengine handles this.
+	memset(MouseMapping,-1,sizeof(MouseMapping));
 	return true;
 }
 
@@ -280,7 +311,6 @@ static int32 mousePositionX = 0;
 static int32 mousePositionY = 0;
 static int32 mouseRelativeX = 0;
 static int32 mouseRelativeY = 0;
-static short mouseButtons = 0;
 
 static void updateMouse(void)
 {

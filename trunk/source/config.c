@@ -550,6 +550,8 @@ void readsavenames(void)
 ===================
 */
 
+int32 dukever13;
+
 void CONFIG_ReadSetup( void )
 {
    int32 dummy;
@@ -569,6 +571,10 @@ void CONFIG_ReadSetup( void )
        commmacro[13] = dummy+'0';
        SCRIPT_GetString( scripthandle, "Comm Setup",commmacro,&ud.ridecule[dummy][0]);
    }
+
+   /* DDOI - Check version */
+   if (!SCRIPT_GetNumber( scripthandle, "Misc", "UseOldVersion", &dukever13))
+	   dukever13 = 0;
 
    SCRIPT_GetString( scripthandle, "Comm Setup","PlayerName",&myname[0]);
 

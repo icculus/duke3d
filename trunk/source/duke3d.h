@@ -575,4 +575,4 @@ extern long stereomode, stereowidth, stereopixelwidth;
 
 extern long myaimmode, myaimstat, omyaimstat;
 
-extern int dukever13; // indicate old version
+extern int32 dukever13; // indicate old version
