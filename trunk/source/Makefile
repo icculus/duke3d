@@ -89,7 +89,7 @@ duke3d: 	\
 	$(CC) $^ $(BUILDOBJS) $(LDLIBS) -o $@
 
 clean:
-	rm -rf *.o
+	rm -rf duke3d *.o
 
 distclean: clean
 	rm -rf *~
