@@ -1248,6 +1248,21 @@ char parsecommand(void)
             while( *textptr == ' ' )
                 textptr++;
 
+            if (k == 13)  // text is wrong for this one ("Press SPACE to continue")  --ryan.
+            {
+                const char *str = CONTROL_GetMappingName(gamefunc_Open);
+                if (str != NULL)
+                {
+                    int qq;
+                    char *upstr = alloca(strlen(str) + 1);
+                    for (qq = 0; str[qq]; qq++) upstr[qq] = toupper(str[qq]);
+                    upstr[qq] = 0;
+                    snprintf(fta_quotes[k], sizeof (fta_quotes[k]), "PRESS %s TO RESTART LEVEL", str);
+                    while( *textptr != 0x0a ) textptr++;
+                    return 0;
+                }
+            }
+
             while( *textptr != 0x0a )
             {
                 fta_quotes[k][i] = *textptr;
@@ -2851,7 +2866,9 @@ char parse(void)
             insptr++;
             parseifelse( (( hittype[g_i].floorz - hittype[g_i].ceilingz ) >> 8 ) < *insptr);
             break;
-        case 63:
+        case 63:  // "ifhitspace" in confiles.  --ryan.
+            // this line is actually checking if the key assigned
+            //  to "OPEN" is pressed, but it may not be space.
             parseifelse( sync[g_p].bits&(1<<29));
             break;
         case 64:

@@ -224,6 +224,8 @@ void CONTROL_PrintAxes( void );
 
 void CONTROL_UpdateKeyboardState(int key, int pressed);
 
+const char *CONTROL_GetMappingName(int32 which);
+
 #ifdef __cplusplus
 };
 #endif
