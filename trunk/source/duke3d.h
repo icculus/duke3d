@@ -28,10 +28,13 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #include <string.h>
 #include <stdlib.h>
 #include <malloc.h>
+#ifdef PLATFORM_DOS
 #include <dos.h>
 #include <bios.h>
 #include <io.h>
-#include <fcntl.H>
+#endif
+
+#include <fcntl.h>
 #include <time.h>
 #include <ctype.h>
 #include "pragmas.h"
