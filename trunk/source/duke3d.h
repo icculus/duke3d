@@ -24,10 +24,15 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 */
 //-------------------------------------------------------------------------
 
+#ifdef PLATFORM_UNIX
+#include "dukeunix.h"
+#endif
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <malloc.h>
+
 #ifdef PLATFORM_DOS
 #include <dos.h>
 #include <bios.h>
