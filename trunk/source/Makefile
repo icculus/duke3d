@@ -2,6 +2,7 @@
 # Duke3D makefile.
 #-----------------------------------------------------------------------------#
 
+linux_ppc := false
 beos := false
 macosx := false
 solaris := false
@@ -57,6 +58,10 @@ endif
 ifeq ($(strip $(macosx)),true)
   EXTRACFLAGS += -DPLATFORM_MACOSX=1
   EXTRALDFLAGS += -lSDLmain
+endif
+
+ifeq ($(strip $(linux_ppc)),true)
+  EXTRACFLAGS += -DPLATFORM_LINUXPPC=1
 endif
 
 ifneq ($(strip $(cygwin)),true)
@@ -129,6 +134,12 @@ all: duke3d build
 
 # Animation playback crashes due to optimization error on MacOS X. --ryan.
 ifeq ($(strip $(macosx)),true)
+animlib.o : animlib.c
+	$(CC) $(CFLAGS) -o $@ $<
+endif
+
+# Animation playback crashes due to optimization error on Linux PPC. --Felipe Barriga.
+ifeq ($(strip $(linux_ppc)),true)
 animlib.o : animlib.c
 	$(CC) $(CFLAGS) -o $@ $<
 endif
