@@ -42,7 +42,8 @@ typedef enum {
 	SCRIPTFLAG_CATEGORY,
 	SCRIPTFLAG_ONESTRING,
 	SCRIPTFLAG_TWOSTRING,
-	SCRIPTFLAG_NUMBER
+	SCRIPTFLAG_HEX,
+	SCRIPTFLAG_DECIMAL
 } scriptflag_t;
 
 typedef struct scriptnode_s {
@@ -209,15 +210,15 @@ static void SCRIPT_parseline (char *curline, scriptnode_t *node)
 
 	if (!strncmp (token, "0x", 2)) {
 		/* Found a hex digit! */
-		node->type = SCRIPTFLAG_NUMBER;
+		node->type = SCRIPTFLAG_HEX;
 		node->data.number = strtol (token, NULL, 16);
 	} else if (isdigit (token[0])) {
 		/* Found a number! */
-		node->type = SCRIPTFLAG_NUMBER;
+		node->type = SCRIPTFLAG_DECIMAL;
 		node->data.number = atoi (token);
 	} else if (token[0] == '~') {
 		/* Found a ... who knows */
-		node->type = SCRIPTFLAG_NUMBER;
+		node->type = SCRIPTFLAG_DECIMAL;
 		node->data.number = -1;
 	} else if (token[0] == '"') {
 		char workbuf[128];
@@ -629,7 +630,7 @@ boolean SCRIPT_GetNumber
 	cur = SCRIPT_findinchildren (cur, sectionname);
 	cur = SCRIPT_findinchildren (cur, entryname);
 
-	if (cur != NULL && cur->type == SCRIPTFLAG_NUMBER)
+	if (cur != NULL && cur->type == SCRIPTFLAG_DECIMAL)
 	{
 		*number = cur->data.number;
 #ifdef DEBUG_SCRIPLIB
@@ -766,7 +767,41 @@ void SCRIPT_PutString
    char * string
    )
 {
-	STUBBED("PutString");
+	scriptnode_t *head;
+	scriptnode_t *section;
+	scriptnode_t *node;
+
+	if(scripthandle >= MAX_SCRIPTS || scripthandle < 0)
+		return;
+
+	head = script_headnode[scripthandle];
+
+	/* We're screwed if there's no head */
+	if (head == NULL) return;
+
+	section = SCRIPT_findinchildren (head, sectionname);
+	if (section == NULL)
+	{
+		/* Add the section if it does not exist */
+		section = SCRIPT_constructnode ();
+		section->type = SCRIPTFLAG_CATEGORY;
+		section->key = SCRIPT_copystring (sectionname);
+		SCRIPT_addchild (head, section);
+	}
+
+	node = SCRIPT_findinchildren (section, entryname);
+	if (node == NULL)
+	{
+		/* Add the section if it does not exist */
+		node = SCRIPT_constructnode ();
+		node->type = SCRIPTFLAG_ONESTRING;
+		node->key = SCRIPT_copystring (entryname);
+		SCRIPT_addchild (node, section);
+	} else {
+		free (node->data.string[0]);
+	}
+
+	node->data.string[0] = SCRIPT_copystring (string);
 }
 
 /*
@@ -805,7 +840,43 @@ void SCRIPT_PutNumber
    boolean defaultvalue
    )
 {
-	STUBBED("PutNumber");
+	/* DDOI - I don't know what "defaultvalue" is for so it's ignored */
+	scriptnode_t *head;
+	scriptnode_t *section;
+	scriptnode_t *node;
+
+	if(scripthandle >= MAX_SCRIPTS || scripthandle < 0)
+		return;
+
+	head = script_headnode[scripthandle];
+
+	/* We're screwed if there's no head */
+	if (head == NULL) return;
+
+	section = SCRIPT_findinchildren (head, sectionname);
+	if (section == NULL)
+	{
+		/* Add the section if it does not exist */
+		section = SCRIPT_constructnode ();
+		section->type = SCRIPTFLAG_CATEGORY;
+		section->key = SCRIPT_copystring (sectionname);
+		SCRIPT_addchild (head, section);
+	}
+
+	node = SCRIPT_findinchildren (section, entryname);
+	if (node == NULL)
+	{
+		/* Add the section if it does not exist */
+		node = SCRIPT_constructnode ();
+		node->key = SCRIPT_copystring (entryname);
+		SCRIPT_addchild (node, section);
+	}
+
+	if (hexadecimal)
+		node->type = SCRIPTFLAG_HEX;
+	else
+		node->type = SCRIPTFLAG_DECIMAL;
+	node->data.number = number;
 }
 
 /*
