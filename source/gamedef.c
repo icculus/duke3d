@@ -1345,9 +1345,36 @@ char parsecommand(void)
             j = 0;
             while(j < 30)
             {
+		// what a crap, skip GRAVITATIONALCONSTANT, MAXGROWAMMO, QSIZE,
+		// TRIPBOMBLASERMODE
+		if(dukever13)
+		{
+		    switch(j)
+		    {
+			case 7:
+			    gc = 176;
+			    ++j;
+			    break;
+			case 24:
+			    max_ammo_amount[11] = 50;
+			    ++j;
+			    break;
+			case 28:
+			    spriteqamount = 1024;
+			    ++j;
+			    break;
+			case 29:
+			    lasermode = 0;
+			    ++j;
+			    break;
+		    };
+		    if(j>27)
+			continue;
+		}
+
                 transnum();
                 scriptptr--;
-
+		
                 switch(j)
                 {
                     case 0:
