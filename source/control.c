@@ -191,6 +191,16 @@ void CONTROL_GetInput( ControlInfo *info )
 	}
     }
     lastmousebuttons = mouseButtons;
+
+    // update stick state.
+    if ((CONTROL_JoystickEnabled) && (_joystick_update()))
+    {
+        // !!! FIXME: Do something like this.
+        //info->dx += _joystick_axis()
+
+        // !!! FIXME: Do this.
+        //SETBUTTON based on _joystick_button().
+    }
 }
 
 void CONTROL_ClearButton( int32 whichbutton )
@@ -243,12 +253,12 @@ void CONTROL_Startup
    int32 ticspersecond
    )
 {
-	STUBBED("CONTROL_Startup");
+    _joystick_init();
 }
 
 void CONTROL_Shutdown( void )
 {
-	STUBBED("CONTROL_Shutdown");
+    _joystick_deinit();
 }
 
 
