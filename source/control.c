@@ -145,6 +145,17 @@ void CONTROL_UpdateKeyboardState(int key, int pressed)
 	}	
 }
 
+
+// added.  --ryan.
+const char *CONTROL_GetMappingName(int32 which)
+{
+	if (!KeyMapping[which].key_active)
+        return NULL;
+
+	return(KB_ScanCodeToString(KeyMapping[which].key1));
+}
+
+
 void CONTROL_MapKey( int32 which, kb_scancode key1, kb_scancode key2 )
 {
 	// STUBBED("CONTROL_MapKey");
