@@ -857,7 +857,15 @@ int setup_homedir (void)
 #elif PLATFORM_UNIX
 	int err;
 
+#if PLATFORM_MACOSX
+	snprintf (ApogeePath, sizeof (ApogeePath), "%s/Library/", getenv ("HOME"));
+	mkdir (ApogeePath, S_IRWXU);
+	snprintf (ApogeePath, sizeof (ApogeePath), "%s/Library/Application Support/", getenv ("HOME"));
+	mkdir (ApogeePath, S_IRWXU);
+	snprintf (ApogeePath, sizeof (ApogeePath), "%s/Library/Application Support/Duke Nukem 3D/", getenv ("HOME"));
+#else
 	snprintf (ApogeePath, sizeof (ApogeePath), "%s/.duke3d/", getenv ("HOME"));
+#endif
 
 	err = mkdir (ApogeePath, S_IRWXU);
 	if (err == -1 && errno != EEXIST)
