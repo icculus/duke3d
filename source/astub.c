@@ -418,7 +418,7 @@ const char *ExtGetWallCaption(short wallnum)
     if(keystatus[0x57]>0) // f11   Grab pic 0x4e +
     {
         wallpicnum = wall[curwall].picnum;
-        sprintf(tempbuf,"Grabed Wall Picnum %ld",wallpicnum);
+        sprintf(tempbuf,"Grabed Wall Picnum %d",wallpicnum);
         printmessage16(tempbuf);
     }
 
@@ -1274,7 +1274,7 @@ void ExtEditWallData(short wallnum)       //F8
     cursectornum = 0;
     search_lotag=getnumber16("Enter Wall Search Lo-Tag : ", search_lotag, 65536L);
     search_hitag=getnumber16("Enter Wall Search Hi-Tag : ", search_hitag, 65536L);
-    sprintf(tempbuf,"Current Wall %ld lo=%ld hi=%ld",
+    sprintf(tempbuf,"Current Wall %d lo=%d hi=%d",
         curwall,search_lotag,search_hitag);
     printmessage16(tempbuf);
 
@@ -1290,7 +1290,7 @@ void ExtEditSpriteData(short spritenum)   //F8
     cursectornum = 0;
     search_lotag=getnumber16("Enter Sprite Search Lo-Tag : ", search_lotag, 65536L);
     search_hitag=getnumber16("Enter Sprite Search Hi-Tag : ", search_hitag, 65536L);
-    sprintf(tempbuf,"Current Sprite %ld %s lo=%ld hi=%ld",
+    sprintf(tempbuf,"Current Sprite %d %s lo=%d hi=%d",
         cursprite,names[sprite[cursprite].picnum],search_lotag,search_hitag);
     printmessage16(tempbuf);
 
@@ -1708,7 +1708,7 @@ void Keys2d(void)
     curspritenum = 0;
     cursectornum=0;
     cursector_lotag=getnumber16("Enter Sector Lo-Tag : ", cursector_lotag, 65536L);
-    sprintf(tempbuf,"Current Sector Lo-Tag %ld",cursector_lotag);
+    sprintf(tempbuf,"Current Sector Lo-Tag %d",cursector_lotag);
     printmessage16(tempbuf);
  }
 
