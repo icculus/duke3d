@@ -47,4 +47,6 @@ void _dos_getdate(struct dosdate_t *date);
 // 64 megs should be enough for anybody.  :)  --ryan.
 #define Z_AvailHeap() ((64 * 1024) * 1024)
 
+#define printchrasm(x,y,ch) printf("%c", (char) (ch & 0xFF))
+
 #endif
