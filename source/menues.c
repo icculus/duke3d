@@ -39,6 +39,8 @@ short sh,onbar,buttonstat,deletespot;
 short last_zero,last_fifty,last_threehundred = 0;
 static char fileselect = 1, menunamecnt, menuname[256][17], curpath[80], menupath[80];
 
+int ignore_escape = 0;
+
 // CTW - REMOVED
 /* Error codes */
 /*
@@ -1524,12 +1526,14 @@ static void non3dr_menus(void)
             rotatesprite(320<<15,10<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(320>>1,15,0,0,"CONTROLS");
 
+            ignore_escape = 1;
             rc = probe(320/4,20+16,16,6);  // !!! FIXME: Move cursor to right more.
             controlsstackedprobey = rc;
             switch (rc)
             {
                 case -1: // escape
                     cmenu(200);  // options menu
+                    ignore_escape = 0;
                     break;
                 case 0:  // movement
                     cmenu(MENU_CONTROLS_MOVEMENT);
