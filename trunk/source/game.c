@@ -6620,7 +6620,8 @@ void comlinehelp(char **argv)
     puts(" /z            Skip memory check");
     puts(" -map FILE     Use a map FILE");
     puts(" -name NAME    Foward NAME");
-  printf(" -net          Net mode game");
+    puts(" -net          Net mode game");
+    printf("\n\n");
 }
 
 void checkcommandline(int argc,char **argv)
@@ -7710,6 +7711,7 @@ int main(int argc,char **argv)
 char opendemoread(char which_demo) // 0 = mine
 {
     char d[] = "demo_.dmo";
+    char *fname = d;
     char ver;
     short i;
 
@@ -7722,6 +7724,7 @@ char opendemoread(char which_demo) // 0 = mine
 
      if(which_demo == 1 && firstdemofile[0] != 0)
      {
+       fname = firstdemofile;
        if ((recfilep = kopen4load(firstdemofile,loadfromgrouponly)) == -1) return(0);
      }
      else
@@ -7731,6 +7734,8 @@ char opendemoread(char which_demo) // 0 = mine
      kread(recfilep,&ver,sizeof(char));
      if( (ver != BYTEVERSION) ) // || (ud.reccnt < 512) )
      {
+        printf("%s is a version %d demo, but we want version %d.\n",
+                fname, (int) ver, (int) BYTEVERSION);
         kclose(recfilep);
         return 0;
      }
@@ -7842,8 +7847,8 @@ void closedemowrite(void)
 // Only bug found so far, not sure if it's OS dependent or compiler or what.
 // Seems to happen when player input starts being simulated, but just guessing.
 // This change effectively disables it. The related code is still enabled.
-// char which_demo = 1;
-char which_demo = 0;
+// (This is working on Linux, so I flipped it back to '1'. --ryan.)
+ char which_demo = 1;
 // CTW END - MODIFICATION
 
 char in_menu = 0;
