@@ -9437,6 +9437,13 @@ void dobonus(char bonusonly)
         else break;
         nextpage();
     }
+
+    // Stop all noise after score screen, otherwise you'll get overlapping
+    //  music after beating an episode on the duke logo animation.
+    //  Not sure why this doesn't happen in the DOS version. Might be a
+    //  quirk of our newer sound code. --ryan.
+    MUSIC_StopSong();
+    FX_StopAllSounds();
 }
 
 
