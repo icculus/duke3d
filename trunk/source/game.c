@@ -8035,14 +8035,16 @@ long playback(void)
                 cnt = l/ud.multimode;
                 kdfread(recsync,sizeof(input)*ud.multimode,cnt,recfilep);
                 #if PLATFORM_BIGENDIAN
-                input *inptr = (input *) recsync;
-                cnt *= ud.multimode;
-                for (i = 0; i < cnt; i++)
                 {
-                    inptr->fvel = BUILDSWAP_INTEL16(inptr->fvel);
-                    inptr->svel = BUILDSWAP_INTEL16(inptr->svel);
-                    inptr->bits = BUILDSWAP_INTEL32(inptr->bits);
-                    inptr++;
+                    input *inptr = (input *) recsync;
+                    cnt *= ud.multimode;
+                    for (i = 0; i < cnt; i++)
+                    {
+                        inptr->fvel = BUILDSWAP_INTEL16(inptr->fvel);
+                        inptr->svel = BUILDSWAP_INTEL16(inptr->svel);
+                        inptr->bits = BUILDSWAP_INTEL32(inptr->bits);
+                        inptr++;
+                    }
                 }
                 #endif
                 i = 0;
