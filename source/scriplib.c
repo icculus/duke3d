@@ -255,7 +255,7 @@ static void SCRIPT_parseline (char *curline, scriptnode_t *node)
 		/* Found a hex digit! */
 		node->type = SCRIPTFLAG_HEX;
 		node->data.number = strtol (token, NULL, 16);
-	} else if (isdigit (token[0])) {
+	} else if (isdigit (token[0]) || token[0] == '-') {
 		/* Found a number! */
 		node->type = SCRIPTFLAG_DECIMAL;
 		node->data.number = atoi (token);
