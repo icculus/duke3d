@@ -5,6 +5,7 @@
 beos := false
 macosx := false
 solaris := false
+shareware := false
 #use_asm := true
 
 #-----------------------------------------------------------------------------#
@@ -67,6 +68,12 @@ endif
 
 ifeq ($(strip $(solaris)),true)
   EXTRALDFLAGS += -lsocket -lnsl
+endif
+
+ifeq ($(strip $(shareware)),true)
+  EXTRACFLAGS += -DVOLUMEONE
+else
+  EXTRACFLAGS += -DVOLUMEALL
 endif
 
 # check out buildengine in this directory:
