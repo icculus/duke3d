@@ -438,9 +438,23 @@ void SCRIPT_Save (int32 scripthandle, char * filename)
 
 int32 SCRIPT_NumberSections( int32 scripthandle )
 {
-	STUBBED("NumberSections");
+	scriptnode_t *cur;
+	int i = 0;
+
+	/* STUBBED("NumberSections"); */
+	if (scripthandle == -1) return 0;
+
+	cur = script_headnode[scripthandle];
+
+	/* cur = SCRIPT_findinchildren (cur, sectionname); */
+	if (cur != NULL) cur = cur->child;
+	while (cur != NULL)
+	{
+		i++;
+		cur = cur->sibling;
+	}
 	
-	return -1;
+	return i;
 }
 
 /*
@@ -468,9 +482,22 @@ char * SCRIPT_Section( int32 scripthandle, int32 which )
 
 int32 SCRIPT_NumberEntries( int32 scripthandle, char * sectionname )
 {
-	STUBBED("NumberEntries");
+	scriptnode_t *cur;
+	int i = 0;
+
+	if (scripthandle == -1) return 0;
+
+	cur = script_headnode[scripthandle];
+
+	cur = SCRIPT_findinchildren (cur, sectionname);
+	if (cur != NULL) cur = cur->child;
+	while (cur != NULL)
+	{
+		i++;
+		cur = cur->sibling;
+	}
 	
-	return 0;
+	return i;
 }
 
 
@@ -484,9 +511,25 @@ int32 SCRIPT_NumberEntries( int32 scripthandle, char * sectionname )
 
 char * SCRIPT_Entry( int32 scripthandle, char * sectionname, int32 which )
 {
-	STUBBED("Entry");
+	scriptnode_t *cur;
+	int i = 0;
+
+	if (scripthandle == -1) return "";
+
+	cur = script_headnode[scripthandle];
+
+	cur = SCRIPT_findinchildren (cur, sectionname);
+	if (cur != NULL) cur = cur->child;
+	while (cur != NULL && i < which)
+	{
+		i++;
+		cur = cur->sibling;
+	}
 	
-	return NULL;
+	if (cur != NULL)
+		return cur->key;
+	else
+		return "";
 }
 
 
