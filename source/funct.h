@@ -340,6 +340,7 @@ extern void RegisterShutdownFunction(void (*shutdown)(void));
 extern void Shutdown(void);
 extern char *ltoa(long value, char *string, int radix);
 extern char *ultoa(unsigned long value, char *string, int radix);
+extern int dukescreencapture(char *str, char inverseit);
 
 /* actors.c */
 extern void updateinterpolations(void);

@@ -909,6 +909,27 @@ int setup_homedir (void)
 }
 
 
+int dukescreencapture(char *str, char inverseit)
+{
+// dos screencapture wants string to be in NAME0000.pcx format.
+#ifndef PLATFORM_DOS
+    // respect prefpath...
+    const char *SCREENSHOTDIR = "Screenshots";
+    size_t slen = strlen(ApogeePath) + strlen(str) +
+                  strlen(PATH_SEP_STR) + strlen(SCREENSHOTDIR) + 1;
+    char *path = alloca(slen);
+    strcpy(path, ApogeePath);
+    strcat(path, SCREENSHOTDIR);
+	mkdir(path, S_IRWXU);
+    strcat(path, PATH_SEP_STR);
+    strcat(path, str);
+    str = path;
+#endif
+
+    return(screencapture(str, inverseit));
+}
+
+
 char   CheckParm (char *check)
 {
     int i;
