@@ -154,6 +154,23 @@ typedef uint8 kb_scancode;
 #define  sc_PrintScreen  0x69
 #define  sc_LastScanCode 0x6e
 
+// AZERTY hacks...
+#define  sc_INTL1  0x70
+#define  sc_INTL2  0x71
+#define  sc_INTL3  0x72
+#define  sc_INTL4  0x73
+#define  sc_INTL5  0x74
+#define  sc_INTL6  0x75
+#define  sc_INTL7  0x76
+#define  sc_INTL8  0x77
+#define  sc_INTL9  0x78
+#define  sc_INTL10 0x79
+#define  sc_INTL11 0x7a
+#define  sc_INTL12 0x7b
+#define  sc_INTL13 0x7c
+#define  sc_INTL14 0x7d
+#define  sc_INTL15 0x7e
+
 // Ascii scan codes
 
 #define  asc_Enter       13
@@ -162,7 +179,7 @@ typedef uint8 kb_scancode;
 #define  asc_Tab         9
 #define  asc_Space       32
 
-#define MAXKEYBOARDSCAN  128
+#define MAXKEYBOARDSCAN  255
 
 
 /*
