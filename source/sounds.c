@@ -102,7 +102,7 @@ void SoundStartup( void )
       Error( FX_ErrorString( FX_Error ));
       }
 
-   status = FX_SetCallBack( TestCallBack );
+   status = FX_SetCallBack( testcallback );
 
    if ( status != FX_Ok )
       {
@@ -229,11 +229,8 @@ int USRHOOKS_FreeMem(char *ptr)
    return( USRHOOKS_Ok);
 }
 
-char menunum=0;
-
 void intomenusounds(void)
 {
-    short i;
     static const short menusnds[] =
     {
         LASERTRIP_EXPLODE,
@@ -254,6 +251,9 @@ void intomenusounds(void)
         RPG_SHOOT,
         SELECT_WEAPON
     };
+    
+    static int menunum = 0;
+    
     sound(menusnds[menunum++]);
     menunum %= 17;
 }
@@ -301,7 +301,7 @@ char loadsound(unsigned short num)
     fp = kopen4load(sounds[num],loadfromgrouponly);
     if(fp == -1)
     {
-        sprintf(&fta_quotes[113][0],"Sound %s(#%ld) not found.",sounds[num],num);
+        sprintf(&fta_quotes[113][0],"Sound %s(#%d) not found.",sounds[num],num);
         FTA(113,&ps[myconnectindex]);
         return 0;
     }
@@ -311,7 +311,7 @@ char loadsound(unsigned short num)
 
     Sound[num].lock = 200;
 
-    allocache((long *)&Sound[num].ptr,l,&Sound[num].lock);
+    allocache((long *)&Sound[num].ptr,l,(unsigned char *)&Sound[num].lock);
     kread( fp, Sound[num].ptr , l);
     kclose( fp );
     return 1;
@@ -630,8 +630,10 @@ void pan3dsound(void)
     }
 }
 
-void TestCallBack(unsigned long num)
+void testcallback(unsigned long _num)
 {
+    long num = (long) _num;
+    
     short tempi,tempj,tempk;
 
         if(num < 0)
@@ -668,15 +670,6 @@ void TestCallBack(unsigned long num)
         Sound[num].lock--;
 }
 
-
-// no idea if this is right. I added this function.  --ryan.
-void testcallback(unsigned long num)
-{
-    // STUBBED("wtf?");
-    TestCallBack(num);
-}
-
-
 void clearsoundlocks(void)
 {
     long i;
@@ -689,4 +682,3 @@ void clearsoundlocks(void)
         if(lumplockbyte[i] >= 200)
             lumplockbyte[i] = 199;
 }
-
