@@ -218,7 +218,7 @@ void RTS_ReadLump (int32 lump, void *dest)
 void *RTS_GetSound (int32 lump)
 {
    lump++;
-   if ((uint32)lump >= numlumps)
+   if (lump >= numlumps)
       Error ("RTS_GetSound: %i >= %i\n",lump,numlumps);
 
    if (lumpcache[lump] == NULL)

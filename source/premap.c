@@ -247,7 +247,7 @@ char getsound(unsigned short num)
         ( l < 12288 ) )
     {
         Sound[num].lock = 2;
-        allocache((long *)&Sound[num].ptr,l,&Sound[num].lock);
+        allocache((long *)&Sound[num].ptr,l,(unsigned char *)&Sound[num].lock);
         if(Sound[num].ptr != NULL)
             kread( fp, Sound[num].ptr , l);
     }
@@ -1134,11 +1134,11 @@ void resetpspritevars(char g)
             firsty = ps[0].posy;
         }
 
-        po[numplayersprites].ox = s->x;
-        po[numplayersprites].oy = s->y;
-        po[numplayersprites].oz = s->z;
-        po[numplayersprites].oa = s->ang;
-        po[numplayersprites].os = s->sectnum;
+        po[(int)numplayersprites].ox = s->x;
+        po[(int)numplayersprites].oy = s->y;
+        po[(int)numplayersprites].oz = s->z;
+        po[(int)numplayersprites].oa = s->ang;
+        po[(int)numplayersprites].os = s->sectnum;
 
         numplayersprites++;
         if(j >= 0)
@@ -1427,7 +1427,7 @@ void enterlevel(char g)
     if(ud.recstat != 2)
     {
         music_select = (ud.volume_number*11) + ud.level_number;
-        playmusic(&music_fn[0][music_select][0]);
+        playmusic(&music_fn[0][(int)music_select][0]);
     }
 
     if( (g&MODE_GAME) || (g&MODE_EOL) )

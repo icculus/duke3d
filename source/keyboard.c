@@ -27,6 +27,9 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #include "duke3d.h"
 #include "keyboard.h"
 
+/* this should be a proper prototype included from a header file */
+extern int stricmp(const char *x, const char *y);
+
 /*
 =============================================================================
 

@@ -545,8 +545,8 @@ char activatewarpelevators(short s,short d) //Parm = sectoreffectornum
 
 void operatesectors(short sn,short ii)
 {
-    long j, l, q, startwall, endwall;
-    short i;
+    long j=0l, l=0l, q=0l, startwall=0l, endwall=0l;
+    short i=0;
     char sect_error;
     sectortype *sptr;
 
@@ -2408,7 +2408,8 @@ void cheatkeys(short snum)
 {
     short i, k;
     char dainv;
-    unsigned long sb_snum, j;
+    unsigned long sb_snum;
+    long j;
     struct player_struct *p;
 
     sb_snum = sync[snum].bits;
