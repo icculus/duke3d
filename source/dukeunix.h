@@ -23,6 +23,7 @@ typedef long long __int64;
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include <assert.h>
 
 struct find_t
 {
@@ -50,5 +51,10 @@ void _dos_getdate(struct dosdate_t *date);
 #ifndef max
 #define max(x, y) ((x) > (y) ? (x) : (y))
 #endif
+
+#define FP_OFF(x) ((long) (x))
+
+// 64 megs should be enough for anyone.  :)
+#define Z_AvailHeap() ((64 * 1024) * 1024)
 
 #endif
