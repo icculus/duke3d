@@ -7412,6 +7412,15 @@ void copyprotect(void)
     }
 }
 
+
+static int load_duke3d_groupfile(void)
+{
+    char groupfile[] = "duke3d.grp";
+    FixFilePath(groupfile);
+    return(initgroupfile(groupfile) != -1);
+}
+
+
 int main(int argc,char **argv)
 {
     long i, j, k, l;
@@ -7471,7 +7480,11 @@ int main(int argc,char **argv)
 
     printf("\n\n");
 
-    initgroupfile("duke3d.grp");
+    if (!load_duke3d_groupfile())
+    {
+        printf("ERROR: Could not initialize group file \"duke3d.grp\"\n");
+        exit(EXIT_FAILURE);
+    }
 
     checkcommandline(argc,argv);
 
