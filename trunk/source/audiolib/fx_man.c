@@ -56,12 +56,6 @@ int FX_SoundDevice = -1;
 int FX_ErrorCode = FX_Ok;
 int FX_Installed = FALSE;
 
-void TextMode( void );
-#pragma aux TextMode =  \
-    "mov    ax, 0003h", \
-    "int    10h"        \
-    modify [ ax ];
-
 #define FX_SetErrorCode( status ) \
    FX_ErrorCode = ( status );
 
