@@ -152,7 +152,7 @@ static int loadpheader(char spot,int32 *vn,int32 *ln,int32 *psk,int32 *nump)
 
      long i;
      char filename[] = "game0.sav";
-     char fullname[128];
+     char fullname[256];
      long fil;
      long bv = 0;
 
@@ -163,7 +163,7 @@ static int loadpheader(char spot,int32 *vn,int32 *ln,int32 *psk,int32 *nump)
 
      walock[MAXTILES-3] = 255;
 
-     kdfread32(&bv,1,fil);
+     kdfread(&bv,4,1,fil);
      if(bv != BYTEVERSION)
      {
         FTA(114,&ps[myconnectindex]);
@@ -171,12 +171,12 @@ static int loadpheader(char spot,int32 *vn,int32 *ln,int32 *psk,int32 *nump)
         return 1;
      }
 
-     kdfread32(nump,1,fil);
+     kdfread(nump,4,1,fil);
 
      kdfread(tempbuf,19,1,fil);
-         kdfread32(vn,1,fil);
-         kdfread32(ln,1,fil);
-     kdfread32(psk,1,fil);
+         kdfread(vn,4,1,fil);
+         kdfread(ln,4,1,fil);
+     kdfread(psk,4,1,fil);
 
      if (waloff[MAXTILES-3] == 0) allocache(&waloff[MAXTILES-3],160*100,&walock[MAXTILES-3]);
      tilesizx[MAXTILES-3] = 100; tilesizy[MAXTILES-3] = 160;
