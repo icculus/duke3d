@@ -40,6 +40,9 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 
 #include "duke3d.h"
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #ifdef VOLUMEONE
     #define VERSION "1.4"
@@ -61,6 +64,7 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 // #define IDFSIZE 16384
 #define IDFILENAME "DUKE3D.IDF"
 
+int dukever13 = 0;
 
 #define TIMERUPDATESIZ 32
 
@@ -7380,6 +7384,24 @@ void copyprotect(void)
     }
 }
 
+static void checkdukever()
+{
+    struct stat statbuf;
+    if(stat("duke3d.grp", &statbuf) == -1)
+	return;
+
+    // TODO: use proper file sizes
+    if(statbuf.st_size<40000000)
+    {
+	dukever13 = 1;
+	puts("assuming Duke Nukem 1.3");
+    }
+    else
+    {
+	puts("assuming Duke Nukem Atomic Edition");
+    }
+}
+
 void main(int argc,char **argv)
 {
     long i, j, k, l;
@@ -7430,6 +7452,7 @@ void main(int argc,char **argv)
     printf("\n\n");
 
     initgroupfile("duke3d.grp");
+    checkdukever();
 
     checkcommandline(argc,argv);
 
