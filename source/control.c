@@ -52,13 +52,77 @@ uint32   CONTROL_ButtonHeldState2;
 //
 //***************************************************************************
 
+struct _KeyMapping
+{
+	boolean key_active;
+	kb_scancode key1;
+	kb_scancode key2;
+	
+	/* other mappings go here */
+} KeyMapping[MAXGAMEBUTTONS];
+
+static void SETBUTTON(int i)
+{
+	int b;
+	
+	if (i < 32) {
+		b = 1 << i;
+		
+		CONTROL_ButtonHeldState1 |= b;
+	} else {
+		i -= 32;
+		
+		b = 1 << i;
+		
+		CONTROL_ButtonHeldState2 |= b;
+	}
+}
+
+static void RESBUTTON(int i)
+{
+	int b;
+	
+	if (i < 32) {
+		b = 1 << i;
+		
+		CONTROL_ButtonHeldState1 &= ~b;
+	} else {
+		i -= 32;
+		
+		b = 1 << i;
+		
+		CONTROL_ButtonHeldState2 &= ~b;
+	}
+}
+
 void CONTROL_UpdateKeyboardState(int key, int pressed)
 {
+	int i;
+	
+	for (i = 0; i < MAXGAMEBUTTONS; i++) {
+		if (KeyMapping[i].key_active == false) {
+			continue;
+		}
+		
+		if (KeyMapping[i].key1 == key || 
+			KeyMapping[i].key2 == key) {
+			
+			if (pressed) {
+				SETBUTTON(i);
+			} else {
+				RESBUTTON(i);
+			}
+		}
+	}
 }
 
 void CONTROL_MapKey( int32 which, kb_scancode key1, kb_scancode key2 )
 {
-	STUBBED("CONTROL_MapKey");
+	// STUBBED("CONTROL_MapKey");
+	
+	KeyMapping[which].key_active = true;
+	KeyMapping[which].key1 = key1;
+	KeyMapping[which].key2 = key2;
 }
 
 void CONTROL_MapButton
