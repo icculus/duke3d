@@ -1941,6 +1941,7 @@ void showtwoscreens(void)
 
 void binscreen(void)
 {
+#ifdef PLATFORM_DOS
     long fil;
 #ifdef VOLUMEONE
     fil = kopen4load("dukesw.bin",1);
@@ -1950,6 +1951,7 @@ void binscreen(void)
     if(fil == -1) return;
     kread(fil,(char *)0xb8000,4000);
     kclose(fil);
+#endif
 }
 
 

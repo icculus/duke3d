@@ -1159,7 +1159,11 @@ char parsecommand(void)
                     break;
                 }
             }
+#ifdef PLATFORM_UNIX
+            skill_names[j][i] = '\0';
+#else
             skill_names[j][i-1] = '\0';
+#endif
             return 0;
 
         case 0:
@@ -1185,7 +1189,11 @@ char parsecommand(void)
                     break;
                 }
             }
+#ifdef PLATFORM_UNIX
+            level_names[j*11+k][i] = '\0';
+#else
             level_names[j*11+k][i-1] = '\0';
+#endif
 
             while( *textptr == ' ' ) textptr++;
 
@@ -1217,7 +1225,11 @@ char parsecommand(void)
                     break;
                 }
             }
+#ifdef PLATFORM_UNIX
+            level_names[j*11+k][i] = '\0';
+#else
             level_names[j*11+k][i-1] = '\0';
+#endif
             return 0;
 
         case 79:
