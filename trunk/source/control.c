@@ -164,7 +164,7 @@ void CONTROL_GetInput( ControlInfo *info )
 
 void CONTROL_ClearButton( int32 whichbutton )
 {
-	STUBBED("CONTROL_ClearButton");
+	RESBUTTON(whichbutton);
 }
 
 void CONTROL_ClearUserInput( UserInput *info )
