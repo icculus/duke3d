@@ -2353,8 +2353,11 @@ void menus(void)
                     (numplayers > 1 && eightytwofifty)||MusicToggle==0||(MusicDevice==NumSoundCards));
                 MusicVolume <<= 2;
                 if(l != MusicVolume)
-                    Music_SetVolume( (short) MusicVolume );
-
+                {
+                    STUBBED("Check this");
+                    // !!! FIXME: Used to be Music_ not MUSIC_.  --ryan.
+                    MUSIC_SetVolume( (short) MusicVolume );
+                }
             }
             menutext(c,50+16+16+16+16,SHX(-6),(FXDevice==NumSoundCards)||SoundToggle==0,"DUKE TALK");
             menutext(c,50+16+16+16+16+16,SHX(-7),(FXDevice==NumSoundCards)||SoundToggle==0,"AMBIENCE");

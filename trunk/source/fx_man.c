@@ -60,6 +60,8 @@ typedef struct __DUKECHANINFO
 } duke_channel_info;
 
 
+int MUSIC_ErrorCode = MUSIC_Ok;
+
 static char warningMessage[80];
 static char errorMessage[80];
 static int fx_initialized = 0;

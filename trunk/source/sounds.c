@@ -660,6 +660,15 @@ void TestCallBack(unsigned long num)
         Sound[num].lock--;
 }
 
+
+// no idea if this is right. I added this function.  --ryan.
+void testcallback(unsigned long num)
+{
+    STUBBED("wtf?");
+    TestCallBack(num);
+}
+
+
 void clearsoundlocks(void)
 {
     long i;
