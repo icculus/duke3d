@@ -95,6 +95,7 @@ static void SCRIPT_freenode (scriptnode_t *node)
 	free (node->sibling);
 	free (node->child);
 	free (node);
+	node = NULL;
 }
 
 static void SCRIPT_writenode (scriptnode_t *node, FILE *fp)
