@@ -1,7 +1,7 @@
 Microsoft Visual Studio Solution File, Format Version 7.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Duke3d", "Duke3d.vcproj", "{F83AC009-740D-4980-8B9B-E414E8CAE826}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "..\..\buildengine\Engine.vcproj", "{2960B59D-CA80-4C18-A4DD-038C38A4113B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "buildengine\Engine.vcproj", "{2960B59D-CA80-4C18-A4DD-038C38A4113B}"
 EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
