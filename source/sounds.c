@@ -435,6 +435,7 @@ int xyzsound(short num,short i,long x,long y,long z)
         if(Sound[num].num > 0) return -1;
 
         start = *(unsigned short *)(Sound[num].ptr + 0x14);
+        start = BUILDSWAP_INTEL16(start);
 
         if(*Sound[num].ptr == 'C')
             voice = FX_PlayLoopedVOC( Sound[num].ptr, start, start + soundsiz[num],
