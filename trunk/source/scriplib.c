@@ -400,10 +400,8 @@ int32 SCRIPT_Load ( char * filename )
 	script_headnode[script_nexthandle] = SCRIPT_constructnode ();
 	headnode = script_headnode[script_nexthandle];
 
-	while (!feof (fp))
+	while (fgets (curline, 128, fp))
 	{
-		fgets (curline, 128, fp);
-		
 		/* Skip comments */
 		if (curline[0] == ';') continue;
 
