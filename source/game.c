@@ -5741,12 +5741,12 @@ void cheats(void)
                             ps[myconnectindex].gotweapon[weapon]  = 1;
                         }
 
-                        KB_FlushKeyBoardQueue();
+                        KB_FlushKeyboardQueue();
                         ps[myconnectindex].cheat_phase = 0;
                         FTA(119,&ps[myconnectindex]);
                         return;
                     case 22:
-                        KB_FlushKeyBoardQueue();
+                        KB_FlushKeyboardQueue();
                         ps[myconnectindex].cheat_phase = 0;
                         ps[myconnectindex].steroids_amount =         400;
                         ps[myconnectindex].heat_amount     =        1200;
@@ -5761,18 +5761,18 @@ void cheats(void)
                         return;
                     case 23:
                         ps[myconnectindex].got_access =              7;
-                        KB_FlushKeyBoardQueue();
+                        KB_FlushKeyboardQueue();
                         ps[myconnectindex].cheat_phase = 0;
                         FTA(121,&ps[myconnectindex]);
                         return;
                     case 24:
                         debug_on = 1-debug_on;
-                        KB_FlushKeyBoardQueue();
+                        KB_FlushKeyboardQueue();
                         ps[myconnectindex].cheat_phase = 0;
                         break;
                     case 20:
                         ud.clipping = 1-ud.clipping;
-                        KB_FlushKeyBoardQueue();
+                        KB_FlushKeyboardQueue();
                         ps[myconnectindex].cheat_phase = 0;
                         FTA(112+ud.clipping,&ps[myconnectindex]);
                         return;
@@ -5780,7 +5780,7 @@ void cheats(void)
                     case 15:
                         ps[myconnectindex].gm = MODE_EOL;
                         ps[myconnectindex].cheat_phase = 0;
-                        KB_FlushKeyBoardQueue();
+                        KB_FlushKeyboardQueue();
                         return;
 
                     case 19:
@@ -5825,7 +5825,7 @@ void cheats(void)
                         sprite[ps[myconnectindex].i].extra = max_player_health;
                         hittype[ps[myconnectindex].i].extra = 0;
                         ps[myconnectindex].cheat_phase = 0;
-                        KB_FlushKeyBoardQueue();
+                        KB_FlushKeyboardQueue();
 
                         return;
 
@@ -5862,7 +5862,7 @@ void cheats(void)
 
 //                        FTA(21,&ps[myconnectindex]);
                         ps[myconnectindex].cheat_phase = 0;
-                        KB_FlushKeyBoardQueue();
+                        KB_FlushKeyboardQueue();
                         ps[myconnectindex].inven_icon = 1;
                         return;
 
@@ -5890,7 +5890,7 @@ void cheats(void)
                             if( volnume > 0 )
                             {
                                 ps[myconnectindex].cheat_phase = 0;
-                                KB_FlushKeyBoardQueue();
+                                KB_FlushKeyboardQueue();
                                 return;
                             }
 #endif
@@ -5898,7 +5898,7 @@ void cheats(void)
                             if(volnume > 4)
                             {
                                 ps[myconnectindex].cheat_phase = 0;
-                                KB_FlushKeyBoardQueue();
+                                KB_FlushKeyboardQueue();
                                 return;
                             }
                             else
@@ -5906,7 +5906,7 @@ void cheats(void)
                             if(volnume > 3)
                             {
                                 ps[myconnectindex].cheat_phase = 0;
-                                KB_FlushKeyBoardQueue();
+                                KB_FlushKeyboardQueue();
                                 return;
                             }
                             else
@@ -5917,7 +5917,7 @@ void cheats(void)
                                 if(levnume > 5)
                                 {
                                     ps[myconnectindex].cheat_phase = 0;
-                                    KB_FlushKeyBoardQueue();
+                                    KB_FlushKeyboardQueue();
                                     return;
                                 }
                             }
@@ -5926,7 +5926,7 @@ void cheats(void)
                                 if(levnume >= 11)
                                 {
                                     ps[myconnectindex].cheat_phase = 0;
-                                    KB_FlushKeyBoardQueue();
+                                    KB_FlushKeyboardQueue();
                                     return;
                                 }
                             }
@@ -5958,13 +5958,13 @@ void cheats(void)
                         else ps[myconnectindex].gm |= MODE_RESTART;
 
                         ps[myconnectindex].cheat_phase = 0;
-                        KB_FlushKeyBoardQueue();
+                        KB_FlushKeyboardQueue();
                         return;
 
                     case 3:
                         ps[myconnectindex].cheat_phase = 0;
                         ud.coords = 1-ud.coords;
-                        KB_FlushKeyBoardQueue();
+                        KB_FlushKeyboardQueue();
                         return;
 
                     case 4:
@@ -5978,13 +5978,13 @@ void cheats(void)
                         }
                         FTA(22,&ps[myconnectindex]);
                         ps[myconnectindex].cheat_phase = 0;
-                        KB_FlushKeyBoardQueue();
+                        KB_FlushKeyboardQueue();
                         return;
                     case 5:
 
                         FTA(21,&ps[myconnectindex]);
                         ps[myconnectindex].cheat_phase = 0;
-                        KB_FlushKeyBoardQueue();
+                        KB_FlushKeyboardQueue();
                         return;
 #ifndef VOLUMEONE
                     case 6:
@@ -6003,7 +6003,7 @@ void cheats(void)
 
                         FTA(100,&ps[myconnectindex]);
                         ps[myconnectindex].cheat_phase = 0;
-                        KB_FlushKeyBoardQueue();
+                        KB_FlushKeyboardQueue();
                         return;
 #endif
 
@@ -6026,7 +6026,7 @@ void cheats(void)
                         ps[myconnectindex].got_access =              7;
                         FTA(5,&ps[myconnectindex]);
                         ps[myconnectindex].cheat_phase = 0;
-                        KB_FlushKeyBoardQueue();
+                        KB_FlushKeyboardQueue();
                         return;
                     case 17: // SHOW ALL OF THE MAP TOGGLE;
                         ud.showallmap = 1-ud.showallmap;
@@ -6047,43 +6047,43 @@ void cheats(void)
                             FTA(1,&ps[myconnectindex]);
                         }
                         ps[myconnectindex].cheat_phase = 0;
-                        KB_FlushKeyBoardQueue();
+                        KB_FlushKeyboardQueue();
                         return;
 
                     case 16:
                         FTA(99,&ps[myconnectindex]);
                         ps[myconnectindex].cheat_phase = 0;
-                        KB_FlushKeyBoardQueue();
+                        KB_FlushKeyboardQueue();
                         return;
                     case 9:
                         ud.tickrate = !ud.tickrate;
                         ps[myconnectindex].cheat_phase = 0;
-                        KB_FlushKeyBoardQueue();
+                        KB_FlushKeyboardQueue();
                         return;
                     case 11:
                         FTA(105,&ps[myconnectindex]);
                         KB_ClearKeyDown(sc_H);
                         ps[myconnectindex].cheat_phase = 0;
-                        KB_FlushKeyBoardQueue();
+                        KB_FlushKeyboardQueue();
                         return;
                     case 12:
                         ps[myconnectindex].steroids_amount = 399;
                         ps[myconnectindex].heat_amount = 1200;
                         ps[myconnectindex].cheat_phase = 0;
                         FTA(37,&ps[myconnectindex]);
-                        KB_FlushKeyBoardQueue();
+                        KB_FlushKeyboardQueue();
                         return;
                     case 13:
                         if(actor_tog == 3) actor_tog = 0;
                         actor_tog++;
                         ps[screenpeek].cheat_phase = 0;
-                        KB_FlushKeyBoardQueue();
+                        KB_FlushKeyboardQueue();
                         return;
                     case 14:
                     case 25:
                         ud.eog = 1;
                         ps[myconnectindex].gm |= MODE_EOL;
-                        KB_FlushKeyBoardQueue();
+                        KB_FlushKeyboardQueue();
                         return;
                 }
              }
@@ -8796,7 +8796,7 @@ void dobonus(char bonusonly)
             if(ud.lockout == 0)
             {
                 playanm("cineov2.anm",1);
-                KB_FlushKeyBoardQueue();
+                KB_FlushKeyboardQueue();
                 clearview(0L);
                 nextpage();
             }
@@ -8839,7 +8839,7 @@ void dobonus(char bonusonly)
             FX_StopAllSounds();
             clearsoundlocks();
             sound(ENDSEQVOL3SND4);
-            KB_FlushKeyBoardQueue();
+            KB_FlushKeyboardQueue();
 
             ps[myconnectindex].palette = palette;
             palto(0,0,0,63);
@@ -8861,7 +8861,7 @@ void dobonus(char bonusonly)
 
             playanm("DUKETEAM.ANM",4);
 
-            KB_FlushKeyBoardQueue();
+            KB_FlushKeyboardQueue();
             while(!KB_KeyWaiting()) getpackets();
 
             clearview(0L);
@@ -8870,7 +8870,7 @@ void dobonus(char bonusonly)
 
             FX_StopAllSounds();
             clearsoundlocks();
-            KB_FlushKeyBoardQueue();
+            KB_FlushKeyboardQueue();
 
             break;
 
@@ -8883,7 +8883,7 @@ void dobonus(char bonusonly)
             {
                 for(t=63;t>=0;t--) palto(0,0,0,t);
                 playanm("cineov3.anm",2);
-                KB_FlushKeyBoardQueue();
+                KB_FlushKeyboardQueue();
                 ototalclock = totalclock+200;
                 while(totalclock < ototalclock) getpackets();
                 clearview(0L);
@@ -8913,7 +8913,7 @@ void dobonus(char bonusonly)
                 while(Sound[ENDSEQVOL3SND9].lock>=200) getpackets();
             }
 
-            KB_FlushKeyBoardQueue();
+            KB_FlushKeyboardQueue();
             totalclock = 0;
             while(!KB_KeyWaiting() && totalclock < 120) getpackets();
 
@@ -8922,7 +8922,7 @@ void dobonus(char bonusonly)
             FX_StopAllSounds();
             clearsoundlocks();
 
-            KB_FlushKeyBoardQueue();
+            KB_FlushKeyboardQueue();
 
             clearview(0L);
 
