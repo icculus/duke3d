@@ -7878,7 +7878,8 @@ void opendemowrite(void)
 //  if ((frecfilep = fopen(d,"wb")) == -1) return;
     if ((frecfilep = fopen(d,"wb")) == NULL) return;
 // CTW END - MODIFICATION
-    fwrite(&dummylong,4,1,frecfilep);
+    val32 = BUILDSWAP_INTEL32(dummylong);
+    fwrite(&val32,4,1,frecfilep);
     fwrite(&ver,sizeof(char),1,frecfilep);
     fwrite((char *)&ud.volume_number,sizeof(char),1,frecfilep);
     fwrite((char *)&ud.level_number,sizeof(char),1,frecfilep);
@@ -7916,22 +7917,28 @@ void record(void)
 {
     short i;
 
-#if PLATFORM_BIGENDIAN
-    STUBBED("This needs byteswapping!");
-#else
     for(i=connecthead;i>=0;i=connectpoint2[i])
-         {
-         copybufbyte(&sync[i],&recsync[ud.reccnt],sizeof(input));
-                 ud.reccnt++;
-                 totalreccnt++;
-                 if (ud.reccnt >= RECSYNCBUFSIZ)
-                 {
-              dfwrite(recsync,sizeof(input)*ud.multimode,ud.reccnt/ud.multimode,frecfilep);
-                          ud.reccnt = 0;
-                 }
-         }
-#endif
-
+    {
+        copybufbyte(&sync[i],&recsync[ud.reccnt],sizeof(input));
+        ud.reccnt++;
+        totalreccnt++;
+        if (ud.reccnt >= RECSYNCBUFSIZ)
+        {
+            #if PLATFORM_BIGENDIAN
+            input *inptr = recsync;
+            int i;
+            for (i = 0; i < ud.reccnt; i++)
+            {
+                inptr->fvel = BUILDSWAP_INTEL16(inptr->fvel);
+                inptr->svel = BUILDSWAP_INTEL16(inptr->svel);
+                inptr->bits = BUILDSWAP_INTEL32(inptr->bits);
+                inptr++;
+            }
+            #endif
+            dfwrite(recsync,sizeof(input)*ud.multimode,ud.reccnt/ud.multimode,frecfilep);
+            ud.reccnt = 0;
+        }
+    }
 }
 
 void closedemowrite(void)
@@ -7942,6 +7949,17 @@ void closedemowrite(void)
     {
         if (ud.reccnt > 0)
         {
+            #if PLATFORM_BIGENDIAN
+            input *inptr = recsync;
+            int i;
+            for (i = 0; i < ud.reccnt; i++)
+            {
+                inptr->fvel = BUILDSWAP_INTEL16(inptr->fvel);
+                inptr->svel = BUILDSWAP_INTEL16(inptr->svel);
+                inptr->bits = BUILDSWAP_INTEL32(inptr->bits);
+                inptr++;
+            }
+            #endif
             dfwrite(recsync,sizeof(input)*ud.multimode,ud.reccnt/ud.multimode,frecfilep);
 
             fseek(frecfilep,SEEK_SET,0L);
