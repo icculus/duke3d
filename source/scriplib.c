@@ -438,23 +438,9 @@ void SCRIPT_Save (int32 scripthandle, char * filename)
 
 int32 SCRIPT_NumberSections( int32 scripthandle )
 {
-	scriptnode_t *cur;
-	int i = 0;
-
-	/* STUBBED("NumberSections"); */
-	if (scripthandle == -1) return 0;
-
-	cur = script_headnode[scripthandle];
-
-	/* cur = SCRIPT_findinchildren (cur, sectionname); */
-	if (cur != NULL) cur = cur->child;
-	while (cur != NULL)
-	{
-		i++;
-		cur = cur->sibling;
-	}
+	STUBBED("NumberSections");
 	
-	return i;
+	return -1;
 }
 
 /*
@@ -482,22 +468,22 @@ char * SCRIPT_Section( int32 scripthandle, int32 which )
 
 int32 SCRIPT_NumberEntries( int32 scripthandle, char * sectionname )
 {
-	scriptnode_t *cur;
-	int i = 0;
+	scriptnode_t *node = NULL;
+	int32 entries = 0;
 
-	if (scripthandle == -1) return 0;
+	if(scripthandle >= MAX_SCRIPTS || scripthandle < 0)
+		return 0;
 
-	cur = script_headnode[scripthandle];
+	node = script_headnode[scripthandle];
+	if(!node) return 0;
+	node = SCRIPT_findinchildren(node,sectionname);
 
-	cur = SCRIPT_findinchildren (cur, sectionname);
-	if (cur != NULL) cur = cur->child;
-	while (cur != NULL)
+	for(node=node->child; node ; node=node->sibling)
 	{
-		i++;
-		cur = cur->sibling;
+		++entries;
 	}
-	
-	return i;
+
+	return entries;
 }
 
 
@@ -508,28 +494,29 @@ int32 SCRIPT_NumberEntries( int32 scripthandle, char * sectionname )
 =
 ==============
 */
-
 char * SCRIPT_Entry( int32 scripthandle, char * sectionname, int32 which )
 {
-	scriptnode_t *cur;
-	int i = 0;
+	scriptnode_t *node = NULL;
+	int32 entrynum = 0;
+	char* val = NULL;
 
-	if (scripthandle == -1) return "";
+	if(scripthandle >= MAX_SCRIPTS || scripthandle < 0)
+		return 0;
 
-	cur = script_headnode[scripthandle];
+	node = script_headnode[scripthandle];
+	if(!node) return 0;
+	node = SCRIPT_findinchildren(node,sectionname);
 
-	cur = SCRIPT_findinchildren (cur, sectionname);
-	if (cur != NULL) cur = cur->child;
-	while (cur != NULL && i < which)
+	for(node=node->child; node ; node=node->sibling, ++entrynum)
 	{
-		i++;
-		cur = cur->sibling;
+		if(entrynum == which)
+		{
+			val = node->key;
+			break;
+		}
 	}
-	
-	if (cur != NULL)
-		return cur->key;
-	else
-		return "";
+
+	return val;
 }
 
 
