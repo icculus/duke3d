@@ -809,7 +809,7 @@ char getch(void)
 	return 0;
 }
 
-extern char ApogeePath[256];
+char ApogeePath[256];
 
 int setup_homedir (void)
 {
