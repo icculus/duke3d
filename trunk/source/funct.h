@@ -56,7 +56,7 @@ extern void stopenvsound(short num,short i);
 //#line "sounds.c" 494
 extern void pan3dsound(void );
 //#line "sounds.c" 571
-extern void TestCallBack(long num);
+extern void TestCallBack(unsigned long num);
 //#line "sector.c" 9
 extern short callsound(short sn,short whatsprite);
 //#line "sector.c" 56

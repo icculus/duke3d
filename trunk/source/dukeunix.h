@@ -43,4 +43,12 @@ struct dosdate_t
 
 void _dos_getdate(struct dosdate_t *date);
 
+#ifndef min
+#define min(x, y) ((x) < (y) ? (x) : (y))
+#endif
+
+#ifndef max
+#define max(x, y) ((x) > (y) ? (x) : (y))
+#endif
+
 #endif

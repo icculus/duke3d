@@ -28,9 +28,11 @@
 
 #include "SDL.h"
 #include "SDL_mixer.h"
+#ifdef ROTT
 #include "rt_def.h"      // ROTT music hack
 #include "rt_cfg.h"      // ROTT music hack
 #include "rt_util.h"     // ROTT music hack
+#endif
 #include "fx_man.h"
 #include "music.h"
 
@@ -1222,6 +1224,7 @@ int MUSIC_PlaySong(unsigned char *song, int loopflag)
     return(MUSIC_Ok);
 } // MUSIC_PlaySong
 
+#ifdef ROTT
 // ROTT Special - SBF
 int MUSIC_PlaySongROTT(unsigned char *song, int size, int loopflag)
 {
@@ -1249,6 +1252,7 @@ int MUSIC_PlaySongROTT(unsigned char *song, int size, int loopflag)
 
     return(MUSIC_Ok);
 } // MUSIC_PlaySongROTT
+#endif
 
 void MUSIC_SetContext(int context)
 {

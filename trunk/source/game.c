@@ -108,6 +108,8 @@ void timerhandler(task *unused)
     totalclock++;
 }
 
+// Build Engine port implements this.  --ryan.
+#if PLATFORM_DOS
 void inittimer()
 {
     TimerPtr = TS_ScheduleTask( timerhandler,TICRATE, 1, NULL );
@@ -121,6 +123,7 @@ void uninittimer(void)
    TimerPtr = NULL;
    TS_Shutdown();
 }
+#endif
 
 int gametext(int x,int y,char *t,char s,short dabits)
 {

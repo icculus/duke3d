@@ -59,6 +59,10 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #include "dukewin.h"
 #endif
 
+#if USE_SDL
+#include "SDL.h"
+#include "SDL_mixer.h"
+#endif
 
 #include "pragmas.h"
 #include "function.h"
@@ -408,7 +412,12 @@ extern short spriteq[1024],spriteqloc,spriteqamount;
 extern struct player_struct ps[MAXPLAYERS];
 extern struct player_orig po[MAXPLAYERS];
 extern struct user_defs ud;
+
+// ported build engine has this, too.  --ryan.
+#if PLATFORM_DOS
 extern short int moustat;
+#endif
+
 extern short int global_random;
 extern long scaredfallz;
 extern char buf[80]; //My own generic input buffer
@@ -479,7 +488,7 @@ extern long movefifoplc, vel,svel,angvel,horiz;
 
 extern short mirrorwall[64], mirrorsector[64], mirrorcnt;
 
-extern void TestCallBack(long);
+extern void TestCallBack(unsigned long);
 
 #define NUMKEYS 19
 
