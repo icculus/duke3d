@@ -44,6 +44,11 @@ FUNCTIONS
 =============================================================================
 */
 
+void keyhandler(void)
+{
+	STUBBED("hook this up from buildengine");
+}
+
 void KB_KeyEvent( int scancode, boolean keypressed )
 {
 	STUBBED("KB_KeyEvent");
