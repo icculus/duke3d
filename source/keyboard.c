@@ -135,6 +135,11 @@ void keyhandler(void)
     	    	return;
     	}
     }
+    else
+    {
+        if (lastkey == 0x4D)  // hack for (non-extended!) KP_right arrow.
+            lastkey = sc_RightArrow;
+    }
     
     if (lastkey >= MAXKEYBOARDSCAN)
     {
