@@ -28,10 +28,6 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 
 #include "duke3d.h"
 
-// this should be a proper prototype included from a header file
-extern int sgn(int);
-long tmulscale11(long i1, long i2, long i3, long i4, long i5, long i6);
-
 int32 turnheldtime; //MED
 int32 lastcontroltime; //MED
 
