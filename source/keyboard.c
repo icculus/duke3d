@@ -41,6 +41,7 @@ volatile kb_scancode KB_LastScan;
 static volatile boolean keyIsWaiting = 0;
 
 static char scancodeToASCII[ MAXKEYBOARDSCAN ];
+static char shiftedScancodeToASCII[ MAXKEYBOARDSCAN ];
 static char extscanToSC[ MAXKEYBOARDSCAN ];
 
 /*
@@ -111,10 +112,16 @@ boolean KB_KeyWaiting( void )
 
 char KB_Getch( void )
 {
+    int shifted;
+
     while (!keyIsWaiting) { _idle(); /* pull the pud. */ }
 	keyIsWaiting = false;
     if (KB_LastScan >= MAXKEYBOARDSCAN)
         return(0);
+
+    if (KB_KeyDown[sc_LeftShift] || KB_KeyDown[sc_RightShift])
+        return shiftedScancodeToASCII[KB_LastScan];
+
     return scancodeToASCII[KB_LastScan];
 }
 
@@ -289,7 +296,8 @@ boolean KB_KeypadActive( void )
 void KB_Startup( void )
 {
     memset(scancodeToASCII, '\0', sizeof (scancodeToASCII));
-    // !!! FIXME: incomplete!
+
+    // !!! FIXME: incomplete?
     scancodeToASCII[sc_A] = 'a';
     scancodeToASCII[sc_B] = 'b';
     scancodeToASCII[sc_C] = 'c';
@@ -331,6 +339,77 @@ void KB_Startup( void )
     scancodeToASCII[sc_Space] = asc_Space;
     scancodeToASCII[sc_Enter] = asc_Enter;
     scancodeToASCII[sc_BackSpace] = asc_BackSpace;
+    scancodeToASCII[sc_Comma] = ',';
+    scancodeToASCII[sc_Period] = '.';
+    scancodeToASCII[sc_Kpad_Star] = '*';
+    scancodeToASCII[sc_Slash] = '/';
+    scancodeToASCII[sc_SemiColon] = ';';
+    scancodeToASCII[sc_Quote] = '\'';
+    scancodeToASCII[sc_Tilde] = '`';
+    scancodeToASCII[sc_BackSlash] = '\\';
+    scancodeToASCII[sc_OpenBracket] = '[';
+    scancodeToASCII[sc_CloseBracket] = ']';
+    scancodeToASCII[sc_Minus] = '-';
+    scancodeToASCII[sc_Equals] = '=';
+    scancodeToASCII[sc_Plus] = '+';
+    scancodeToASCII[sc_kpad_Minus] = '-';
+    scancodeToASCII[sc_kpad_Period] = '.';
+    scancodeToASCII[sc_kpad_Plus] = '+';
+
+    // !!! FIXME: incomplete?
+    memset(shiftedScancodeToASCII, '\0', sizeof (shiftedScancodeToASCII));
+    shiftedScancodeToASCII[sc_A] = 'A';
+    shiftedScancodeToASCII[sc_B] = 'B';
+    shiftedScancodeToASCII[sc_C] = 'C';
+    shiftedScancodeToASCII[sc_D] = 'D';
+    shiftedScancodeToASCII[sc_E] = 'E';
+    shiftedScancodeToASCII[sc_F] = 'F';
+    shiftedScancodeToASCII[sc_G] = 'G';
+    shiftedScancodeToASCII[sc_H] = 'H';
+    shiftedScancodeToASCII[sc_I] = 'I';
+    shiftedScancodeToASCII[sc_J] = 'J';
+    shiftedScancodeToASCII[sc_K] = 'K';
+    shiftedScancodeToASCII[sc_L] = 'L';
+    shiftedScancodeToASCII[sc_M] = 'M';
+    shiftedScancodeToASCII[sc_N] = 'N';
+    shiftedScancodeToASCII[sc_O] = 'O';
+    shiftedScancodeToASCII[sc_P] = 'P';
+    shiftedScancodeToASCII[sc_Q] = 'Q';
+    shiftedScancodeToASCII[sc_R] = 'R';
+    shiftedScancodeToASCII[sc_S] = 'S';
+    shiftedScancodeToASCII[sc_T] = 'T';
+    shiftedScancodeToASCII[sc_U] = 'U';
+    shiftedScancodeToASCII[sc_V] = 'V';
+    shiftedScancodeToASCII[sc_W] = 'W';
+    shiftedScancodeToASCII[sc_X] = 'X';
+    shiftedScancodeToASCII[sc_Y] = 'Y';
+    shiftedScancodeToASCII[sc_Z] = 'Z';
+    shiftedScancodeToASCII[sc_0] = ')';
+    shiftedScancodeToASCII[sc_1] = '!';
+    shiftedScancodeToASCII[sc_2] = '@';
+    shiftedScancodeToASCII[sc_3] = '#';
+    shiftedScancodeToASCII[sc_4] = '$';
+    shiftedScancodeToASCII[sc_5] = '%';
+    shiftedScancodeToASCII[sc_6] = '^';
+    shiftedScancodeToASCII[sc_7] = '&';
+    shiftedScancodeToASCII[sc_8] = '*';
+    shiftedScancodeToASCII[sc_9] = '(';
+    shiftedScancodeToASCII[sc_Comma] = '<';
+    shiftedScancodeToASCII[sc_Period] = '>';
+    shiftedScancodeToASCII[sc_Kpad_Star] = '*';
+    shiftedScancodeToASCII[sc_Slash] = '?;
+    shiftedScancodeToASCII[sc_SemiColon] = ':';
+    shiftedScancodeToASCII[sc_Quote] = '\"';
+    shiftedScancodeToASCII[sc_Tilde] = '~';
+    shiftedScancodeToASCII[sc_BackSlash] = '|';
+    shiftedScancodeToASCII[sc_OpenBracket] = '{';
+    shiftedScancodeToASCII[sc_CloseBracket] = '}';
+    shiftedScancodeToASCII[sc_Minus] = '_';
+    shiftedScancodeToASCII[sc_Equals] = '+';
+    shiftedScancodeToASCII[sc_Plus] = '+';
+    shiftedScancodeToASCII[sc_kpad_Minus] = '-';
+    shiftedScancodeToASCII[sc_kpad_Period] = '.';
+    shiftedScancodeToASCII[sc_kpad_Plus] = '+';
 
     memset(extscanToSC, '\0', sizeof (extscanToSC));
     
