@@ -400,6 +400,7 @@ int32 SCRIPT_Load ( char * filename )
 	script_headnode[script_nexthandle] = SCRIPT_constructnode ();
 	headnode = script_headnode[script_nexthandle];
 
+	memset (curline, 0, 128);
 	while (fgets (curline, 128, fp))
 	{
 		/* Skip comments */
@@ -451,6 +452,7 @@ int32 SCRIPT_Load ( char * filename )
 				SCRIPT_addchild (cur_subsection, node);
 			}
 		}
+		memset (curline, 0, 128);
 	}
 
 	fclose (fp);
