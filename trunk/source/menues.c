@@ -148,7 +148,7 @@ loadpheader(char spot,int32 *vn,int32 *ln,int32 *psk,int32 *nump)
 {
 
      long i;
-         char *fn = "game0.sav";
+         char fn[] = "game0.sav";
          long fil;
      long bv;
 
@@ -186,8 +186,8 @@ loadpheader(char spot,int32 *vn,int32 *ln,int32 *psk,int32 *nump)
 loadplayer(signed char spot)
 {
      short k,music_changed;
-     char *fn = "game0.sav";
-     char *mpfn = "gameA_00.sav";
+     char fn[] = "game0.sav";
+     char mpfn[] = "gameA_00.sav";
      char *fnptr, scriptptrs[MAXSCRIPTSIZE];
      long fil, bv, i, j, x;
      int32 nump;
@@ -503,8 +503,8 @@ loadplayer(signed char spot)
 saveplayer(signed char spot)
 {
      long i, j;
-         char *fn = "game0.sav";
-     char *mpfn = "gameA_00.sav";
+         char fn[] = "game0.sav";
+     char mpfn[] = "gameA_00.sav";
      char *fnptr,scriptptrs[MAXSCRIPTSIZE];
          FILE *fil;
      long bv = BYTEVERSION;

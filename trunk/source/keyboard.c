@@ -38,7 +38,9 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 volatile byte  KB_KeyDown[ MAXKEYBOARDSCAN ];   // Keyboard state array
 volatile kb_scancode KB_LastScan;
 
-static boolean keyIsWaiting = 0;
+static volatile boolean keyIsWaiting = 0;
+
+static char scancodeToASCII[ MAXKEYBOARDSCAN ];
 
 /*
 =============================================================================
@@ -167,8 +169,11 @@ boolean KB_KeyWaiting( void )
 
 char KB_Getch( void )
 {
-	STUBBED("KB_Getch");
-	return 0;
+    while (!keyIsWaiting) { _idle(); /* pull the pud. */ }
+	keyIsWaiting = false;
+    if (KB_LastScan >= MAXKEYBOARDSCAN)
+        return(0);
+    return scancodeToASCII[KB_LastScan];
 }
 
 void KB_Addch( char ch )
@@ -186,12 +191,6 @@ void KB_ClearKeysDown( void )
 {
     memset(KB_KeyDown, '\0', sizeof (KB_KeyDown));
 	keyIsWaiting = false;
-}
-
-char *KB_ScanCodeToString( kb_scancode scancode )
-{
-	STUBBED("KB_ScanCodeToString");
-	return 0;
 }
 
 static struct {
@@ -303,6 +302,18 @@ static struct {
 	{ NULL,		0		}
 };
 
+char *KB_ScanCodeToString( kb_scancode scancode )
+{
+	int i;
+	for(i = 0; keyname2scancode[i].name != NULL; i++)
+	{
+        if (keyname2scancode[i].code == scancode)
+            return keyname2scancode[i].name;
+	}
+	
+	return NULL;
+}
+
 kb_scancode KB_StringToScanCode( char * string )
 {
 	char* name = NULL;
@@ -335,6 +346,50 @@ boolean KB_KeypadActive( void )
 
 void KB_Startup( void )
 {
+    memset(scancodeToASCII, '\0', sizeof (scancodeToASCII));
+    // !!! FIXME: incomplete!
+    scancodeToASCII[sc_A] = 'a';
+    scancodeToASCII[sc_B] = 'b';
+    scancodeToASCII[sc_C] = 'c';
+    scancodeToASCII[sc_D] = 'd';
+    scancodeToASCII[sc_E] = 'e';
+    scancodeToASCII[sc_F] = 'f';
+    scancodeToASCII[sc_G] = 'g';
+    scancodeToASCII[sc_H] = 'h';
+    scancodeToASCII[sc_I] = 'i';
+    scancodeToASCII[sc_J] = 'j';
+    scancodeToASCII[sc_K] = 'k';
+    scancodeToASCII[sc_L] = 'l';
+    scancodeToASCII[sc_M] = 'm';
+    scancodeToASCII[sc_N] = 'n';
+    scancodeToASCII[sc_O] = 'o';
+    scancodeToASCII[sc_P] = 'p';
+    scancodeToASCII[sc_Q] = 'q';
+    scancodeToASCII[sc_R] = 'r';
+    scancodeToASCII[sc_S] = 's';
+    scancodeToASCII[sc_T] = 't';
+    scancodeToASCII[sc_U] = 'u';
+    scancodeToASCII[sc_V] = 'v';
+    scancodeToASCII[sc_W] = 'w';
+    scancodeToASCII[sc_X] = 'x';
+    scancodeToASCII[sc_Y] = 'y';
+    scancodeToASCII[sc_Z] = 'z';
+    scancodeToASCII[sc_0] = '0';
+    scancodeToASCII[sc_1] = '1';
+    scancodeToASCII[sc_2] = '2';
+    scancodeToASCII[sc_3] = '3';
+    scancodeToASCII[sc_4] = '4';
+    scancodeToASCII[sc_5] = '5';
+    scancodeToASCII[sc_6] = '6';
+    scancodeToASCII[sc_7] = '7';
+    scancodeToASCII[sc_8] = '8';
+    scancodeToASCII[sc_9] = '9';
+    scancodeToASCII[sc_Escape] = asc_Escape;
+    scancodeToASCII[sc_Tab] = asc_Tab;
+    scancodeToASCII[sc_Space] = asc_Space;
+    scancodeToASCII[sc_Enter] = asc_Enter;
+    scancodeToASCII[sc_BackSpace] = asc_BackSpace;
+
 	KB_ClearKeysDown();
 }
 
