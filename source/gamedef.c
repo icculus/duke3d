@@ -1459,9 +1459,9 @@ void passone(void)
 
 char *defaultcons[3] =
 {
-     {"GAME.CON"},
-     {"USER.CON"},
-     {"DEFS.CON"}
+     "GAME.CON",
+     "USER.CON",
+     "DEFS.CON"
 };
 
 void copydefaultcons(void)

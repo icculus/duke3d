@@ -61,7 +61,7 @@ void RTS_AddFile (char *filename)
    {
    wadinfo_t  header;
    lumpinfo_t *lump_p;
-   uint32     i;
+   int32     i;
    int32      handle, length;
    int32      startlump;
    filelump_t *fileinfo;
@@ -92,7 +92,7 @@ void RTS_AddFile (char *filename)
 //
 // Fill in lumpinfo
 //
-   SafeRealloc(&lumpinfo,numlumps*sizeof(lumpinfo_t));
+   SafeRealloc((void **)&lumpinfo,numlumps*sizeof(lumpinfo_t));
    lump_p = &lumpinfo[startlump];
 
    for (i=startlump ; i<numlumps ; i++,lump_p++, fileinfo++)
@@ -224,7 +224,7 @@ void *RTS_GetSound (int32 lump)
    if (lumpcache[lump] == NULL)
    {
       lumplockbyte[lump] = 200;
-      allocache((char *)&lumpcache[lump],(long)RTS_SoundLength(lump-1),&lumplockbyte[lump]);
+      allocache((long *)&lumpcache[lump],(long)RTS_SoundLength(lump-1),&lumplockbyte[lump]);
       RTS_ReadLump(lump, lumpcache[lump]);
    }
    else

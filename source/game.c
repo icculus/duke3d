@@ -104,13 +104,13 @@ task *TimerPtr=NULL;
 
 extern long lastvisinc;
 
-void timerhandler(task *unused)
+// Build Engine port implements this.  --ryan.
+#if PLATFORM_DOS
+static void timerhandler(task *unused)
 {
     totalclock++;
 }
 
-// Build Engine port implements this.  --ryan.
-#if PLATFORM_DOS
 void inittimer()
 {
     TimerPtr = TS_ScheduleTask( timerhandler,TICRATE, 1, NULL );
@@ -123,6 +123,11 @@ void uninittimer(void)
       TS_Terminate( TimerPtr );
    TimerPtr = NULL;
    TS_Shutdown();
+}
+#else
+void timerhandler(void)
+{
+    totalclock++;
 }
 #endif
 
@@ -356,7 +361,7 @@ short user_quote_time[MAXUSERQUOTES];
 char user_quote[MAXUSERQUOTES][128];
 // char typebuflen,typebuf[41];
 
-adduserquote(char *daquote)
+static void adduserquote(char *daquote)
 {
     long i;
 
@@ -2630,7 +2635,7 @@ long tempsectorz[MAXSECTORS];
 long tempsectorpicnum[MAXSECTORS];
 //short tempcursectnum;
 
-void SE40_Draw(int spnum,long x,long y,long z,short a,short h,long smoothratio)
+static void SE40_Draw(int spnum,long x,long y,long z,short a,short h,long smoothratio)
 {
  int i=0,j=0,k=0;
  int floor1=0,floor2=0,ok=0,fofmode=0;
@@ -2744,7 +2749,7 @@ void SE40_Draw(int spnum,long x,long y,long z,short a,short h,long smoothratio)
 
 
 
-void se40code(long x,long y,long z,long a,long h, long smoothratio)
+static void se40code(long x,long y,long z,long a,long h, long smoothratio)
 {
     int i;
 
@@ -7402,7 +7407,11 @@ int main(int argc,char **argv)
     sixteen[0] = 'D';
     trees[0] = 'I';
 
+#if PLATFORM_DOS
     printstr(0,0,"                                                                                ",79);
+#else
+	printf("                   ");
+#endif
 
 #ifdef VOLUMEALL
     #ifdef AUSTRALIA
@@ -7416,6 +7425,10 @@ int main(int argc,char **argv)
     #else
         printstr(40-(strlen(HEAD)>>1),0,HEAD,79);
     #endif
+#endif
+
+#if !PLATFORM_DOS
+		printf("\n");
 #endif
 
 #ifdef BETA
@@ -7732,7 +7745,7 @@ char opendemoread(char which_demo) // 0 = mine
      kread(recfilep,(int32 *)&ud.m_respawn_items,sizeof(int32));
      kread(recfilep,(int32 *)&ud.m_respawn_inventory,sizeof(int32));
      kread(recfilep,(int32 *)&ud.playerai,sizeof(int32));
-     kread(recfilep,(char *)&ud.user_name[0][0],sizeof(ud.user_name),1);
+     kread(recfilep,(char *)&ud.user_name[0][0],sizeof(ud.user_name));
      kread(recfilep,(int32 *)&ud.auto_run,sizeof(int32));
      kread(recfilep,(char *)boardfilename,sizeof(boardfilename));
      if( boardfilename[0] != 0 )
@@ -7742,7 +7755,7 @@ char opendemoread(char which_demo) // 0 = mine
      }
 
      for(i=0;i<ud.multimode;i++)
-        kread(recfilep,(int32 *)&ps[i].aim_mode,sizeof(char),1);
+        kread(recfilep,(int32 *)&ps[i].aim_mode,sizeof(char));
      ud.god = ud.cashman = ud.eog = ud.showallmap = 0;
      ud.clipping = ud.scrollmode = ud.overhead_on = 0;
      ud.showweapons =  ud.pause_on = ud.auto_run = 0;
@@ -9229,7 +9242,7 @@ void dobonus(char bonusonly)
                     sprintf(tempbuf,"%-3ld",ps[myconnectindex].secret_rooms);
                     gametext((320>>2)+70,120+9,tempbuf,0,2+8+16);
                     if( ps[myconnectindex].secret_rooms > 0 )
-                        sprintf(tempbuf,"%-3ld%",(100*ps[myconnectindex].secret_rooms/ps[myconnectindex].max_secret_rooms));
+                        sprintf(tempbuf,"%-3ld",(100*ps[myconnectindex].secret_rooms/ps[myconnectindex].max_secret_rooms));
                     sprintf(tempbuf,"%-3ld",ps[myconnectindex].max_secret_rooms-ps[myconnectindex].secret_rooms);
                     gametext((320>>2)+70,130+9,tempbuf,0,2+8+16);
                 }

@@ -64,7 +64,12 @@ BUILDOBJS := \
 	buildengine/unix_compat.o
 
 CC = gcc
-CFLAGS = -g $(SDL_CFLAGS) -DUSE_SDL=1 -DPLATFORM_UNIX=1 -DUSE_I386_ASM=1 -W -Wall -Wno-unused $(EXTRACFLAGS) -O2
+CFLAGS = -g $(SDL_CFLAGS) -DUSE_SDL=1 -DPLATFORM_UNIX=1 -DUSE_I386_ASM=1 -W -Wall -Wno-unused $(EXTRACFLAGS) -O2 -funsigned-char
+
+# Uncomment this to compile with the Intel compiler (v6.0)
+#CC = icc
+#CFLAGS = -g $(SDL_CFLAGS) -DUSE_SDL=1 -DPLATFORM_UNIX=1 -DUSE_I386_ASM=1 $(EXTRACFLAGS) -O2
+
 LDLIBS = $(SDL_LDFLAGS) -lSDL -lSDL_mixer $(EXTRALDFLAGS) -Wl,-E
 
 all: duke3d

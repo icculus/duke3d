@@ -604,7 +604,7 @@ void hitradius( short i, long  r, long  hp1, long  hp2, long  hp3, long  hp4 )
 }
 
 
-movesprite(short spritenum, long xchange, long ychange, long zchange, unsigned long cliptype)
+short movesprite(short spritenum, long xchange, long ychange, long zchange, unsigned long cliptype)
 {
     long daz,h, oldx, oldy;
     short retval, dasectnum, a, cd;

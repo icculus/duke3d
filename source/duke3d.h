@@ -120,7 +120,8 @@ struct player_struct;
 #include "sndcards.h"
 
 #include "names.h"
-#include "funct.h"
+
+#include "buildengine/engine.h"
 
 #define TICRATE (120)
 #define TICSPERFRAME (TICRATE/26)
@@ -498,6 +499,7 @@ extern long frameplace, chainplace, chainnumpages;
 extern volatile long checksume;
 
 #include "funct.h"
+#include "buildengine/engine_protos.h"
 
 extern char screencapt;
 extern short soundps[NUM_SOUNDS],soundpe[NUM_SOUNDS],soundvo[NUM_SOUNDS];

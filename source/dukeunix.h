@@ -4,7 +4,10 @@
 #define cdecl
 #define __far
 #define __interrupt
+
+#ifdef __GNUC__
 typedef long long __int64;
+#endif
 
 //#define STUBBED(x)
 #define STUBBED(x) fprintf(stderr,"STUB: %s (%s, %s:%d)\n",x,__FUNCTION__,__FILE__,__LINE__)
