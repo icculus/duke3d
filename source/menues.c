@@ -735,7 +735,7 @@ ControlInfo minfo;
 
 long mi;
 
-int probe(int x,int y,int i,int n)
+static int probe_with_delete(int x,int y,int i,int n,int *hitdelete)
 {
     short centre, s;
 
@@ -795,6 +795,22 @@ int probe(int x,int y,int i,int n)
     else
         rotatesprite((x-tilesizx[BIGFNTCURSOR]-4)<<16,(y+(probey*i)-4)<<16,65536L,0,SPINNINGNUKEICON+(((totalclock>>3))%7),sh,0,10,0,0,xdim-1,ydim-1);
 
+    if (hitdelete != NULL)
+    {
+        *hitdelete = ((KB_KeyPressed(sc_Delete)) ||
+                      (KB_KeyPressed(sc_BackSpace)) ||
+                      (KB_KeyPressed(sc_kpad_Period)));
+
+        if (*hitdelete)
+        {
+            sound(KICK_HIT);
+            KB_ClearKeyDown(sc_Delete);
+            KB_ClearKeyDown(sc_BackSpace);
+            KB_ClearKeyDown(sc_kpad_Period);
+            return(probey);
+        }
+    }
+
     if( KB_KeyPressed(sc_Space) || KB_KeyPressed( sc_kpad_Enter ) || KB_KeyPressed( sc_Enter ) || (LMB && !onbar) )
     {
         if(current_menu != 110)
@@ -820,6 +836,11 @@ int probe(int x,int y,int i,int n)
             return(probey);
         else return(-probey-2);
     }
+}
+
+int probe(int x,int y,int i,int n)
+{
+    return probe_with_delete(x,y,i,n,NULL);
 }
 
 int menutext(int x,int y,short s,short p,char *t)
@@ -936,6 +957,7 @@ int menutext(int x,int y,short s,short p,char *t)
     }
     return (x);
 }
+
 
 int menutextc(int x,int y,short s,short p,char *t)
 {
@@ -1349,10 +1371,12 @@ static void DoKeybindMenu(char *name, KeyBinds *keybinds, int cnt, int prevmenu)
 {
     int i;
     int rc;
+    int hitdelete = 0;
+    int drawmenu = 0;
     rotatesprite(320<<15,10<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
     menutext(320>>1,15,0,0,name);
 
-    rc = probe(46,20+16,15,cnt);  // !!! FIXME: Move cursor to right more?
+    rc = probe_with_delete(46,20+16,15,cnt,&hitdelete);
     if (rc == -1) // escape
     {
         cmenu(prevmenu);
@@ -1364,14 +1388,29 @@ static void DoKeybindMenu(char *name, KeyBinds *keybinds, int cnt, int prevmenu)
     }
     else if (rc >= 0)  // chose an option.
     {
-        prevbindmenu = current_menu;
-        currentbind = &keybinds[rc];
-        keybindprobey = probey;
-        KB_FlushKeyboardQueue();
-        KB_ClearKeysDown();
-        cmenu(MENU_CONTROLS_KEYBINDER);
+        if (hitdelete)   // clear this keybind.
+        {
+            char *fname = CONFIG_FunctionNumToName(keybinds[rc].which);
+            CONTROL_MapKey(keybinds[rc].which, 0, 0);
+            CONFIG_PutString("KeyDefinitions", fname, "");
+            drawmenu = 1;
+        }
+        else   // Go to the keybinder menu to select a new key.
+        {
+            prevbindmenu = current_menu;
+            currentbind = &keybinds[rc];
+            keybindprobey = probey;
+            KB_FlushKeyboardQueue();
+            KB_ClearKeysDown();
+            cmenu(MENU_CONTROLS_KEYBINDER);
+        }
     }
     else  // unknown option or none chosen, so draw menu.
+    {
+        drawmenu = 1;
+    }
+
+    if (drawmenu)
     {
         for (i = 0; i < cnt; i++)
             keybindtext(i, keybinds[i].name, keybinds[i].which);
@@ -1413,6 +1452,7 @@ static void non3dr_menus(void)
                     else
                     {
                         char *fname = CONFIG_FunctionNumToName(currentbind->which);
+                        sound(PISTOL_BODYHIT);
                         CONTROL_MapKey(currentbind->which, sc, 0);
                         CONFIG_PutString("KeyDefinitions", fname, scstr);
                     }
@@ -1542,8 +1582,8 @@ static void non3dr_menus(void)
             {
                 { "JUMP", gamefunc_Jump },
                 { "CROUCH", gamefunc_Crouch },
-                { "RUN", gamefunc_Strafe_Left },
-                { "RUNLOCK", gamefunc_Strafe_Right },
+                { "RUN", gamefunc_Run },
+                { "RUNLOCK", gamefunc_AutoRun },
                 { "AIM UP", gamefunc_Aim_Up },
                 { "AIM DOWN", gamefunc_Aim_Down },
                 { "CENTER VIEW", gamefunc_Center_View },
