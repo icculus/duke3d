@@ -52,6 +52,10 @@ uint32   CONTROL_ButtonHeldState2;
 //
 //***************************************************************************
 
+void CONTROL_UpdateKeyboardState(int key, int pressed)
+{
+}
+
 void CONTROL_MapKey( int32 which, kb_scancode key1, kb_scancode key2 )
 {
 	STUBBED("CONTROL_MapKey");

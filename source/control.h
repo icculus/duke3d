@@ -208,6 +208,8 @@ void CONTROL_SetAnalogAxisScale
    );
 void CONTROL_PrintAxes( void );
 
+void CONTROL_UpdateKeyboardState(int key, int pressed);
+
 #ifdef __cplusplus
 };
 #endif

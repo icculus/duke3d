@@ -48,19 +48,34 @@ FUNCTIONS
 
 void keyhandler(void)
 {
-    int lastkey = _readlastkeyhit();
+    int rawkey = _readlastkeyhit();
+    int lastkey = rawkey & 0x7f;
+    
+    // 128 bit means key was released.
+    int pressed = !(rawkey & 0x80);
+    
+    if (rawkey == 0xe0)
+    {
+        STUBBED("Extended scancode!");
+        return;
+    }
+    
     if (lastkey >= MAXKEYBOARDSCAN)
     {
         STUBBED("Scancode out of range!");
         return;
     }
 
-    KB_LastScan = lastkey;
+    if (pressed)
+    {
+         KB_LastScan = lastkey;
+    }
 
-    // 128 bit means key was released.
-    KB_KeyDown[lastkey] = (lastkey & 128) ? 0 : 1;
+    KB_KeyDown[lastkey] = pressed;
 
     keyIsWaiting = ((keyIsWaiting) || (KB_KeyDown[lastkey]));
+    
+    CONTROL_UpdateKeyboardState(lastkey, pressed);
 }
 
 void KB_KeyEvent( int scancode, boolean keypressed )
