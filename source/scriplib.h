@@ -196,6 +196,22 @@ void SCRIPT_GetBoolean
 /*
 ==============
 =
+= SCRIPT_GetFloat
+=
+==============
+*/
+
+boolean SCRIPT_GetFloat
+   (
+   int32 scripthandle,
+   char * sectionname,
+   char * entryname,
+   float * floatnumber
+   );
+
+/*
++==============
++=
 = SCRIPT_GetDouble
 =
 ==============

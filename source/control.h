@@ -127,7 +127,8 @@ typedef enum
    controltype_keyboardandexternal,
    controltype_keyboardandgamepad,
    controltype_keyboardandflightstick,
-   controltype_keyboardandthrustmaster
+   controltype_keyboardandthrustmaster,
+   controltype_joystickandmouse
    } controltype;
 
 
@@ -162,6 +163,8 @@ void CONTROL_MapButton
         int32 whichbutton,
         boolean doubleclicked
         );
+void CONTROL_MapJoyButton(int32 whichfunction, int32 whichbutton, boolean doubleclicked);
+void CONTROL_MapJoyHat(int32 whichfunction, int32 whichhat, int32 whichvalue); 
 void CONTROL_DefineFlag( int32 which, boolean toggle );
 boolean CONTROL_FlagActive( int32 which );
 void CONTROL_ClearAssignments( void );
@@ -204,8 +207,19 @@ void CONTROL_MapDigitalAxis
 void CONTROL_SetAnalogAxisScale
    (
    int32 whichaxis,
-   int32 axisscale
+   float axisscale
    );
+void CONTROL_SetAnalogAxisDeadzone
+   (
+   int32 whichaxis,
+   int32 axisdeadzone
+   );
+int32 CONTROL_FilterDeadzone
+   (
+   int32 axisvalue,
+   int32 axisdeadzone
+   );
+int32 CONTROL_GetFilteredAxisValue(int32 axis);
 void CONTROL_PrintAxes( void );
 
 void CONTROL_UpdateKeyboardState(int key, int pressed);

@@ -1903,6 +1903,50 @@ void getinput(short snum)
        svel = -info.dyaw/8;
     else angvel = info.dyaw/64;
 
+    // Account for which mode we're in. (1, 2 or 7)
+    switch(ControllerType)
+    {
+    case controltype_keyboardandjoystick:
+    case controltype_joystickandmouse:
+            {
+                    if(CONTROL_JoystickEnabled)
+                    {
+                            //
+                            if(ud.mouseflip)
+                            {
+                                    horiz -= info.dpitch/(314-128);
+                            }
+                            else
+                            {
+                                    horiz += info.dpitch/(314-128);
+                            }
+
+                            info.dpitch = 0;
+                    }
+            }
+            break;
+    default:
+            {
+                    // If Mouse aim active
+                    if( myaimmode )
+                    {        
+                            //
+                            if(ud.mouseflip)
+                            {
+                                    horiz -= info.dpitch/(314-128);
+                            }
+                            else
+                            {
+                                    horiz += info.dpitch/(314-128);
+                            }
+
+                            info.dpitch = 0;            
+                    }
+            }
+            break;
+    }
+
+    /*
     if( myaimmode )
     {
         if(ud.mouseflip)
@@ -1911,6 +1955,7 @@ void getinput(short snum)
 
         info.dz = 0;
     }
+    */
 
     svel -= info.dx;
     vel = -info.dz>>6;

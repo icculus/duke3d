@@ -27,6 +27,7 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #include "duke3d.h"
 #include "control.h"
 #include "mouse.h"
+#include "joystick.h"
 
 //***************************************************************************
 // FIXME  These will need to be removed once the buildengine directory
@@ -54,8 +55,13 @@ uint32   CONTROL_ButtonHeldState1;
 uint32   CONTROL_ButtonState2;
 uint32   CONTROL_ButtonHeldState2;
 
+uint32   CONTROL_JoyHatState[MAXJOYHATS];
+
 static short mouseButtons = 0;
 static short lastmousebuttons = 0;
+
+static short joyHats[MAXJOYHATS];
+static short lastjoyHats[MAXJOYHATS];
 
 //***************************************************************************
 //
@@ -73,6 +79,13 @@ struct _KeyMapping
 } KeyMapping[MAXGAMEBUTTONS];
 
 static int32 MouseMapping[MAXMOUSEBUTTONS];
+
+// Joystick/Gamepad bindings
+static int32 JoyAxisMapping[MAXJOYAXES];
+static int32 JoyHatMapping[MAXJOYHATS][8];
+static int32 JoyButtonMapping[MAXJOYBUTTONS];
+static float JoyAnalogScale[MAXJOYAXES];
+static int32 JoyAnalogDeadzone[MAXJOYAXES];
 
 static void SETBUTTON(int i)
 {
@@ -154,6 +167,29 @@ void CONTROL_MapButton
     MouseMapping[whichbutton] = whichfunction;
 }
 
+void CONTROL_MapJoyButton(int32 whichfunction, int32 whichbutton, boolean doubleclicked)
+{
+    if(whichbutton < 0 || whichbutton >= MAXJOYBUTTONS)
+    {
+        return;
+    }
+
+    if(doubleclicked)
+       return; // TODO
+
+    JoyButtonMapping[whichbutton] = whichfunction;
+}
+
+void CONTROL_MapJoyHat(int32 whichfunction, int32 whichhat, int32 whichvalue)
+{
+    if(whichhat < 0 || whichhat >= MAXJOYHATS)
+    {
+        return;
+    }
+
+    JoyHatMapping[whichhat][whichvalue] = whichfunction;
+}
+
 void CONTROL_DefineFlag( int32 which, boolean toggle )
 {
 	// STUBBED("CONTROL_DefineFlag");
@@ -179,13 +215,41 @@ void CONTROL_GetInput( ControlInfo *info )
 {
     int32 sens = CONTROL_GetMouseSensitivity() >> 9;
     int32 mx, my;
-    int i;
+    int i, j;
     memset(info, '\0', sizeof (ControlInfo));
+
+    mx = my = 0;
 
     MOUSE_GetDelta(&mx,&my);
 
     info->dyaw = mx * sens;
+
+       switch(ControllerType)
+       {
+       case controltype_keyboardandjoystick:
+               {
+               }
+               break;
+       case controltype_joystickandmouse:
+               {
+                       // Mouse should use pitch instead of forward movement.
+                       info->dpitch = my * sens*2;
+               }
+               break;
+       default:
+               {
+            // If mouse aim is active
+                       if( myaimmode )
+                       {  
+                               info->dpitch = my * sens*2;
+            }
+            else
+            {
     info->dz = my * sens*2;
+            }
+               }
+               break;
+       }
 
     // TODO: releasing the mouse button does not honor if a keyboard key with
     // the same function is still pressed. how should it?
@@ -204,11 +268,95 @@ void CONTROL_GetInput( ControlInfo *info )
     // update stick state.
     if ((CONTROL_JoystickEnabled) && (_joystick_update()))
     {
-        // !!! FIXME: Do something like this.
-        //info->dx += _joystick_axis()
+               // Check the hats
+               JOYSTICK_UpdateHats();
 
-        // !!! FIXME: Do this.
-        //SETBUTTON based on _joystick_button().
+               // TODO: make this NOT use the BUTTON() system for storing the hat input. (requires much game code changing)
+               for(i=0; i<MAXJOYHATS; i++)
+               {
+
+                       for(j=0; j<8; j++)
+                       {
+                               if(!(lastjoyHats[i] & (1<<j)) && (joyHats[i] & (1<<j)))
+                               {
+                                       SETBUTTON(JoyHatMapping[i][j]);
+                               }
+                               else if((lastjoyHats[i] & (1<<j)) && !(joyHats[i] & (1<<j)))
+                               {
+                                       RESBUTTON(JoyHatMapping[i][j]);
+                               }
+                       }
+
+                       lastjoyHats[i] = joyHats[i];
+               }
+               
+
+        for(i=0; i<MAXJOYAXES;i++)
+        {
+            switch(JoyAxisMapping[i])
+            {
+                case analog_turning:
+                    {
+                     info->dyaw +=  (int32)((float)CONTROL_FilterDeadzone
+                                    (
+                                        _joystick_axis(i),
+                                        JoyAnalogDeadzone[i]
+                                    ) 
+                                        * JoyAnalogScale[i]
+                                    );
+                    }
+                   break;
+                case analog_strafing:
+                    {
+                        info->dx += (int32)((float)CONTROL_FilterDeadzone
+                                    (
+                                        _joystick_axis(i), 
+                                        JoyAnalogDeadzone[i]
+                                    )
+                                        * JoyAnalogScale[i]
+                                    );
+                                    //printf("Joy %d = %d\n", i, info->dx);
+                    }
+                   break;
+                case analog_lookingupanddown:
+                        info->dpitch += (int32)((float)CONTROL_FilterDeadzone
+                                    (
+                                        _joystick_axis(i), 
+                                        JoyAnalogDeadzone[i]
+                                    )
+                                        * JoyAnalogScale[i]
+                                    );
+                   break;
+                case analog_elevation: //STUB
+                   break;
+                case analog_rolling: //STUB
+                   break;
+                case analog_moving:
+                    {
+                        info->dz += (int32)((float)CONTROL_FilterDeadzone
+                                    (
+                                        _joystick_axis(i), 
+                                        JoyAnalogDeadzone[i]
+                                    )
+                                        * JoyAnalogScale[i]
+                                    );
+                    }
+                   break;
+                default:
+                    break;
+            }
+        }
+        for(i=0; i<MAXJOYBUTTONS;++i)
+        {
+            if(_joystick_button(i))
+            {
+                SETBUTTON(JoyButtonMapping[i]);
+            }
+            else
+            {
+                RESBUTTON(JoyButtonMapping[i]);
+            }
+        }
     }
 }
 
@@ -262,7 +410,15 @@ void CONTROL_Startup
    int32 ticspersecond
    )
 {
+    int i;
+
     _joystick_init();
+
+    for (i=0; i < MAXJOYHATS; i++)
+    {
+	    joyHats[i] = 0;
+	    lastjoyHats[i] = 0;
+    }
 }
 
 void CONTROL_Shutdown( void )
@@ -277,7 +433,10 @@ void CONTROL_MapAnalogAxis
    int32 whichanalog
    )
 {
-	STUBBED("CONTROL_MapAnalogAxis");
+    if(whichaxis < MAXJOYAXES)
+    {
+        JoyAxisMapping[whichaxis] = whichanalog;
+    }
 }
 
 
@@ -294,10 +453,52 @@ void CONTROL_MapDigitalAxis
 void CONTROL_SetAnalogAxisScale
    (
    int32 whichaxis,
-   int32 axisscale
+   float axisscale
    )
 {
-	STUBBED("CONTROL_SetAnalogAxisScale");
+    if(whichaxis < MAXJOYAXES)
+    {
+        // Set it... make sure we don't let them set it to 0.. div by 0 is bad.
+        JoyAnalogScale[whichaxis] = (axisscale == 0) ? 1.0f : axisscale;
+    }
+}
+
+void CONTROL_SetAnalogAxisDeadzone
+   (
+   int32 whichaxis,
+   int32 axisdeadzone
+   )
+{
+    if(whichaxis < MAXJOYAXES)
+    {
+        // Set it... 
+        JoyAnalogDeadzone[whichaxis] = axisdeadzone;
+    }
+}
+
+int32 CONTROL_FilterDeadzone
+   (
+   int32 axisvalue,
+   int32 axisdeadzone
+   )
+{
+    if((axisvalue < axisdeadzone) && (axisvalue > -axisdeadzone))
+    {
+        return 0;
+    }
+
+    return axisvalue;
+}
+
+int32 CONTROL_GetFilteredAxisValue(int32 axis)
+{
+return (int32)((float)CONTROL_FilterDeadzone
+                                    (
+                                        _joystick_axis(axis), 
+                                        JoyAnalogDeadzone[axis]
+                                    )
+                                        * JoyAnalogScale[axis]
+                                    );
 }
 
 void CONTROL_PrintAxes( void )
@@ -363,5 +564,15 @@ void    MOUSE_GetDelta( int32*x, int32*y  )
     if (y) *y = mouseRelativeY;
 
     mouseRelativeX = mouseRelativeY = 0;
+}
+
+void JOYSTICK_UpdateHats()
+{
+       int i;
+
+       for(i=0; i<MAXJOYHATS; i++)
+       {
+               joyHats[i] = _joystick_hat(i);
+       }
 }
 
