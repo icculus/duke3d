@@ -13,6 +13,7 @@
 #include <assert.h>
 
 #include "duke3d.h"
+#include "buildengine/cache1d.h"
 
 #if PLATFORM_DOS
 // Use the original Apogee Sound System libs instead.  --ryan.
@@ -498,6 +499,7 @@ int FX_Shutdown( void )
     fastReverb = 0;
     fx_initialized = 0;
     maxReverbDelay = 256;
+
     return(FX_Ok);
 } // FX_Shutdown
 
@@ -1233,7 +1235,73 @@ STUBBED("Need to use PlaySongROTT.  :(");
     return(MUSIC_Ok);
 } // MUSIC_PlaySong
 
-#ifdef ROTT
+
+extern char ApogeePath[256];
+
+// Duke3D-specific.  --ryan.
+void PlayMusic(char *_filename)
+{
+    //char filename[MAX_PATH];
+    //strcpy(filename, _filename);
+    //FixFilePath(filename);
+
+    char filename[MAX_PATH];
+    long handle;
+    long size;
+    void *song;
+    long rc;
+
+    MUSIC_StopSong();
+
+    // Read from a groupfile, write it to disk so SDL_mixer can read it.
+    //   Lame.  --ryan.
+    handle = kopen4load(_filename, 0);
+    if (handle == -1)
+        return;
+
+    size = kfilelength(handle);
+    if (size == -1)
+    {
+        kclose(handle);
+        return;
+    } // if
+
+    song = malloc(size);
+    if (song == NULL)
+    {
+        kclose(handle);
+        return;
+    } // if
+
+    rc = kread(handle, song, size);
+    kclose(handle);
+    if (rc != size)
+    {
+        free(song);
+        return;
+    } // if
+
+    // save the file somewhere, so SDL_mixer can load it
+    //GetPathFromEnvironment(filename, ApogeePath, "tmpsong.mid");
+    STUBBED("Write temp midi file to homedir/.duke3d");
+    handle = SafeOpenWrite("tmpsong.mid", filetype_binary);
+    
+    SafeWrite(handle, song, size);
+    close(handle);
+    free(song);
+    
+    //music_songdata = song;
+
+    music_musicchunk = Mix_LoadMUS("tmpsong.mid");
+    if (music_musicchunk != NULL)
+    {
+        // !!! FIXME: I set the music to loop. Hope that's okay. --ryan.
+        Mix_PlayMusic(music_musicchunk, -1);
+    } // if
+}
+
+
+#if ROTT
 // ROTT Special - SBF
 int MUSIC_PlaySongROTT(unsigned char *song, int size, int loopflag)
 {
@@ -1262,6 +1330,7 @@ int MUSIC_PlaySongROTT(unsigned char *song, int size, int loopflag)
     return(MUSIC_Ok);
 } // MUSIC_PlaySongROTT
 #endif
+
 
 void MUSIC_SetContext(int context)
 {
