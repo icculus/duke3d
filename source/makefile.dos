@@ -8,7 +8,7 @@ duke3d.exe : game.obj actors.obj gamedef.obj global.obj menues.obj player.obj &
 			a.obj mmulti.obj config.obj animlib.obj
 		wlink $(all) @makefile.lnk
 
-compileoptions = $(prod) $(debug) -imact
+compileoptions = $(prod) $(debug) -imact -dPLATFORM_DOS=1
 globaldependencies = makefile. duke3d.h global.c
 
 game.obj : game.c $(globaldependencies)

@@ -24,13 +24,16 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 */
 //-------------------------------------------------------------------------
 
+#if PLATFORM_DOS
 #include <conio.h>
+#include <dos.h>
+#endif
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <time.h>
-#include <dos.h>
 #include "duke3d.h"
 #include "scriplib.h"
 

@@ -24,24 +24,40 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 */
 //-------------------------------------------------------------------------
 
-#ifdef PLATFORM_UNIX
-#include "dukeunix.h"
-#endif
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <malloc.h>
 
-#ifdef PLATFORM_DOS
+#include <fcntl.h>
+#include <time.h>
+#include <ctype.h>
+
+#if (!defined MAX_PATH)
+  #if (defined MAXPATHLEN)
+    #define MAX_PATH MAXPATHLEN
+  #elif (defined PATH_MAX)
+    #define MAX_PATH PATH_MAX
+  #else
+    #define MAX_PATH 256
+  #endif
+#endif
+
+#if PLATFORM_DOS
 #include <dos.h>
 #include <bios.h>
 #include <io.h>
 #endif
 
-#include <fcntl.h>
-#include <time.h>
-#include <ctype.h>
+#if PLATFORM_UNIX
+#include "dukeunix.h"
+#endif
+
+#if PLATFORM_WIN32
+#include "dukewin.h"
+#endif
+
+
 #include "pragmas.h"
 #include "function.h"
 #include "build.h"
@@ -97,7 +113,6 @@ struct player_struct;
 
 #include "names.h"
 #include "funct.h"
-
 
 #define TICRATE (120)
 #define TICSPERFRAME (TICRATE/26)
@@ -267,7 +282,7 @@ typedef struct
     int  length, num;
 } SAMPLE;
 
-static struct animwalltype
+struct animwalltype
 {
         short wallnum;
         long tag;
@@ -282,7 +297,7 @@ extern long msx[2048],msy[2048];
 extern short cyclers[MAXCYCLERS][6],numcyclers;
 extern char myname[32];
 
-typedef struct user_defs
+struct user_defs
 {
     char god,warp_on,cashman,eog,showallmap;
     char show_help,scrollmode,clipping;
@@ -311,7 +326,7 @@ typedef struct user_defs
 
 };
 
-typedef struct player_orig
+struct player_orig
 {
     long ox,oy,oz;
     short oa,os;
@@ -326,7 +341,7 @@ void add_ammo( short, short, short, short );
 
 extern long fricxv,fricyv;
 
-typedef struct player_struct
+struct player_struct
 {
     long zoom,exitx,exity,loogiex[64],loogiey[64],numloogs,loogcnt;
     long posx, posy, posz, horiz, ohoriz, ohorizoff, invdisptime;
@@ -422,7 +437,7 @@ extern short camsprite;
 extern char inspace(short sectnum);
 
 
-typedef struct weaponhit
+struct weaponhit
 {
     char cgg;
     short picnum,ang,extra,owner,movflag;
@@ -460,7 +475,7 @@ extern long movefifoplc, vel,svel,angvel,horiz;
 
 extern short mirrorwall[64], mirrorsector[64], mirrorcnt;
 
-extern void TestCallBack(unsigned long);
+extern void TestCallBack(long);
 
 #define NUMKEYS 19
 

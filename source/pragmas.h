@@ -1547,7 +1547,7 @@ long divscale32(long i1, long i2);
         modify exact [eax edx]\
 
 /* !!! move these into ves.h?  --ryan. */
-#ifdef PLATFORM_DOS
+#if PLATFORM_DOS
 
 void int5(void);
 #pragma aux int5 =\
@@ -1763,7 +1763,7 @@ void qinterpolatedown16short(long *i1, long i2, long i3, long i4);
         modify exact [eax ebx ecx edx edi]\
 
 
-#if (defined PLATFORM_DOS)   /* !!! move this to dos_driver.c? */
+#if PLATFORM_DOS   /* !!! move this to dos_driver.c? */
 
 void setcolor16(int i1);
 #pragma aux setcolor16 =\
@@ -1773,7 +1773,7 @@ void setcolor16(int i1);
         parm [eax]\
         modify exact [eax edx]\
 
-#endif  /* defined PLATFORM_DOS */
+#endif  /* PLATFORM_DOS */
 
 
 void vlin16first(long i1, long i2);
@@ -1810,7 +1810,7 @@ void vlin16(long i1, long i2);
         parm [edi][ecx]\
         modify exact [ecx esi edi]\
 
-#if (defined PLATFORM_DOS)   /* !!! move this to dos_driver.c? */
+#if PLATFORM_DOS   /* !!! move this to dos_driver.c? */
 
 void drawpixel16(long offset);
 #pragma aux drawpixel16 =\
@@ -1856,7 +1856,7 @@ int kinp(long i);
         parm nomemory [edx]\
         modify exact [eax]\
 
-#endif  /* defined PLATFORM_DOS */
+#endif  /* PLATFORM_DOS */
 
 
 long mul3(long i1);
@@ -1958,7 +1958,7 @@ long kmax(long i1, long i2);
         parm nomemory [eax][ebx]\
         modify exact [eax]\
 
-#if (defined PLATFORM_DOS)  /* !!! move to dos_driver.c? */
+#if PLATFORM_DOS  /* !!! move to dos_driver.c? */
 void limitrate(void);
 #pragma aux limitrate =\
         "mov dx, 0x3da",\

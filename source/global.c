@@ -172,3 +172,224 @@ long oldipos[MAXINTERPOLATIONS];
 long bakipos[MAXINTERPOLATIONS];
 long *curipos[MAXINTERPOLATIONS];
 
+
+// portability stuff.  --ryan.
+
+void FixFilePath(char *filename)
+{
+#if PLATFORM_UNIX
+    char *ptr;
+    char *lastsep = filename;
+
+    if ((!filename) || (*filename == '\0'))
+        return;
+
+    if (access(filename, F_OK) == 0)  /* File exists; we're good to go. */
+        return;
+
+    for (ptr = filename; 1; ptr++)
+    {
+        if (*ptr == '\\')
+            *ptr = PATH_SEP_CHAR;
+
+        if ((*ptr == PATH_SEP_CHAR) || (*ptr == '\0'))
+        {
+            char pch = *ptr;
+            struct dirent *dent = NULL;
+            DIR *dir;
+
+            if ((pch == PATH_SEP_CHAR) && (*(ptr + 1) == '\0'))
+                return; /* eos is pathsep; we're done. */
+
+            if (lastsep == ptr)
+                continue;  /* absolute path; skip to next one. */
+
+            *ptr = '\0';
+            if (lastsep == filename) {
+                dir = opendir((*lastsep == PATH_SEP_CHAR) ? ROOTDIR : CURDIR);
+                
+                if (*lastsep == PATH_SEP_CHAR) {
+                    lastsep++;
+                }
+            } 
+            else
+            {
+                *lastsep = '\0';
+                dir = opendir(filename);
+                *lastsep = PATH_SEP_CHAR;
+                lastsep++;
+            }
+
+            if (dir == NULL)
+            {
+                *ptr = PATH_SEP_CHAR;
+                return;  /* maybe dir doesn't exist? give up. */
+            }
+
+            while ((dent = readdir(dir)) != NULL)
+            {
+                if (strcasecmp(dent->d_name, lastsep) == 0)
+                {
+                    /* found match; replace it. */
+                    strcpy(lastsep, dent->d_name);
+                    break;
+                }
+            }
+
+            closedir(dir);
+            *ptr = pch;
+            lastsep = ptr;
+
+            if (dent == NULL)
+                return;  /* no match. oh well. */
+
+            if (pch == '\0')  /* eos? */
+                return;
+        }
+    }
+#endif
+}
+
+
+#if PLATFORM_DOS
+ /* no-op. */
+
+#elif PLATFORM_WIN32
+int _dos_findfirst(char *filename, int x, struct find_t *f)
+{
+    long rc = _findfirst(filename, &f->data);
+    f->handle = rc;
+    if (rc != -1)
+    {
+        strncpy(f->name, f->data.name, sizeof (f->name) - 1);
+        f->name[sizeof (f->name) - 1] = '\0';
+        return(0);
+    }
+    return(1);
+}
+
+int _dos_findnext(struct find_t *f)
+{
+    int rc = 0;
+    if (f->handle == -1)
+        return(1);   /* invalid handle. */
+
+    rc = _findnext(f->handle, &f->data);
+    if (rc == -1)
+    {
+        _findclose(f->handle);
+        f->handle = -1;
+        return(1);
+    }
+
+    strncpy(f->name, f->data.name, sizeof (f->name) - 1);
+    f->name[sizeof (f->name) - 1] = '\0';
+    return(0);
+}
+
+#elif PLATFORM_UNIX 
+int _dos_findfirst(char *filename, int x, struct find_t *f)
+{
+    char *ptr;
+
+    if (strlen(filename) >= sizeof (f->pattern))
+        return(1);
+
+    strcpy(f->pattern, filename);
+    FixFilePath(f->pattern);
+    ptr = strrchr(f->pattern, PATH_SEP_CHAR);
+
+    if (ptr == NULL)
+    {
+        ptr = filename;
+        f->dir = opendir(CURDIR);
+    }
+    else
+    {
+        *ptr = '\0';
+        f->dir = opendir(f->pattern);
+        memmove(f->pattern, ptr + 1, strlen(ptr + 1) + 1);
+    }
+
+    return(_dos_findnext(f));
+}
+
+
+static int check_pattern_nocase(const char *x, const char *y)
+{
+    if ((x == NULL) || (y == NULL))
+        return(0);  /* not a match. */
+
+    while ((*x) && (*y))
+    {
+        if (*x == '*')
+            Error("Unexpected wildcard!");  /* FIXME? */
+
+        else if (*x == '?')
+        {
+            if (*y == '\0')
+                return(0);  /* anything but EOS is okay. */
+        }
+
+        else
+        {
+            if (toupper((int) *x) != toupper((int) *y))
+                return(0);  /* not a match. */
+        }
+
+        x++;
+        y++;
+    }
+
+    return(*x == *y);  /* it's a match (both should be EOS). */
+}
+
+int _dos_findnext(struct find_t *f)
+{
+    struct dirent *dent;
+
+    if (f->dir == NULL)
+        return(1);  /* no such dir or we're just done searching. */
+
+    while ((dent = readdir(f->dir)) != NULL)
+    {
+        if (check_pattern_nocase(f->pattern, dent->d_name))
+        {
+            if (strlen(dent->d_name) < sizeof (f->name))
+            {
+                strcpy(f->name, dent->d_name);
+                return(0);  /* match. */
+            }
+        }
+    }
+
+    closedir(f->dir);
+    f->dir = NULL;
+    return(1);  /* no match in whole directory. */
+}
+#else
+#error please define for your platform.
+#endif
+
+
+#if !PLATFORM_DOS
+void _dos_getdate(struct dosdate_t *date)
+{
+	time_t curtime = time(NULL);
+	struct tm *tm;
+	
+	if (date == NULL) {
+		return;
+	}
+	
+	memset(date, 0, sizeof(struct dosdate_t));
+	
+	if ((tm = localtime(&curtime)) != NULL) {
+		date->day = tm->tm_mday;
+		date->month = tm->tm_mon + 1;
+		date->year = tm->tm_year + 1900;
+		date->dayofweek = tm->tm_wday + 1;
+	}
+}
+#endif
+
