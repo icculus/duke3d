@@ -475,8 +475,8 @@ int32 SCRIPT_NumberEntries( int32 scripthandle, char * sectionname )
 		return 0;
 
 	node = script_headnode[scripthandle];
+	node = SCRIPT_findinchildren(node, sectionname);
 	if(!node) return 0;
-	node = SCRIPT_findinchildren(node,sectionname);
 
 	for(node=node->child; node ; node=node->sibling)
 	{
@@ -501,11 +501,11 @@ char * SCRIPT_Entry( int32 scripthandle, char * sectionname, int32 which )
 	char* val = NULL;
 
 	if(scripthandle >= MAX_SCRIPTS || scripthandle < 0)
-		return 0;
+		return "";
 
 	node = script_headnode[scripthandle];
-	if(!node) return 0;
 	node = SCRIPT_findinchildren(node,sectionname);
+	if(!node) return "";
 
 	for(node=node->child; node ; node=node->sibling, ++entrynum)
 	{
