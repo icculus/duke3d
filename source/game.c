@@ -999,12 +999,12 @@ void checksync(void)
       if (syncstat)
       {
           printext256(4L,130L,31,0,"Out Of Sync - Please restart game",0);
-          printext256(4L,138L,31,0,"RUN DN3DHELP.EXE for information.",0);
+          //printext256(4L,138L,31,0,"RUN DN3DHELP.EXE for information.",0);
       }
       if (syncstate)
       {
           printext256(4L,160L,31,0,"Missed Network packet!",0);
-          printext256(4L,138L,31,0,"RUN DN3DHELP.EXE for information.",0);
+          //printext256(4L,138L,31,0,"RUN DN3DHELP.EXE for information.",0);
       }
 }
 
