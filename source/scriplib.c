@@ -519,10 +519,12 @@ void SCRIPT_GetString
    char * dest
    )
 {
+    scriptnode_t *cur;
+
 	/* STUBBED("GetString"); */
 	if (scripthandle == -1) return;
 
-	scriptnode_t *cur = script_headnode[scripthandle];
+	cur = script_headnode[scripthandle];
 
 	cur = SCRIPT_findinchildren (cur, sectionname);
 	cur = SCRIPT_findinchildren (cur, entryname);
@@ -552,10 +554,12 @@ void SCRIPT_GetDoubleString
    char * dest2
    )
 {
+    scriptnode_t *cur;
+
 	/* STUBBED("GetDoubleString"); */
 	if (scripthandle == -1) return;
 
-	scriptnode_t *cur = script_headnode[scripthandle];
+	cur = script_headnode[scripthandle];
 
 	cur = SCRIPT_findinchildren (cur, sectionname);
 	cur = SCRIPT_findinchildren (cur, entryname);
@@ -585,10 +589,12 @@ boolean SCRIPT_GetNumber
    int32 * number
    )
 {
+	scriptnode_t *cur;
+
 	/* STUBBED("GetNumber"); */
 	if (scripthandle == -1) return false;
 
-	scriptnode_t *cur = script_headnode[scripthandle];
+	cur = script_headnode[scripthandle];
 
 	cur = SCRIPT_findinchildren (cur, sectionname);
 	cur = SCRIPT_findinchildren (cur, entryname);
