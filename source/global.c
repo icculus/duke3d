@@ -34,6 +34,10 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #include <endian.h>
 #endif
 
+#ifdef __sun
+#include <sys/byteorder.h>
+#endif
+
 #include "duke3d.h"
 
 char *mymembuf;
@@ -677,6 +681,12 @@ void SafeFree (void * ptr)
 
 #ifdef PLATFORM_WIN32
 #define BYTE_ORDER LITTLE_ENDIAN
+#endif
+
+#ifdef _LITTLE_ENDIAN
+#define BYTE_ORDER LITTLE_ENDIAN
+#elif defined(_BIG_ENDIAN)
+#define BYTE_ORDER BIG_ENDIAN
 #endif
 
 #ifndef BYTE_ORDER
