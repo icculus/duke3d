@@ -26,6 +26,7 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 
 #include "duke3d.h"
 #include "control.h"
+#include "mouse.h"
 
 //***************************************************************************
 //
@@ -183,5 +184,42 @@ void CONTROL_SetAnalogAxisScale
 void CONTROL_PrintAxes( void )
 {
 	STUBBED("CONTROL_PrintAxes");
+}
+
+boolean MOUSE_Init( void )
+{
+	STUBBED("MOUSE_Init");
+	return true;
+}
+
+void    MOUSE_Shutdown( void )
+{
+	STUBBED("MOUSE_Shutdown");
+}
+
+void    MOUSE_ShowCursor( void )
+{
+	STUBBED("MOUSE_ShowCursor");
+}
+
+void    MOUSE_HideCursor( void )
+{
+	STUBBED("MOUSE_HideCursor");
+}
+
+int32   MOUSE_GetButtons( void )
+{
+	STUBBED("MOUSE_GetButtons");
+	return 0;
+}
+
+void    MOUSE_GetPosition( int32*x, int32*y  )
+{
+	STUBBED("MOUSE_GetPosition");
+}
+
+void    MOUSE_GetDelta( int32*x, int32*y  )
+{
+	STUBBED("MOUSE_GetDelta");
 }
 
