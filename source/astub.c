@@ -261,7 +261,27 @@ long xvel, yvel, hvel, timeoff;
 
 static char once=0;
 
+void Ver()
+{
+ sprintf(tempbuf,"DUKE NUKEM BUILD: V032696");
+ if (qsetmode == 200)    //In 3D mode
+ { printext256(60*8,24*8,11,-1,tempbuf,1);
+   rotatesprite((320-8)<<16,(200-8)<<16,64<<9,0,SPINNINGNUKEICON+(((4-totalclock>>3))&7),0,0,0,0,0,xdim-1,ydim-1);
+ }else
+ { printext16(0,0,15,-1,tempbuf,0);
+ }
+}
 
+void PrintStatus(char *string,int num,char x,char y,char color)
+{
+     sprintf(tempbuf,"%s %d",string,num);
+     printext16(x*8,y*8,color,-1,tempbuf,0);
+}
+
+void SpriteName(short spritenum, char *lo2)
+{
+    sprintf(lo2,names[sprite[spritenum].picnum]);
+}// end SpriteName
 
 void ExtLoadMap(const char *mapname)
 {
@@ -1276,18 +1296,6 @@ void ExtEditSpriteData(short spritenum)   //F8
 
 }
 
-
-void PrintStatus(char *string,int num,char x,char y,char color)
-{
-     sprintf(tempbuf,"%s %d",string,num);
-     printext16(x*8,y*8,color,-1,tempbuf,0);
-}
-
-void SpriteName(short spritenum, char *lo2)
-{
-    sprintf(lo2,names[sprite[spritenum].picnum]);
-}// end SpriteName
-
 char GAMEpalette[768];
 char WATERpalette[768];
 char SLIMEpalette[768];
@@ -2204,17 +2212,6 @@ void faketimerhandler(void)
                 editstatus = 1;
                 sidemode = 2;
         }
-}
-
-void Ver()
-{
- sprintf(tempbuf,"DUKE NUKEM BUILD: V032696");
- if (qsetmode == 200)    //In 3D mode
- { printext256(60*8,24*8,11,-1,tempbuf,1);
-   rotatesprite((320-8)<<16,(200-8)<<16,64<<9,0,SPINNINGNUKEICON+(((4-totalclock>>3))&7),0,0,0,0,0,xdim-1,ydim-1);
- }else
- { printext16(0,0,15,-1,tempbuf,0);
- }
 }
 
 ActorMem(int i)
