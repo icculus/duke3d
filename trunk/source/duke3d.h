@@ -61,6 +61,10 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #include "dukewin.h"
 #endif
 
+#ifndef GCC_PACK1_EXT
+#define GCC_PACK1_EXT
+#endif
+
 #if USE_SDL
 #include "SDL.h"
 #include "SDL_mixer.h"
@@ -86,7 +90,9 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #ifdef VOLUMEONE
     #define BYTEVERSION 27
 #else
-    #define BYTEVERSION 116
+    // 116 is Duke 1.4, 117 is 1.5.  --ryan.
+    //#define BYTEVERSION 116
+    #define BYTEVERSION 117
 #endif
 
 #define NUMPAGES 1
@@ -272,12 +278,20 @@ enum USRHOOKS_Errors
    USRHOOKS_Ok      = 0
    };
 
+#if HAVE_PRAGMA_PACK
+#pragma pack(push, 1)
+#endif
 typedef struct
 {
-    signed char avel, horz;
-    short fvel, svel;
-    unsigned long bits;
+    signed char avel GCC_PACK1_EXT;
+    signed char horz GCC_PACK1_EXT;
+    short fvel GCC_PACK1_EXT;
+    short svel GCC_PACK1_EXT;
+    unsigned long bits GCC_PACK1_EXT;
 } input;
+#if HAVE_PRAGMA_PACK
+#pragma pack(pop)
+#endif
 
 /* !!! FIXME: "sync" is defined in unistd.h ... :(  --ryan. */
 #define sync duke_sync
