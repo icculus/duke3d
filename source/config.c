@@ -93,6 +93,7 @@ void CONFIG_GetSetupFilename( void )
    char extension[10];
    char * src;
    char * filenames[MAXSETUPFILES];
+   clock_t time;
    int32 numfiles;
    int32 i;
 
@@ -135,8 +136,7 @@ void CONFIG_GetSetupFilename( void )
       }
    if (numfiles>1)
       {
-      int32 time;
-      int32 oldtime;
+      clock_t oldtime;
       int32 count;
 
       printf("\nMultiple Configuration Files Encountered\n");
@@ -186,8 +186,8 @@ void CONFIG_GetSetupFilename( void )
    if (numfiles==1)
       strcpy (setupfilename, filenames[0]);
    printf("Using Setup file: '%s'\n",setupfilename);
-   i=clock()+(3*CLOCKS_PER_SEC/4);
-   while (clock()<i)
+   time=clock()+(3*CLOCKS_PER_SEC/4);
+   while (clock()<time)
       {
       ;
       }
