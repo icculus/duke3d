@@ -334,20 +334,12 @@ extern void SwapIntelLong(long *l);
 extern void SwapIntelShort(short *s);
 extern void SwapIntelLongArray(long *l, int num);
 extern void SwapIntelShortArray(short *s, int num);
-
-/*  uh...why are these here? --ryan.
-extern char *strlwr(char *s);
-extern char *strupr(char *s);
-extern char *itoa(int value, char *string, int radix);
-extern char *ltoa(long value, char *string, int radix);
-extern char *ultoa(unsigned long value, char *string, int radix);
-extern char getch(void);
-*/
-
 extern int setup_homedir(void);
 extern char CheckParm(char *check);
 extern void RegisterShutdownFunction(void (*shutdown)(void));
 extern void Shutdown(void);
+extern char *ltoa(long value, char *string, int radix);
+extern char *ultoa(unsigned long value, char *string, int radix);
 
 /* actors.c */
 extern void updateinterpolations(void);
