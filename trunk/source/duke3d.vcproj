@@ -27,7 +27,7 @@
 				ImproveFloatingPointConsistency="TRUE"
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="TRUE"
-				AdditionalIncludeDirectories="..\..\buildengine\SDL-1.2.5\include;..\..\buildengine\SDL_mixer-1.2.5;..\..\"
+				AdditionalIncludeDirectories="buildengine\SDL-1.2.5\include;buildengine\SDL_mixer-1.2.5;.\buildengine;.\buildengine"
 				PreprocessorDefinitions="NDEBUG;WIN32;_CONSOLE;USE_I386_ASM;PLATFORM_WIN32"
 				RuntimeLibrary="4"
 				DefaultCharIsUnsigned="TRUE"
@@ -47,7 +47,7 @@
 				OutputFile="./ReleaseVC7/duke3d.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="&quot;..\..\buildengine\SDL-1.2.5\lib&quot;;&quot;..\..\buildengine\SDL_mixer-1.2.5\lib&quot;"
+				AdditionalLibraryDirectories="&quot;buildengine\SDL-1.2.5\lib&quot;;&quot;buildengine\SDL_mixer-1.2.5\lib&quot;"
 				ProgramDatabaseFile=".\ReleaseVC7/Duke3dw32.pdb"
 				SubSystem="1"/>
 			<Tool
@@ -79,7 +79,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\buildengine\SDL-1.2.5\include;..\..\buildengine\SDL_mixer-1.2.5;..\..\"
+				AdditionalIncludeDirectories="buildengine\SDL-1.2.5\include;buildengine\SDL_mixer-1.2.5;.\buildengine"
 				PreprocessorDefinitions="_DEBUG;WIN32;_CONSOLE;USE_I386_ASM;PLATFORM_WIN32"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="5"
@@ -102,7 +102,7 @@
 				OutputFile="./DebugVC7/duke3d.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="&quot;..\..\buildengine\SDL-1.2.5\lib&quot;;&quot;..\..\buildengine\SDL_mixer-1.2.5\lib&quot;"
+				AdditionalLibraryDirectories="&quot;buildengine\SDL-1.2.5\lib&quot;;&quot;buildengine\SDL_mixer-1.2.5\lib&quot;"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\DebugVC7/Duke3dw32.pdb"
