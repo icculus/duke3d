@@ -99,7 +99,7 @@ LDLIBS = $(SDL_LDFLAGS) -lSDL -lSDL_mixer $(EXTRALDFLAGS)
 # !!! FIXME: Do we even need this? It doesn't fly on MacOS X.  --ryan.
 #LDLIBS += -Wl,-E
 
-all: duke3d
+all: duke3d build
 
 
 %.o : %.c
@@ -134,9 +134,12 @@ duke3d: 	\
 	audiolib/audiolib.a
 	$(CC) $^ $(BUILDOBJS) $(LDLIBS) -o $@
 
+build: astub.o
+	$(CC) $^ $(BUILDOBJS) buildengine/build.o $(LDLIBS) -o $@
+
 clean:
 	$(MAKE) -C audiolib clean
-	rm -rf duke3d *.o
+	rm -rf duke3d build *.o
 
 distclean: clean
 	$(MAKE) -C audiolib distclean
