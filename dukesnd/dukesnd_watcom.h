@@ -60,6 +60,7 @@ extern "C" {
  *     Have fun, and good luck!   --ryan.  (icculus@clutteredmind.org)
  */
 
+
 #endif /* __WATCOMC__ */
 #endif /* _SDL_syms_for_watcom_h_ */
 
