@@ -110,11 +110,16 @@ void CONFIG_GetSetupFilename( void )
       {
       do
          {
-         filenames[numfiles]=SafeMalloc(128);
-         strcpy(filenames[numfiles],fblock.name);
-         numfiles++;
-         if (numfiles == MAXSETUPFILES)
-            break;
+         // skip timidity.cfg if it exists; it's needed for MIDI playback
+         //  with SDL_mixer, and isn't a Duke configuration file. --ryan.
+         if (strcmpi(fblock.name, "timidity.cfg") != 0)
+            {
+             filenames[numfiles]=SafeMalloc(128);
+             strcpy(filenames[numfiles],fblock.name);
+             numfiles++;
+             if (numfiles == MAXSETUPFILES)
+                break;
+            }
          }
       while(!_dos_findnext(&fblock));
       }
