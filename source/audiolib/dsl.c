@@ -169,7 +169,7 @@ int   DSL_BeginBufferedPlayback( char *BufferStart,
 	if (MixMode & STEREO) chunksize *= 2;
 */
 	
-	if (Mix_OpenAudio(SampleRate, format, channels, 256) < 0) {
+	if (Mix_OpenAudio(SampleRate, format, channels, chunksize) < 0) {
 		DSL_SetErrorCode(DSL_MixerInitFailure);
 		
 		return DSL_Error;
