@@ -336,7 +336,15 @@ static int check_pattern_nocase(const char *x, const char *y)
     while ((*x) && (*y))
     {
         if (*x == '*')
-            Error("Unexpected wildcard!");  /* FIXME? */
+        {
+            x++;
+            while (*y != '\0')
+            {
+                if (toupper((int) *x) == toupper((int) *y))
+                    break;
+                y++;
+            }
+        }
 
         else if (*x == '?')
         {
