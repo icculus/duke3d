@@ -1553,9 +1553,9 @@ static void non3dr_menus(void)
                     menutext(c,20+16,SHX(-1),PHX(-1),"MOVEMENT");
                     menutext(c,20+16+16,SHX(-2),PHX(-2),"MORE MOVEMENT");
                     menutext(c,20+16+16+16,SHX(-3),PHX(-3),"ACTIONS");
-                    menutext(c,20+16+16+16+16,SHX(-4),PHX(-4),"WEAPONS");
-                    menutext(c,20+16+16+16+16+16,SHX(-5),PHX(-5),"ITEMS");
-                    menutext(c,20+16+16+16+16+16+16,SHX(-6),PHX(-6),"MISC");
+                    menutext(c,20+16+16+16+16,SHX(-4),PHX(-4),"WEAPON SELECT");
+                    menutext(c,20+16+16+16+16+16,SHX(-5),PHX(-5),"INVENTORY");
+                    menutext(c,20+16+16+16+16+16+16,SHX(-6),PHX(-6),"MISCELLANEOUS");
                     break;
             }
             break;
@@ -1604,8 +1604,10 @@ static void non3dr_menus(void)
                 { "OPEN OR USE", gamefunc_Open },
                 { "QUICK KICK", gamefunc_Quick_Kick },
                 { "180 TURN", gamefunc_TurnAround },
-                { "HOLSTER WEAPON" ,gamefunc_Holster_Weapon },
                 { "VIEW MAP", gamefunc_Map },
+                { "HOLSTER WEAPON" ,gamefunc_Holster_Weapon },
+                { "PREVIOUS WEAPON", gamefunc_Previous_Weapon },
+                { "NEXT WEAPON", gamefunc_Next_Weapon }
             };
 
             DoKeybindMenu("ACTIONS", keybinds, ALEN(keybinds), MENU_CONTROLS);
@@ -1616,23 +1618,19 @@ static void non3dr_menus(void)
         {
             static KeyBinds keybinds[] =
             {
-                { "PREVIOUS WEAPON", gamefunc_Previous_Weapon },
-                { "NEXT WEAPON", gamefunc_Next_Weapon },
-/*
-   gamefunc_Weapon_1,
-   gamefunc_Weapon_2,
-   gamefunc_Weapon_3,
-   gamefunc_Weapon_4,
-   gamefunc_Weapon_5,
-   gamefunc_Weapon_6,
-   gamefunc_Weapon_7,
-   gamefunc_Weapon_8,
-   gamefunc_Weapon_9,
-   gamefunc_Weapon_10,
-*/
+                { "KICK", gamefunc_Weapon_1 },
+                { "PISTOL", gamefunc_Weapon_2 },
+                { "SHOTGUN", gamefunc_Weapon_3 },
+                { "RIPPER", gamefunc_Weapon_4 },
+                { "RPG", gamefunc_Weapon_5 },
+                { "PIPEBOMB", gamefunc_Weapon_6 },
+                { "SHRINK RAY", gamefunc_Weapon_7 },
+                { "DEVASTATOR", gamefunc_Weapon_8 },
+                { "TRIP BOMP", gamefunc_Weapon_9 },
+                { "FREEZER", gamefunc_Weapon_10 }
             };
 
-            DoKeybindMenu("WEAPONS", keybinds, ALEN(keybinds), MENU_CONTROLS);
+            DoKeybindMenu("WEAPON SELECT", keybinds, ALEN(keybinds), MENU_CONTROLS);
             break;
         }
 
@@ -1650,7 +1648,7 @@ static void non3dr_menus(void)
                 { "USE STEROIDS", gamefunc_Steroids }
             };
 
-            DoKeybindMenu("ITEMS", keybinds, ALEN(keybinds), MENU_CONTROLS);
+            DoKeybindMenu("INVENTORY", keybinds, ALEN(keybinds), MENU_CONTROLS);
             break;
         }
 
@@ -1667,7 +1665,7 @@ static void non3dr_menus(void)
                 { "TOGGLE CROSSHAIR", gamefunc_Toggle_Crosshair },
             };
 
-            DoKeybindMenu("MISC", keybinds, ALEN(keybinds), MENU_CONTROLS);
+            DoKeybindMenu("MISCELLANEOUS", keybinds, ALEN(keybinds), MENU_CONTROLS);
             break;
         }
 #endif
