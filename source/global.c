@@ -28,6 +28,7 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include <errno.h>
 
 #include "duke3d.h"
 
@@ -185,6 +186,7 @@ long *curipos[MAXINTERPOLATIONS];
 
 
 // portability stuff.  --ryan.
+// A good portion of this was ripped from GPL'd Rise of the Triad.  --ryan.
 
 void FixFilePath(char *filename)
 {
@@ -405,7 +407,6 @@ void _dos_getdate(struct dosdate_t *date)
 #endif
 
 
-// Ripped from GPL'd Rise of the Triad.  --ryan.
 int FindDistance2D(int ix, int iy)
 {
   int   t;
@@ -425,7 +426,6 @@ int FindDistance2D(int ix, int iy)
   return (ix - (ix>>5) - (ix>>7)  + (t>>2) + (t>>6));
 }
 
-// Ripped from GPL'd Rise of the Triad.  --ryan.
 int FindDistance3D(int ix, int iy, int iz)
 {
    int   t;
@@ -453,7 +453,6 @@ int FindDistance3D(int ix, int iy, int iz)
    return (ix - (ix>>4) + (t>>2) + (t>>3));
 }
 
-// Ripped from GPL'd Rise of the Triad.  --ryan.
 void Error (char *error, ...)
 {
    char msgbuf[300];
@@ -475,3 +474,140 @@ void Error (char *error, ...)
    exit (1);
 }
 
+
+int32 SafeOpenAppend (const char *_filename, int32 filetype)
+{
+	int	handle;
+    char filename[MAX_PATH];
+    strncpy(filename, _filename, sizeof (filename));
+    filename[sizeof (filename) - 1] = '\0';
+    FixFilePath(filename);
+
+	handle = open(filename,O_RDWR | O_BINARY | O_CREAT | O_APPEND
+	, S_IREAD | S_IWRITE);
+
+	if (handle == -1)
+		Error ("Error opening for append %s: %s",filename,strerror(errno));
+
+	return handle;
+}
+
+int32 SafeOpenWrite (const char *_filename, int32 filetype)
+{
+	int	handle;
+    char filename[MAX_PATH];
+    strncpy(filename, _filename, sizeof (filename));
+    filename[sizeof (filename) - 1] = '\0';
+    FixFilePath(filename);
+
+	handle = open(filename,O_RDWR | O_BINARY | O_CREAT | O_TRUNC
+	, S_IREAD | S_IWRITE);
+
+	if (handle == -1)
+		Error ("Error opening %s: %s",filename,strerror(errno));
+
+	return handle;
+}
+
+int32 SafeOpenRead (const char *_filename, int32 filetype)
+{
+	int	handle;
+    char filename[MAX_PATH];
+    strncpy(filename, _filename, sizeof (filename));
+    filename[sizeof (filename) - 1] = '\0';
+    FixFilePath(filename);
+
+	handle = open(filename,O_RDONLY | O_BINARY);
+
+	if (handle == -1)
+		Error ("Error opening %s: %s",filename,strerror(errno));
+
+	return handle;
+}
+
+
+void SafeRead (int32 handle, void *buffer, int32 count)
+{
+	unsigned	iocount;
+
+	while (count)
+	{
+		iocount = count > 0x8000 ? 0x8000 : count;
+		if (read (handle,buffer,iocount) != (int)iocount)
+			Error ("File read failure reading %ld bytes",count);
+		buffer = (void *)( (byte *)buffer + iocount );
+		count -= iocount;
+	}
+}
+
+
+void SafeWrite (int32 handle, void *buffer, int32 count)
+{
+	unsigned	iocount;
+
+	while (count)
+	{
+		iocount = count > 0x8000 ? 0x8000 : count;
+		if (write (handle,buffer,iocount) != (int)iocount)
+			Error ("File write failure writing %ld bytes",count);
+		buffer = (void *)( (byte *)buffer + iocount );
+		count -= iocount;
+	}
+}
+
+void SafeWriteString (int handle, char * buffer)
+{
+	unsigned	iocount;
+
+   iocount=strlen(buffer);
+	if (write (handle,buffer,iocount) != (int)iocount)
+			Error ("File write string failure writing %s\n",buffer);
+}
+
+void *SafeMalloc (long size)
+{
+	void *ptr;
+
+#if 0
+   if (zonememorystarted==false)
+      Error("Called SafeMalloc without starting zone memory\n");
+	ptr = Z_Malloc (size,PU_STATIC,NULL);
+#else
+    ptr = malloc(size);
+#endif
+
+	if (!ptr)
+      Error ("SafeMalloc failure for %lu bytes",size);
+
+	return ptr;
+}
+
+void *SafeLevelMalloc (long size)
+{
+	void *ptr;
+
+#if 0
+   if (zonememorystarted==false)
+      Error("Called SafeLevelMalloc without starting zone memory\n");
+   ptr = Z_LevelMalloc (size,PU_STATIC,NULL);
+#else
+    ptr = malloc(size);
+#endif
+
+	if (!ptr)
+      Error ("SafeLevelMalloc failure for %lu bytes",size);
+
+	return ptr;
+}
+
+void SafeFree (void * ptr)
+{
+   if ( ptr == NULL )
+      Error ("SafeFree : Tried to free a freed pointer\n");
+
+#if 0
+	Z_Free (ptr);
+#else
+    free(ptr);
+#endif
+}
