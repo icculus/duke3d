@@ -54,4 +54,9 @@ void _dos_getdate(struct dosdate_t *date);
 
 #define FP_OFF(x) ((long) (x))
 
+#define strcmpi(x, y) strcasecmp(x, y)
+
+// 64 megs should be enough for anybody.  :)  --ryan.
+#define Z_AvailHeap() ((64 * 1024) * 1024)
+
 #endif

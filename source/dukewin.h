@@ -44,4 +44,7 @@ void _dos_getdate(struct dosdate_t *date);
 #endif
 #define FP_OFF(x) ((long) (x))
 
+// 64 megs should be enough for anybody.  :)  --ryan.
+#define Z_AvailHeap() ((64 * 1024) * 1024)
+
 #endif
