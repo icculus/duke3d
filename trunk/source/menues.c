@@ -1543,7 +1543,7 @@ static void non3dr_menus(void)
                 { "JUMP", gamefunc_Jump },
                 { "CROUCH", gamefunc_Crouch },
                 { "RUN", gamefunc_Strafe_Left },
-                { "AUTORUN", gamefunc_Strafe_Right },
+                { "RUNLOCK", gamefunc_Strafe_Right },
                 { "AIM UP", gamefunc_Aim_Up },
                 { "AIM DOWN", gamefunc_Aim_Down },
                 { "CENTER VIEW", gamefunc_Center_View },
@@ -1561,10 +1561,9 @@ static void non3dr_menus(void)
                 { "FIRE OR ATTACK", gamefunc_Fire },
                 { "OPEN OR USE", gamefunc_Open },
                 { "QUICK KICK", gamefunc_Quick_Kick },
-                { "TURN AROUND", gamefunc_TurnAround },
+                { "180 TURN", gamefunc_TurnAround },
                 { "HOLSTER WEAPON" ,gamefunc_Holster_Weapon },
                 { "VIEW MAP", gamefunc_Map },
-                { "CHAT MESSAGE", gamefunc_SendMessage },
             };
 
             DoKeybindMenu("ACTIONS", keybinds, ALEN(keybinds), MENU_CONTROLS);
@@ -1575,8 +1574,8 @@ static void non3dr_menus(void)
         {
             static KeyBinds keybinds[] =
             {
-                { "NEXT WEAPON", gamefunc_Next_Weapon },
                 { "PREVIOUS WEAPON", gamefunc_Previous_Weapon },
+                { "NEXT WEAPON", gamefunc_Next_Weapon },
 /*
    gamefunc_Weapon_1,
    gamefunc_Weapon_2,
@@ -1600,8 +1599,8 @@ static void non3dr_menus(void)
             static KeyBinds keybinds[] =
             {
                 { "INVENTORY", gamefunc_Inventory },
-                { "NEXT ITEM", gamefunc_Inventory_Right },
                 { "PREVIOUS ITEM", gamefunc_Inventory_Left },
+                { "NEXT ITEM", gamefunc_Inventory_Right },
                 { "USE HOLODUKE", gamefunc_Holo_Duke},
                 { "USE JETPACK", gamefunc_Jetpack },
                 { "USE NIGHTVISION", gamefunc_NightVision },
@@ -1622,6 +1621,7 @@ static void non3dr_menus(void)
                 { "SHOW WEAPONS", gamefunc_Show_Opponents_Weapon },
                 { "MAP FOLLOW MODE", gamefunc_Map_Follow_Mode },
                 { "SEE COOP VIEW", gamefunc_See_Coop_View },
+                { "CHAT MESSAGE", gamefunc_SendMessage },
                 { "TOGGLE CROSSHAIR", gamefunc_Toggle_Crosshair },
             };
 
