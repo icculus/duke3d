@@ -260,6 +260,7 @@ void intomenusounds(void)
 
 void playmusic(char *fn)
 {
+#if PLATFORM_DOS
     short      fp;
     long        l;
 
@@ -281,6 +282,10 @@ void playmusic(char *fn)
     kread( fp, MusicPtr, l);
     kclose( fp );
     MUSIC_PlaySong( MusicPtr, MUSIC_LoopSong );
+#else
+    // the SDL_mixer version does more or less this same thing.  --ryan.
+    PlayMusic(fn);
+#endif
 }
 
 char loadsound(unsigned short num)
