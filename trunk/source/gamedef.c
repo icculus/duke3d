@@ -1523,7 +1523,7 @@ void loadefs(char *filenam,char *mptr)
     }
 
     fp = kopen4load(filenam,loadfromgrouponly);
-    if( fp == 0 )
+    if( fp <= 0 )
     {
         if( loadfromgrouponly == 1 )
             gameexit("\nMissing con file(s).");
