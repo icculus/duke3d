@@ -50,6 +50,9 @@ void SoundShutdown( void );
 void MusicStartup( void );
 void MusicShutdown( void );
 
+/* sounds.c */
+void clearsoundlocks(void);
+
 /* dunno where this came from; I added it. --ryan. */
 void testcallback(unsigned long num);
 
