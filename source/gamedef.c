@@ -1132,7 +1132,11 @@ char parsecommand(void)
                     break;
                 }
             }
+#ifdef PLATFORM_UNIX
+            volume_names[j][i] = '\0';
+#else
             volume_names[j][i-1] = '\0';
+#endif
             return 0;
         case 108:
             scriptptr--;
@@ -1500,7 +1504,11 @@ void loadefs(char *filenam,char *mptr)
         kclose(fp);
     }
 
+#ifdef PLATFORM_UNIX
+    textptr[fs - 1] = 0;
+#else
     textptr[fs - 2] = 0;
+#endif
 
     clearbuf(actorscrptr,MAXSPRITES,0L);
     clearbufbyte(actortype,MAXSPRITES,0L);
