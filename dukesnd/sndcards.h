@@ -1,40 +1,37 @@
-/*
- * This is temporary, since I'm missing headers. It's based on Dose's
- *  notes, and may be incomplete AND incorrect to boot.
- *
- *  Written by Ryan C. Gordon (icculus@linuxgames.com) ...
- */
+/**********************************************************************
+   module: SNDCARDS.H
 
-#ifndef _INCLUDE_SNDCARDS_H_
-#define _INCLUDE_SNDCARDS_H_
+   author: James R. Dos‚
+   phone:  (214)-271-1365 Ext #221
+   date:   March 31, 1994
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+   Contains enumerated type definitions for sound cards.
+
+   (c) Copyright 1994 James R. Dos‚.  All Rights Reserved.
+**********************************************************************/
+
+#ifndef __SNDCARDS_H
+#define __SNDCARDS_H
+
+#define ASS_VERSION_STRING "1.07"
 
 typedef enum
-{
-    SoundBlaster,
-    ProAudioSpectrum,
-    SoundMan16,
-    Adlib,
-    GenMidi,
-    SoundCanvas,
-    Awe32,
-    WaveBlaster,
-    SoundScape,
-    UltraSound,
-    SoundSource,
-    TandySoundSource,
-    PC,
-    NumSoundCards
-} soundcardnames;
-
-#ifdef __cplusplus
-}
-#endif
+   {
+//   ASS_NoSound,
+   SoundBlaster,
+   ProAudioSpectrum,
+   SoundMan16,
+   Adlib,
+   GenMidi,
+   SoundCanvas,
+   Awe32,
+   WaveBlaster,
+   SoundScape,
+   UltraSound,
+   SoundSource,
+   TandySoundSource,
+   PC,
+   NumSoundCards
+   } soundcardnames;
 
 #endif
-
-// end of sndcards.h ...
-
