@@ -521,7 +521,7 @@ void readsavenames(void)
 {
     long dummy;
     short i;
-    char *fn = {"game_.sav"};
+    char fn[] = "game_.sav";
     FILE *fil;
 
     for (i=0;i<10;i++)
