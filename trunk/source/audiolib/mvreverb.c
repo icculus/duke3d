@@ -8,9 +8,14 @@ void MV_16BitReverb( const char *src, char *dest, const VOLUME16 *volume, int co
 	short *pdest = (short *)dest;
 	
 	for (i = 0; i < count; i++) {
-		int sl = src[i*2+PLATFORM_BIGENDIAN];
-		int sh = src[i*2+PLATFORM_LITTLEENDIAN] ^ 0x80;
-		
+        #if PLATFORM_BIGENDIAN
+		int sl = src[i*2+1];
+		int sh = src[i*2+0] ^ 0x80;
+        #else
+		int sl = src[i*2+0];
+		int sh = src[i*2+1] ^ 0x80;
+		#endif
+
 		sl = (*volume)[sl] >> 8;
 		sh = (*volume)[sh];
 		
