@@ -154,6 +154,7 @@ static void SCRIPT_recursivefree (scriptnode_t *node)
 	}
 
 	SCRIPT_freenode (node);
+	node = NULL;
 }
 
 static void SCRIPT_addsibling (scriptnode_t *node, scriptnode_t *sibling)
