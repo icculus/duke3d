@@ -6961,7 +6961,13 @@ void Logo(void)
     nextpage();
 #endif
 
+
+#if 1  // ryan stubbed this.
+    STUBBED("PlayMusic?!");
+#else
     PlayMusic(&env_music_fn[0][0]);
+#endif
+
     for(i=0;i<64;i+=7) palto(0,0,0,i);
     ps[myconnectindex].palette = drealms;
     palto(0,0,0,63);

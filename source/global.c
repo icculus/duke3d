@@ -863,11 +863,21 @@ char   CheckParm (char *check)
     return(0);
 }
 
+
+static void (*shutdown_func)(void) = NULL;
+
 void RegisterShutdownFunction( void (* shutdown) (void) )
 {
-    // !!! FIXME: This might be really wrong.
-    STUBBED("might be bad behaviour");
-    atexit(shutdown);
+    shutdown_func = shutdown;
+}
+
+void Shutdown(void)
+{
+    if (shutdown_func != NULL)
+    {
+        shutdown_func();
+        shutdown_func = NULL;
+    }
 }
 
 
