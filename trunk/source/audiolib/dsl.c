@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "dsl.h"
+#include "util.h"
 
 #include "SDL.h"
 #include "SDL_mixer.h"
@@ -12,17 +13,18 @@ static int DSL_ErrorCode = DSL_Ok;
 
 static int mixer_initialized;
 
-static void ( *CallBackFuncx )( void );
+static void ( *_CallBackFunc )( void );
 static volatile char *_BufferStart;
 static int _BufferSize;
 static int _NumDivisions;
 static int _SampleRate;
+static int _remainder;
 
 static Mix_Chunk *blank;
+static unsigned char *blank_buf;
 
 /*
 possible todo ideas: cache sdl/sdl mixer error messages.
-better chunksizes for larger sampling rates.
 */
 
 char *DSL_ErrorString( int ErrorNumber )
@@ -86,23 +88,44 @@ static void mixer_callback(int chan, void *stream, int len, void *udata)
 {
 	Uint8 *stptr;
 	Uint8 *fxptr;
-
+	int copysize;
+	
 	/* len should equal _BufferSize, else this is screwed up */
 
 	stptr = (Uint8 *)stream;
 	
+	if (_remainder > 0) {
+		copysize = min(len, _remainder);
+		
+		fxptr = (Uint8 *)(&_BufferStart[MV_MixPage * 
+			_BufferSize]);
+		
+		memcpy(stptr, fxptr+(_BufferSize-_remainder), copysize);
+		
+		len -= copysize;
+		_remainder -= copysize;
+		
+		stptr += copysize;
+	}
+	
 	while (len > 0) {
-		CallBackFuncx();
+		/* new buffer */
+		
+		_CallBackFunc();
 		
 		fxptr = (Uint8 *)(&_BufferStart[MV_MixPage * 
 			_BufferSize]);
 
-		memcpy(stptr, fxptr, _BufferSize);
+		copysize = min(len, _BufferSize);
 		
-		len -= _BufferSize;
+		memcpy(stptr, fxptr, copysize);
 		
-		stptr += _BufferSize;
+		len -= copysize;
+		
+		stptr += copysize;
 	}
+	
+	_remainder = len;
 }
 
 int   DSL_BeginBufferedPlayback( char *BufferStart,
@@ -112,27 +135,36 @@ int   DSL_BeginBufferedPlayback( char *BufferStart,
 	Uint16 format;
 	Uint8 *tmp;
 	int channels;
-	
+	int chunksize;
+		
 	if (mixer_initialized) {
 		DSL_SetErrorCode(DSL_MixerActive);
 		
 		return DSL_Error;
 	}
 	
-	CallBackFuncx = CallBackFunc;
+	_CallBackFunc = CallBackFunc;
 	_BufferStart = BufferStart;
 	_BufferSize = (BufferSize / NumDivisions);
 	_NumDivisions = NumDivisions;
 	_SampleRate = SampleRate;
 
+	_remainder = 0;
+	
 	format = (MixMode & SIXTEEN_BIT) ? AUDIO_S16LSB : AUDIO_U8;
 	channels = (MixMode & STEREO) ? 2 : 1;
 
+/*
+	23ms is typically ideal (11025,22050,44100)
+*/
+	
+	chunksize = 256;
+	
+	if (SampleRate >= 16000) chunksize *= 2;
+	if (SampleRate >= 32000) chunksize *= 2;
+	
 /*	
 // SDL mixer does this already
-
-	chunksize = 256;
-
 	if (MixMode & SIXTEEN_BIT) chunksize *= 2;
 	if (MixMode & STEREO) chunksize *= 2;
 */
@@ -150,8 +182,10 @@ int   DSL_BeginBufferedPlayback( char *BufferStart,
 	Mix_RegisterEffect(0, mixer_callback, NULL, NULL);
 	
 	/* create a dummy sample just to allocate that channel */
-	tmp = (Uint8 *)calloc(1, 4096);
-	blank = Mix_QuickLoad_RAW(tmp, 4096);
+	blank_buf = (Uint8 *)malloc(4096);
+	memset(blank_buf, 0, 4096);
+	
+	blank = Mix_QuickLoad_RAW(blank_buf, 4096);
 		
 	Mix_PlayChannel(0, blank, -1);
 	
@@ -162,11 +196,21 @@ int   DSL_BeginBufferedPlayback( char *BufferStart,
 
 void DSL_StopPlayback( void )
 {
+	if (mixer_initialized) {
+		Mix_HaltChannel(0);
+	}
+	
 	if (blank != NULL) {
 		Mix_FreeChunk(blank);
 	}
 	
 	blank = NULL;
+	
+	if (blank_buf  != NULL) {
+		free(blank_buf);
+	}
+	
+	blank_buf = NULL;
 	
 	if (mixer_initialized) {
 		Mix_CloseAudio();
