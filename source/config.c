@@ -89,6 +89,10 @@ static int32 setupread=0;
 #define MAXSETUPFILES 20
 void CONFIG_GetSetupFilename( void )
    {
+ // this isn't hooked up to read from stdin, so skip it on Unix for now. --ryan.
+#if PLATFORM_UNIX
+   GetPathFromEnvironment(setupfilename, 128, SETUPFILENAME);
+#else
    struct find_t fblock;
    char extension[10];
    char * src;
@@ -195,6 +199,7 @@ void CONFIG_GetSetupFilename( void )
       {
       SafeFree(filenames[i]);
       }
+#endif
    }
 
 /*
@@ -796,4 +801,11 @@ void CONFIG_WriteSetup( void )
    SCRIPT_Save (scripthandle, setupfilename);
    SCRIPT_Free (scripthandle);
    }
+
+
+void CONFIG_PutString( char *sectionname, char *entryname, char *string )
+{
+    if (!setupread) return;
+    SCRIPT_PutString(scripthandle, sectionname, entryname, string);
+}
 
