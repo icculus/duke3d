@@ -147,7 +147,7 @@ void CONTROL_MapButton
 
 void CONTROL_DefineFlag( int32 which, boolean toggle )
 {
-	STUBBED("CONTROL_DefineFlag");
+	// STUBBED("CONTROL_DefineFlag");
 }
 
 boolean CONTROL_FlagActive( int32 which )
