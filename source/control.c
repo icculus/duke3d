@@ -68,13 +68,13 @@ static void SETBUTTON(int i)
 	if (i < 32) {
 		b = 1 << i;
 		
-		CONTROL_ButtonHeldState1 |= b;
+		CONTROL_ButtonState1 |= b;
 	} else {
 		i -= 32;
 		
 		b = 1 << i;
 		
-		CONTROL_ButtonHeldState2 |= b;
+		CONTROL_ButtonState2 |= b;
 	}
 }
 
@@ -85,13 +85,13 @@ static void RESBUTTON(int i)
 	if (i < 32) {
 		b = 1 << i;
 		
-		CONTROL_ButtonHeldState1 &= ~b;
+		CONTROL_ButtonState1 &= ~b;
 	} else {
 		i -= 32;
 		
 		b = 1 << i;
 		
-		CONTROL_ButtonHeldState2 &= ~b;
+		CONTROL_ButtonState2 &= ~b;
 	}
 }
 
@@ -113,7 +113,7 @@ void CONTROL_UpdateKeyboardState(int key, int pressed)
 				RESBUTTON(i);
 			}
 		}
-	}
+	}	
 }
 
 void CONTROL_MapKey( int32 which, kb_scancode key1, kb_scancode key2 )
