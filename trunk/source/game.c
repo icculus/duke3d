@@ -6990,7 +6990,7 @@ void Logo(void)
     nextpage();
 #endif
 
-    PlayMusic(&env_music_fn[0][0]);
+    playmusic(&env_music_fn[0][0]);
 
     for(i=0;i<64;i+=7) palto(0,0,0,i);
     ps[myconnectindex].palette = drealms;
@@ -7206,10 +7206,19 @@ void Startup(void)
    if(networkmode == 255)
        networkmode = 1;
 
+#ifdef PLATFORM_DOS
    puts("Checking music inits.");
    MusicStartup();
    puts("Checking sound inits.");
    SoundStartup();
+#else
+   /* SBF - wasn't sure if swapping them would harm anything. */
+   puts("Checking sound inits.");
+   SoundStartup();
+   puts("Checking music inits.");
+   MusicStartup();
+#endif
+
    loadtmb();
 }
 
