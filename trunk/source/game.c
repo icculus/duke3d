@@ -2037,8 +2037,11 @@ void gameexit(char *msg)
         if(true)
         {
             if(*t == ' ' && *(t+1) == 0) *t = 0;
-            printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-            printf("%s%s","\n",t);
+            #if PLATFORM_DOS   // Is there a good reason for this? --ryan.
+            printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+            #else
+            printf("\n\n%s",t);
+            #endif
         }
 // CTW END - MODIFICATION        
     }
