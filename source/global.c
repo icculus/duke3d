@@ -864,7 +864,7 @@ char   CheckParm (char *check)
     int i;
     for (i = 1; i < _argc; i++)
     {
-        if (strcmpi(_argv[i], check) == 0)
+        if ((*check == '-') && (strcmpi(_argv[i], check + 1) == 0))
             return(i);
     }
 
