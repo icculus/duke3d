@@ -11,6 +11,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <assert.h>
+#include "dukesnd_watcom.h"
 #include "SDL.h"
 #include "SDL_mixer.h"
 #include "fx_man.h"
@@ -45,6 +46,10 @@ static int maxReverbDelay = 256;
 static int mixerIsStereo = 1;
 static duke_channel_info *chaninfo = NULL;
 
+
+#ifdef __WATCOMC__
+#pragma aux (__cdecl) channelDoneCallback;
+#endif
 
 // This function is called whenever an SDL_mixer channel completes playback.
 //  We use this for state management and calling the application's callback.

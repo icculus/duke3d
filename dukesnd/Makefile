@@ -130,6 +130,9 @@ all: $(SNDDLL)
 
 $(SNDDLL) : $(SNDOBJS)
 	$(LINKER) -shared -o $(SNDDLL) $(LDFLAGS) $(SNDOBJS)
+ifneq ($(strip $(cygwin)),true)
+	perl -w ./watcom_sdl_syms.pl $(SNDDLL) > dukesnd_watcom.h
+endif
 
 else
 
