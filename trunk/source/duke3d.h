@@ -78,10 +78,21 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #include "buildengine/build.h"
 #include "function.h"
 
-#define VOLUMEALL
-#define PLUTOPAK
+//#define VOLUMEALL
+//#define PLUTOPAK
 // #define VOLUMEONE
 // #define ONELEVELDEMO
+
+// Make sure something is defined here (although this is usually
+//  handled in the makefile now). --ryan.
+#if ((!defined VOLUMEALL) && (!defined VOLUMEONE))
+#define VOLUMEALL
+#endif
+
+// Define plutopak if volumeall. --ryan.
+#if (defined VOLUMEALL)
+#define PLUTOPAK
+#endif
 
 // #define TEN
 // #define BETA
