@@ -593,6 +593,24 @@ void *SafeMalloc (long size)
 	return ptr;
 }
 
+void SafeRealloc (void **x, int32 size)
+{
+	void *ptr;
+
+#if 0
+   if (zonememorystarted==false)
+      Error("Called SafeMalloc without starting zone memory\n");
+	ptr = Z_Malloc (size,PU_STATIC,NULL);
+#else
+    ptr = realloc(*x, size);
+#endif
+
+	if (!ptr)
+      Error ("SafeRealloc failure for %lu bytes",size);
+
+    *x = ptr;
+}
+
 void *SafeLevelMalloc (long size)
 {
 	void *ptr;
