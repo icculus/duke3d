@@ -72,7 +72,7 @@ int32 ScreenMode;
 int32 ScreenWidth;
 int32 ScreenHeight;
 
-static char setupfilename[128]={SETUPFILENAME};
+static char setupfilename[128];
 static int32 scripthandle;
 static int32 setupread=0;
 /*
@@ -92,7 +92,7 @@ void CONFIG_GetSetupFilename( void )
    int32 numfiles;
    int32 i;
 
-   strcpy(setupfilename,SETUPFILENAME);
+   GetPathFromEnvironment(setupfilename, 128, SETUPFILENAME);
 
    // determine extension
 
@@ -526,13 +526,16 @@ void readsavenames(void)
 {
     long dummy;
     short i;
-    char fn[] = "game_.sav";
+    char filename[] = "game_.sav";
+    char fullname[128];
     FILE *fil;
 
     for (i=0;i<10;i++)
     {
-        fn[4] = i+'0';
-        if ((fil = fopen(fn,"rb")) == NULL ) continue;
+        filename[4] = i+'0';
+        GetPathFromEnvironment(fullname, 128, filename);
+
+        if ((fil = fopen(fullname,"rb")) == NULL ) continue;
         dfread(&dummy,4,1,fil);
 
         if(dummy != BYTEVERSION) return;

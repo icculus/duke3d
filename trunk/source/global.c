@@ -188,6 +188,7 @@ long oldipos[MAXINTERPOLATIONS];
 long bakipos[MAXINTERPOLATIONS];
 long *curipos[MAXINTERPOLATIONS];
 
+static char ApogeePath[256];
 
 // portability stuff.  --ryan.
 // A good portion of this was ripped from GPL'd Rise of the Triad.  --ryan.
@@ -578,6 +579,12 @@ void SafeWrite (int32 handle, void *buffer, int32 count)
 	}
 }
 
+
+void GetPathFromEnvironment( char *fullname, int32 length, const char *filename )
+{
+	snprintf(fullname, length-1, "%s%s", ApogeePath, filename);
+}
+
 void SafeWriteString (int handle, char * buffer)
 {
 	unsigned	iocount;
@@ -842,8 +849,6 @@ char getch(void)
 	getchar();
 	return 0;
 }
-
-char ApogeePath[256];
 
 int setup_homedir (void)
 {

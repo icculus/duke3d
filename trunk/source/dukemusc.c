@@ -376,9 +376,8 @@ void PlayMusic(char *_filename)
     } // if
 
     // save the file somewhere, so SDL_mixer can load it
-    //GetPathFromEnvironment(filename, ApogeePath, "tmpsong.mid");
-    STUBBED("Write temp midi file to homedir/.duke3d");
-    handle = SafeOpenWrite("tmpsong.mid", filetype_binary);
+    GetPathFromEnvironment(filename, MAX_PATH, "tmpsong.mid");
+    handle = SafeOpenWrite(filename, filetype_binary);
     
     SafeWrite(handle, song, size);
     close(handle);
@@ -386,7 +385,7 @@ void PlayMusic(char *_filename)
     
     //music_songdata = song;
 
-    music_musicchunk = Mix_LoadMUS("tmpsong.mid");
+    music_musicchunk = Mix_LoadMUS(filename);
     if (music_musicchunk != NULL)
     {
         // !!! FIXME: I set the music to loop. Hope that's okay. --ryan.
@@ -405,7 +404,7 @@ int MUSIC_PlaySongROTT(unsigned char *song, int size, int loopflag)
     MUSIC_StopSong();
 
     // save the file somewhere, so SDL_mixer can load it
-    GetPathFromEnvironment(filename, ApogeePath, "tmpsong.mid");
+    GetPathFromEnvironment(filename, MAX_PATH, "tmpsong.mid");
     handle = SafeOpenWrite(filename);
     
     SafeWrite(handle, song, size);

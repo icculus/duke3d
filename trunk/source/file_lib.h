@@ -144,12 +144,12 @@ void SaveFile ( const char * filename, void * bufferptr, int32 count );
 //
 //                          fullname - final string containing entire path
 //
-//                          envname - string naming enivronment variable
+//                          length - size of the fullname variable
 //
 //                          filename - standard filename
 //
 //==========================================================================
-void GetPathFromEnvironment( char *fullname, const char *envname, const char *filename );
+void GetPathFromEnvironment( char *fullname, int32 length, const char *filename );
 
 //==========================================================================
 //

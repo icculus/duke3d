@@ -7175,6 +7175,8 @@ void Startup(void)
 
    KB_Startup();
 
+   setup_homedir();
+
    CONFIG_GetSetupFilename();
    CONFIG_ReadSetup();
 

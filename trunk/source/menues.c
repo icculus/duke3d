@@ -148,13 +148,15 @@ static int loadpheader(char spot,int32 *vn,int32 *ln,int32 *psk,int32 *nump)
 {
 
      long i;
-         char fn[] = "game0.sav";
-         long fil;
+     char filename[] = "game0.sav";
+     char fullname[128];
+     long fil;
      long bv;
 
-         fn[4] = spot+'0';
+     filename[4] = spot+'0';
+     GetPathFromEnvironment(fullname, 128, filename);
 
-     if ((fil = kopen4load(fn,0)) == -1) return(-1);
+     if ((fil = kopen4load(fullname,0)) == -1) return(-1);
 
      walock[MAXTILES-3] = 255;
 
@@ -188,6 +190,7 @@ int loadplayer(signed char spot)
      short k,music_changed;
      char fn[] = "game0.sav";
      char mpfn[] = "gameA_00.sav";
+     char fullname[128];
      char *fnptr, scriptptrs[MAXSCRIPTSIZE];
      long fil, bv, i, j, x;
      int32 nump;
@@ -202,7 +205,6 @@ int loadplayer(signed char spot)
 
      if( multiflag == 2 && multiwho != myconnectindex )
      {
-         fnptr = mpfn;
          mpfn[4] = spot + 'A';
 
          if(ud.multimode > 9)
@@ -211,11 +213,16 @@ int loadplayer(signed char spot)
              mpfn[7] = (multiwho%10) + '0';
          }
          else mpfn[7] = multiwho + '0';
+
+         GetPathFromEnvironment(fullname, 128, mpfn);
+         fnptr = fullname;
      }
      else
      {
-        fnptr = fn;
         fn[4] = spot + '0';
+
+        GetPathFromEnvironment(fullname, 128, fn);
+        fnptr = fullname;
      }
 
      if ((fil = kopen4load(fnptr,0)) == -1) return(-1);
@@ -503,10 +510,11 @@ int loadplayer(signed char spot)
 int saveplayer(signed char spot)
 {
      long i, j;
-         char fn[] = "game0.sav";
+     char fn[] = "game0.sav";
      char mpfn[] = "gameA_00.sav";
+     char fullname[128];
      char *fnptr,scriptptrs[MAXSCRIPTSIZE];
-         FILE *fil;
+     FILE *fil;
      long bv = BYTEVERSION;
 
      if(spot < 0)
@@ -521,7 +529,6 @@ int saveplayer(signed char spot)
 
      if( multiflag == 2 && multiwho != myconnectindex )
      {
-         fnptr = mpfn;
          mpfn[4] = spot + 'A';
 
          if(ud.multimode > 9)
@@ -530,11 +537,16 @@ int saveplayer(signed char spot)
              mpfn[7] = multiwho + '0';
          }
          else mpfn[7] = multiwho + '0';
+
+         GetPathFromEnvironment(fullname, 128, mpfn);
+         fnptr = fullname;
      }
      else
      {
-        fnptr = fn;
         fn[4] = spot + '0';
+
+        GetPathFromEnvironment(fullname, 128, fn);
+        fnptr = fullname;
      }
 
      if ((fil = fopen(fnptr,"wb")) == 0) return(-1);
