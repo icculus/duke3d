@@ -31,7 +31,7 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 /* this should be a proper prototype included from a header file */
 extern int stricmp(const char *x, const char *y);
 
-extern char inputloc;
+extern short inputloc;
 extern int recfilep;
 extern char vgacompatible;
 short probey=0,lastprobey=0,last_menu,globalskillsound=-1;
