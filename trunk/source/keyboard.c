@@ -117,7 +117,7 @@ char KB_Getch( void )
     while (!keyIsWaiting) { _idle(); /* pull the pud. */ }
 	keyIsWaiting = false;
     if (KB_LastScan >= MAXKEYBOARDSCAN)
-        return(0);
+        return(0xFF);
 
     if (KB_KeyDown[sc_LeftShift] || KB_KeyDown[sc_RightShift])
         return shiftedScancodeToASCII[KB_LastScan];
@@ -295,7 +295,7 @@ boolean KB_KeypadActive( void )
 
 void KB_Startup( void )
 {
-    memset(scancodeToASCII, '\0', sizeof (scancodeToASCII));
+    memset(scancodeToASCII, 0xFF, sizeof (scancodeToASCII));
 
     // !!! FIXME: incomplete?
     scancodeToASCII[sc_A] = 'a';
@@ -357,7 +357,7 @@ void KB_Startup( void )
     scancodeToASCII[sc_kpad_Plus] = '+';
 
     // !!! FIXME: incomplete?
-    memset(shiftedScancodeToASCII, '\0', sizeof (shiftedScancodeToASCII));
+    memset(shiftedScancodeToASCII, 0xFF, sizeof (shiftedScancodeToASCII));
     shiftedScancodeToASCII[sc_A] = 'A';
     shiftedScancodeToASCII[sc_B] = 'B';
     shiftedScancodeToASCII[sc_C] = 'C';
