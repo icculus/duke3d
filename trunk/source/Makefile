@@ -76,6 +76,7 @@ duke3d: 	\
 	game.o \
 	gamedef.o \
 	global.o \
+	keyboard.o \
 	menues.o \
 	player.o \
 	premap.o \
