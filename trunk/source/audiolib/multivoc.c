@@ -540,7 +540,8 @@ void MV_ServiceVoc
 
       MV_BufferEmpty[ MV_MixPage ] = FALSE;
 
-      MV_MixFunction( voice, MV_MixPage );
+      if (MV_MixFunction != NULL)
+        MV_MixFunction( voice, MV_MixPage );
 
       next = voice->next;
 
