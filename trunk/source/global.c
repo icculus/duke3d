@@ -860,10 +860,10 @@ int setup_homedir (void)
 #ifdef DC
 	strcpy (ApogeePath, "/ram/");
 #elif PLATFORM_UNIX
+    char *cfgpath;
 	int err;
 
 #if PLATFORM_MACOSX
-    char *cfgpath;
 	snprintf (ApogeePath, sizeof (ApogeePath), "%s/Library/", getenv ("HOME"));
 	mkdir (ApogeePath, S_IRWXU);
 	snprintf (ApogeePath, sizeof (ApogeePath), "%s/Library/Application Support/", getenv ("HOME"));
