@@ -1,7 +1,7 @@
 #----------------------------------------------------------------------------
 # Makefile for building DUKESND on Unix/Cygwin systems.
 #
-#  Written by Ryan C. Gordon (icculus@linuxgames.com)
+#  Written by Ryan C. Gordon (icculus@clutteredmind.org)
 #----------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------#
