@@ -3,7 +3,7 @@
 #-----------------------------------------------------------------------------#
 
 beos := false
-use_asm := true
+#use_asm := true
 
 #-----------------------------------------------------------------------------#
 # If this makefile fails to detect Cygwin correctly, or you want to force

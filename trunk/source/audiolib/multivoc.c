@@ -592,6 +592,17 @@ void MV_ServiceRightGus( char **ptr, unsigned long *length )
 
    Interperate the information of a VOC format sound file.
 ---------------------------------------------------------------------*/
+static inline unsigned int get_le32(void *p0)
+{
+	unsigned char *p = p0;
+	return p[0] | (p[1]<<8) | (p[2]<<16) | (p[3]<<24);
+}
+
+static inline unsigned int get_le16(void *p0)
+{
+	unsigned char *p = p0;
+	return p[0] | (p[1]<<8);
+}
 
 playbackstatus MV_GetNextVOCBlock
    (
@@ -657,8 +668,11 @@ playbackstatus MV_GetNextVOCBlock
          break;
          }
 
-      blocktype = ( int )*ptr;
-      blocklength = ( *( unsigned long * )( ptr + 1 ) ) & 0x00ffffff;
+      {
+      unsigned tmp = get_le32(ptr);
+      blocktype = tmp&255;
+      blocklength = tmp>>8;
+      }
       ptr += 4;
 
       switch( blocktype )
@@ -737,7 +751,7 @@ playbackstatus MV_GetNextVOCBlock
             // Repeat begin
             if ( voice->LoopEnd == NULL )
                {
-               voice->LoopCount = *( unsigned short * )ptr;
+               voice->LoopCount = get_le16(ptr);
                voice->LoopStart = ptr + blocklength;
                }
             ptr += blocklength;
@@ -770,7 +784,7 @@ playbackstatus MV_GetNextVOCBlock
          case 8 :
             // Extended block
             voice->bits  = 8;
-            tc = *( unsigned short * )ptr;
+            tc = get_le16(ptr);
             packtype = *( ptr + 2 );
             voicemode = *( ptr + 3 );
             ptr += blocklength;
@@ -778,10 +792,10 @@ playbackstatus MV_GetNextVOCBlock
 
          case 9 :
             // New sound data block
-            samplespeed = *( unsigned long * )ptr;
-            BitsPerSample = ( unsigned )*( ptr + 4 );
-            Channels = ( unsigned )*( ptr + 5 );
-            Format = ( unsigned )*( unsigned short * )( ptr + 6 );
+            samplespeed = get_le32(ptr);
+            BitsPerSample = ptr[4];
+            Channels = ptr[5];
+            Format = get_le16(ptr+6);
 
             if ( ( BitsPerSample == 8 ) && ( Channels == 1 ) &&
                ( Format == VOC_8BIT ) )
