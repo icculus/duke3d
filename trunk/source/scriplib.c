@@ -95,7 +95,6 @@ static void SCRIPT_freenode (scriptnode_t *node)
 	free (node->sibling);
 	free (node->child);
 	free (node);
-	node = NULL;
 }
 
 static void SCRIPT_writenode (scriptnode_t *node, FILE *fp)
@@ -146,10 +145,12 @@ static void SCRIPT_recursivefree (scriptnode_t *node)
 	/* Free dependant nodes first */
 	if (node->child) {
 		SCRIPT_recursivefree (node->child);
+		node->child = NULL;
 	}
 
 	if (node->sibling) {
 		SCRIPT_recursivefree (node->sibling);
+		node->sibling = NULL;
 	}
 
 	SCRIPT_freenode (node);
