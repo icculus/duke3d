@@ -158,8 +158,6 @@ const char *CONTROL_GetMappingName(int32 which)
 
 void CONTROL_MapKey( int32 which, kb_scancode key1, kb_scancode key2 )
 {
-	// STUBBED("CONTROL_MapKey");
-	
 	KeyMapping[which].key_active = true;
 	KeyMapping[which].key1 = key1;
 	KeyMapping[which].key2 = key2;
