@@ -65,6 +65,10 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 
 #define TIMERUPDATESIZ 32
 
+/* this should be a proper prototype included from a header file */
+extern int stricmp(const char *x, const char *y);
+extern int sgn(int);
+
 long cameradist = 0, cameraclock = 0;
 char eightytwofifty = 0;
 char playerswhenstarted;
@@ -952,7 +956,7 @@ void caches(void)
      for(i=0;i<cacnum;i++)
           if ((*cac[i].lock) >= 200)
           {
-                sprintf(tempbuf,"Locked- %ld: Leng:%ld, Lock:%ld",i,cac[i].leng,*cac[i].lock);
+                sprintf(tempbuf,"Locked- %d: Leng:%ld, Lock:%d",i,cac[i].leng,*cac[i].lock);
                 printext256(0L,k,31,-1,tempbuf,1); k += 6;
           }
 
@@ -961,7 +965,7 @@ void caches(void)
      for(i=1;i<11;i++)
           if (lumplockbyte[i] >= 200)
           {
-                sprintf(tempbuf,"RTS Locked %ld:",i);
+                sprintf(tempbuf,"RTS Locked %d:",i);
                 printext256(0L,k,31,-1,tempbuf,1); k += 6;
           }
 
@@ -1220,7 +1224,7 @@ void myospal(long x, long y, short tilenum, signed char shade, char orientation,
 void invennum(long x,long y,char num1,char ha,char sbits)
 {
     char dabuf[80] = {0};
-    sprintf(dabuf,"%ld",num1);
+    sprintf(dabuf,"%d",num1);
     if(num1 > 99)
     {
         rotatesprite((x-4)<<16,y<<16,65536L,0,THREEBYFIVE+dabuf[0]-'0',ha,0,sbits,0,0,xdim-1,ydim-1);
@@ -1322,14 +1326,14 @@ void weapon_amounts(struct player_struct *p,long x,long y,long u)
 
      if (u&4)
      {
-         if (u != 0xffffffff) patchstatusbar(96,178,96+12,178+6);
+         if ((unsigned long)u != 0xffffffff) patchstatusbar(96,178,96+12,178+6);
          weaponnum999(PISTOL_WEAPON,x,y,
                      p->ammo_amount[PISTOL_WEAPON],max_ammo_amount[PISTOL_WEAPON],
                      12-20*(cw == PISTOL_WEAPON) );
      }
      if (u&8)
      {
-         if (u != 0xffffffff) patchstatusbar(96,184,96+12,184+6);
+         if ((unsigned long)u != 0xffffffff) patchstatusbar(96,184,96+12,184+6);
          weaponnum999(SHOTGUN_WEAPON,x,y+6,
                      p->ammo_amount[SHOTGUN_WEAPON],max_ammo_amount[SHOTGUN_WEAPON],
                      (!p->gotweapon[SHOTGUN_WEAPON]*9)+12-18*
@@ -1337,7 +1341,7 @@ void weapon_amounts(struct player_struct *p,long x,long y,long u)
      }
      if (u&16)
      {
-         if (u != 0xffffffff) patchstatusbar(96,190,96+12,190+6);
+         if ((unsigned long)u != 0xffffffff) patchstatusbar(96,190,96+12,190+6);
          weaponnum999(CHAINGUN_WEAPON,x,y+12,
                       p->ammo_amount[CHAINGUN_WEAPON],max_ammo_amount[CHAINGUN_WEAPON],
                       (!p->gotweapon[CHAINGUN_WEAPON]*9)+12-18*
@@ -1345,7 +1349,7 @@ void weapon_amounts(struct player_struct *p,long x,long y,long u)
      }
      if (u&32)
      {
-         if (u != 0xffffffff) patchstatusbar(135,178,135+8,178+6);
+         if ((unsigned long)u != 0xffffffff) patchstatusbar(135,178,135+8,178+6);
          weaponnum(RPG_WEAPON,x+39,y,
                   p->ammo_amount[RPG_WEAPON],max_ammo_amount[RPG_WEAPON],
                   (!p->gotweapon[RPG_WEAPON]*9)+12-19*
@@ -1353,7 +1357,7 @@ void weapon_amounts(struct player_struct *p,long x,long y,long u)
      }
      if (u&64)
      {
-         if (u != 0xffffffff) patchstatusbar(135,184,135+8,184+6);
+         if ((unsigned long)u != 0xffffffff) patchstatusbar(135,184,135+8,184+6);
          weaponnum(HANDBOMB_WEAPON,x+39,y+6,
                      p->ammo_amount[HANDBOMB_WEAPON],max_ammo_amount[HANDBOMB_WEAPON],
                      (((!p->ammo_amount[HANDBOMB_WEAPON])|(!p->gotweapon[HANDBOMB_WEAPON]))*9)+12-19*
@@ -1361,7 +1365,7 @@ void weapon_amounts(struct player_struct *p,long x,long y,long u)
      }
      if (u&128)
      {
-         if (u != 0xffffffff) patchstatusbar(135,190,135+8,190+6);
+         if ((unsigned long)u != 0xffffffff) patchstatusbar(135,190,135+8,190+6);
 
 #ifdef VOLUMEONE
          orderweaponnum(SHRINKER_WEAPON,x+39,y+12,
@@ -1383,7 +1387,7 @@ void weapon_amounts(struct player_struct *p,long x,long y,long u)
      }
      if (u&256)
      {
-         if (u != 0xffffffff) patchstatusbar(166,178,166+8,178+6);
+         if ((unsigned long)u != 0xffffffff) patchstatusbar(166,178,166+8,178+6);
 
 #ifdef VOLUMEONE
         orderweaponnum(DEVISTATOR_WEAPON,x+70,y,
@@ -1399,7 +1403,7 @@ void weapon_amounts(struct player_struct *p,long x,long y,long u)
      }
      if (u&512)
      {
-         if (u != 0xffffffff) patchstatusbar(166,184,166+8,184+6);
+         if ((unsigned long)u != 0xffffffff) patchstatusbar(166,184,166+8,184+6);
 #ifdef VOLUMEONE
          orderweaponnum(TRIPBOMB_WEAPON,x+70,y+6,
                      p->ammo_amount[TRIPBOMB_WEAPON],max_ammo_amount[TRIPBOMB_WEAPON],
@@ -1415,7 +1419,7 @@ void weapon_amounts(struct player_struct *p,long x,long y,long u)
 
      if (u&65536L)
      {
-         if (u != 0xffffffff) patchstatusbar(166,190,166+8,190+6);
+         if ((unsigned long)u != 0xffffffff) patchstatusbar(166,190,166+8,190+6);
 #ifdef VOLUMEONE
         orderweaponnum(-1,x+70,y+12,
                      p->ammo_amount[FREEZE_WEAPON],max_ammo_amount[FREEZE_WEAPON],
@@ -1634,7 +1638,7 @@ void coolgaugetext(short snum)
             }
             invennum(284-30-o,200-6,(char)i,0,10+permbit);
             if (j > 0) minitext(288-30-o,180,"ON",0,10+16+permbit);
-            else if (j != 0x80000000) minitext(284-30-o,180,"OFF",2,10+16+permbit);
+            else if ((unsigned long)j != 0x80000000) minitext(284-30-o,180,"OFF",2,10+16+permbit);
             if (p->inven_icon >= 6) minitext(284-35-o,180,"AUTO",2,10+16+permbit);
         }
         return;
@@ -1687,7 +1691,7 @@ void coolgaugetext(short snum)
     //15 - update kills
     //16 - update FREEZE_WEAPON ammo
 
-    if (u == 0xffffffff)
+    if ((unsigned long)u == 0xffffffff)
     {
         patchstatusbar(0,0,320,200);
         if (ud.multimode > 1 && ud.coop != 1)
@@ -1697,7 +1701,7 @@ void coolgaugetext(short snum)
     {
         if (u&32768)
         {
-            if (u != 0xffffffff) patchstatusbar(276,183,299,193);
+            if ((unsigned long)u != 0xffffffff) patchstatusbar(276,183,299,193);
             digitalnumber(287,200-17,max(p->frag-p->fraggedself,0),-16,10+16+128);
         }
     }
@@ -1705,7 +1709,7 @@ void coolgaugetext(short snum)
     {
         if (u&16384)
         {
-            if (u != 0xffffffff) patchstatusbar(275,182,299,194);
+            if ((unsigned long)u != 0xffffffff) patchstatusbar(275,182,299,194);
             if (p->got_access&4) rotatesprite(275<<16,182<<16,65536L,0,ACCESS_ICON,0,23,10+16+128,0,0,xdim-1,ydim-1);
             if (p->got_access&2) rotatesprite(288<<16,182<<16,65536L,0,ACCESS_ICON,0,21,10+16+128,0,0,xdim-1,ydim-1);
             if (p->got_access&1) rotatesprite(281<<16,189<<16,65536L,0,ACCESS_ICON,0,0,10+16+128,0,0,xdim-1,ydim-1);
@@ -1715,20 +1719,20 @@ void coolgaugetext(short snum)
 
     if (u&1)
     {
-        if (u != 0xffffffff) patchstatusbar(20,183,43,193);
+        if ((unsigned long)u != 0xffffffff) patchstatusbar(20,183,43,193);
         if(sprite[p->i].pal == 1 && p->last_extra < 2)
             digitalnumber(32,200-17,1,-16,10+16+128);
         else digitalnumber(32,200-17,p->last_extra,-16,10+16+128);
     }
     if (u&2)
     {
-        if (u != 0xffffffff) patchstatusbar(52,183,75,193);
+        if ((unsigned long)u != 0xffffffff) patchstatusbar(52,183,75,193);
         digitalnumber(64,200-17,p->shield_amount,-16,10+16+128);
     }
 
     if (u&1024)
     {
-        if (u != 0xffffffff) patchstatusbar(196,183,219,193);
+        if ((unsigned long)u != 0xffffffff) patchstatusbar(196,183,219,193);
         if (p->curr_weapon != KNEE_WEAPON)
         {
             if (p->curr_weapon == HANDREMOTE_WEAPON) i = HANDBOMB_WEAPON; else i = p->curr_weapon;
@@ -1738,7 +1742,7 @@ void coolgaugetext(short snum)
 
     if (u&(2048+4096+8192))
     {
-        if (u != 0xffffffff)
+        if ((unsigned long)u != 0xffffffff)
         {
             if (u&(2048+4096)) { patchstatusbar(231,179,265,197); }
                               else { patchstatusbar(250,190,261,195); }
@@ -1773,7 +1777,7 @@ void coolgaugetext(short snum)
                     default: j = 0x80000000;
                 }
                 if (j > 0) minitext(288-30-o,180,"ON",0,10+16+permbit);
-                else if (j != 0x80000000) minitext(284-30-o,180,"OFF",2,10+16+permbit);
+                else if ((unsigned long)j != 0x80000000) minitext(284-30-o,180,"OFF",2,10+16+permbit);
             }
             if (u&8192)
             {
@@ -1831,21 +1835,21 @@ void coords(short snum)
     printext256(250L,y+7L,31,-1,tempbuf,1);
     sprintf(tempbuf,"Z= %ld",ps[snum].posz);
     printext256(250L,y+14L,31,-1,tempbuf,1);
-    sprintf(tempbuf,"A= %ld",ps[snum].ang);
+    sprintf(tempbuf,"A= %d",ps[snum].ang);
     printext256(250L,y+21L,31,-1,tempbuf,1);
     sprintf(tempbuf,"ZV= %ld",ps[snum].poszv);
     printext256(250L,y+28L,31,-1,tempbuf,1);
-    sprintf(tempbuf,"OG= %ld",ps[snum].on_ground);
+    sprintf(tempbuf,"OG= %d",ps[snum].on_ground);
     printext256(250L,y+35L,31,-1,tempbuf,1);
-    sprintf(tempbuf,"AM= %ld",ps[snum].ammo_amount[GROW_WEAPON]);
+    sprintf(tempbuf,"AM= %d",ps[snum].ammo_amount[GROW_WEAPON]);
     printext256(250L,y+43L,31,-1,tempbuf,1);
-    sprintf(tempbuf,"LFW= %ld",ps[snum].last_full_weapon);
+    sprintf(tempbuf,"LFW= %d",ps[snum].last_full_weapon);
     printext256(250L,y+50L,31,-1,tempbuf,1);
-    sprintf(tempbuf,"SECTL= %ld",sector[ps[snum].cursectnum].lotag);
+    sprintf(tempbuf,"SECTL= %d",sector[ps[snum].cursectnum].lotag);
     printext256(250L,y+57L,31,-1,tempbuf,1);
     sprintf(tempbuf,"SEED= %ld",randomseed);
     printext256(250L,y+64L,31,-1,tempbuf,1);
-    sprintf(tempbuf,"THOLD= %ld",ps[snum].transporter_hold);
+    sprintf(tempbuf,"THOLD= %d",ps[snum].transporter_hold);
     printext256(250L,y+64L+7,31,-1,tempbuf,1);
 }
 
@@ -2119,8 +2123,8 @@ short strget(short x,short y,char *t,short dalen,short c)
     {
         char b[41],ii;
         for(ii=0;ii<inputloc;ii++)
-            b[ii] = '*';
-        b[ii] = 0;
+            b[(int)ii] = '*';
+        b[(int)ii] = 0;
         x = gametext(x,y,b,c,2+8+16);
     }
     else x = gametext(x,y,t,c,2+8+16);
@@ -2182,7 +2186,7 @@ void typemode(void)
                      }
                      else
                      {
-                         sprintf(buf,"      %ld - %s",i+1,ud.user_name[i]);
+                         sprintf(buf,"      %d - %s",i+1,ud.user_name[i]);
                          minitextshade((320>>1)-40-6+1,j+1,buf,26,0,2+8+16);
                          minitext((320>>1)-40-6,j,buf,0,2+8+16); j += 7;
                      }
@@ -3164,9 +3168,9 @@ char wallswitchcheck(short i)
 long tempwallptr;
 short spawn( short j, short pn )
 {
-    short i, s, startwall, endwall, sect, clostest;
-    long x, y, d;
-    spritetype *sp;
+    short i=0, s=0, startwall=0, endwall=0, sect=0, clostest=0;
+    long x=0l, y=0l, d=0l;
+    spritetype *sp=NULL;
 
     if(j >= 0)
     {
@@ -3979,7 +3983,7 @@ short spawn( short j, short pn )
                 break;
 
             case WATERDRIP:
-                if(j >= 0 && sprite[j].statnum == 10 || sprite[j].statnum == 1)
+                if(j >= 0 && (sprite[j].statnum == 10 || sprite[j].statnum == 1))
                 {
                     sp->shade = 32;
                     if(sprite[j].pal != 1)
@@ -5736,8 +5740,8 @@ void cheats(void)
              return;
           }
 
-          cheatbuf[cheatbuflen++] = ch;
-          cheatbuf[cheatbuflen] = 0;
+          cheatbuf[(int)cheatbuflen++] = ch;
+          cheatbuf[(int)cheatbuflen] = 0;
 
           if(cheatbuflen > 11)
           {
@@ -6265,8 +6269,8 @@ void nonsharedkeys(void)
                     if(music_select == 6) music_select = 0;
 #endif
                     strcpy(&tempbuf[0],"PLAYING ");
-                    strcat(&tempbuf[0],&music_fn[0][music_select][0]);
-                    playmusic(&music_fn[0][music_select][0]);
+                    strcat(&tempbuf[0],&music_fn[0][(int)music_select][0]);
+                    playmusic(&music_fn[0][(int)music_select][0]);
                     strcpy(&fta_quotes[26][0],&tempbuf[0]);
                     FTA(26,&ps[myconnectindex]);
                     return;
@@ -6486,7 +6490,7 @@ void nonsharedkeys(void)
         if( KB_KeyPressed( sc_F5 ) && MusicDevice != NumSoundCards )
         {
             KB_ClearKeyDown( sc_F5 );
-            strcpy(&tempbuf[0],&music_fn[0][music_select][0]);
+            strcpy(&tempbuf[0],&music_fn[0][(int)music_select][0]);
             strcat(&tempbuf[0],".  USE SHIFT-F5 TO CHANGE.");
             strcpy(&fta_quotes[26][0],&tempbuf[0]);
             FTA(26,&ps[myconnectindex]);
@@ -6955,7 +6959,8 @@ void printstr(short x, short y, char string[81], char attribute)
         while (string[i] != 0)
         {
                 character = string[i];
-                printchrasm(0xb8000+(long)pos,1L,((long)attribute<<8)+(long)character);
+//                printchrasm(0xb8000+(long)pos,1L,((long)attribute<<8)+(long)character);
+                printchrasm(0xb8000+(long)pos,1L,(char)(((long)attribute<<8)+(long)character));
                 i++;
                 pos+=2;
         }
@@ -7323,7 +7328,7 @@ void writestring(long a1,long a2,long a3,short a4,long vx,long vy,long vz)
 
     fp = (FILE *)fopen("debug.txt","rt+");
 
-    fprintf(fp,"%ld %ld %ld %ld %ld %ld %ld\n",a1,a2,a3,a4,vx,vy,vz);
+    fprintf(fp,"%ld %ld %ld %d %ld %ld %ld\n",a1,a2,a3,a4,vx,vy,vz);
 
     fclose(fp);
 
@@ -7606,7 +7611,7 @@ int main(int argc,char **argv)
     }*/
     if( setgamemode(ScreenMode,ScreenWidth,ScreenHeight) < 0 )
     {
-        printf("\nVESA driver for ( %i * %i ) not found/supported!\n",xdim,ydim);
+        printf("\nVESA driver for ( %ld * %ld ) not found/supported!\n",xdim,ydim);
         ScreenMode = 2;
         ScreenWidth = 320;
         ScreenHeight = 200;
@@ -9065,20 +9070,20 @@ void dobonus(char bonusonly)
             {
                 if(i == y)
                 {
-                    sprintf(tempbuf,"%-4ld",ps[y].fraggedself);
+                    sprintf(tempbuf,"%-4d",ps[y].fraggedself);
                     minitext(92+(y*23),90+t,tempbuf,2,2+8+16+128);
                     xfragtotal -= ps[y].fraggedself;
                 }
                 else
                 {
-                    sprintf(tempbuf,"%-4ld",frags[i][y]);
+                    sprintf(tempbuf,"%-4d",frags[i][y]);
                     minitext(92+(y*23),90+t,tempbuf,0,2+8+16+128);
                     xfragtotal += frags[i][y];
                 }
 
                 if(myconnectindex == connecthead)
                 {
-                    sprintf(tempbuf,"stats %ld killed %ld %ld\n",i+1,y+1,frags[i][y]);
+                    sprintf(tempbuf,"stats %ld killed %ld %d\n",i+1,y+1,frags[i][y]);
                     sendscore(tempbuf);
                 }
             }
@@ -9262,7 +9267,7 @@ void dobonus(char bonusonly)
                         bonuscnt++;
                         sound(PIPEBOMB_EXPLODE);
                     }
-                    sprintf(tempbuf,"%-3ld",ps[myconnectindex].actors_killed);
+                    sprintf(tempbuf,"%-3d",ps[myconnectindex].actors_killed);
                     gametext((320>>2)+70,93+9,tempbuf,0,2+8+16);
                     if(ud.player_skill > 3 )
                     {
@@ -9272,8 +9277,8 @@ void dobonus(char bonusonly)
                     else
                     {
                         if( (ps[myconnectindex].max_actors_killed-ps[myconnectindex].actors_killed) < 0 )
-                            sprintf(tempbuf,"%-3ld",0);
-                        else sprintf(tempbuf,"%-3ld",ps[myconnectindex].max_actors_killed-ps[myconnectindex].actors_killed);
+                            sprintf(tempbuf,"%-3d",0);
+                        else sprintf(tempbuf,"%-3d",ps[myconnectindex].max_actors_killed-ps[myconnectindex].actors_killed);
                         gametext((320>>2)+70,99+4+9,tempbuf,0,2+8+16);
                     }
                 }
@@ -9291,11 +9296,11 @@ void dobonus(char bonusonly)
                         bonuscnt++;
                         sound(PIPEBOMB_EXPLODE);
                     }
-                    sprintf(tempbuf,"%-3ld",ps[myconnectindex].secret_rooms);
+                    sprintf(tempbuf,"%-3d",ps[myconnectindex].secret_rooms);
                     gametext((320>>2)+70,120+9,tempbuf,0,2+8+16);
                     if( ps[myconnectindex].secret_rooms > 0 )
-                        sprintf(tempbuf,"%-3ld",(100*ps[myconnectindex].secret_rooms/ps[myconnectindex].max_secret_rooms));
-                    sprintf(tempbuf,"%-3ld",ps[myconnectindex].max_secret_rooms-ps[myconnectindex].secret_rooms);
+                        sprintf(tempbuf,"%-3d",(100*ps[myconnectindex].secret_rooms/ps[myconnectindex].max_secret_rooms));
+                    sprintf(tempbuf,"%-3d",ps[myconnectindex].max_secret_rooms-ps[myconnectindex].secret_rooms);
                     gametext((320>>2)+70,130+9,tempbuf,0,2+8+16);
                 }
             }

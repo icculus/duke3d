@@ -29,6 +29,9 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #include <dos.h>
 #endif
 
+/* this should be a proper prototype included from a header file */
+extern int stricmp(const char *x, const char *y);
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -36,6 +39,7 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #include <time.h>
 #include "duke3d.h"
 #include "scriplib.h"
+
 
 // we load this in to get default button and key assignments
 // as well as setting up function mappings

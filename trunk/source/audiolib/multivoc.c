@@ -396,7 +396,7 @@ void MV_StopVoice
 
    // move the voice from the play list to the free list
    LL_Remove( voice, next, prev );
-   LL_Add( &VoicePool, voice, next, prev );
+   LL_Add( (VoiceNode *)&VoicePool, voice, next, prev );
 
    RestoreInterrupts( flags );
    }
@@ -483,11 +483,11 @@ void MV_ServiceVoc
             {
             if ( MV_ReverbTable != NULL )
                {
-               MV_16BitReverb( source, dest, MV_ReverbTable, count / 2 );
+               MV_16BitReverb( source, dest, (const VOLUME16 *)MV_ReverbTable, count / 2 );
                if ( ( MV_SoundCard == UltraSound ) && ( MV_Channels == 2 ) )
                   {
                   MV_16BitReverb( source + MV_RightChannelOffset,
-                     dest + MV_RightChannelOffset, MV_ReverbTable, count / 2 );
+                     dest + MV_RightChannelOffset, (const VOLUME16 *)MV_ReverbTable, count / 2 );
                   }
                }
             else
@@ -504,11 +504,11 @@ void MV_ServiceVoc
             {
             if ( MV_ReverbTable != NULL )
                {
-               MV_8BitReverb( source, dest, MV_ReverbTable, count );
+               MV_8BitReverb( source, dest, (const VOLUME16 *)MV_ReverbTable, count );
                if ( ( MV_SoundCard == UltraSound ) && ( MV_Channels == 2 ) )
                   {
                   MV_8BitReverb( source + MV_RightChannelOffset,
-                     dest + MV_RightChannelOffset, MV_ReverbTable, count );
+                     dest + MV_RightChannelOffset, (const VOLUME16 *)MV_ReverbTable, count );
                   }
                }
             else
@@ -600,14 +600,14 @@ playbackstatus MV_GetNextVOCBlock
 
    {
    unsigned char *ptr;
-   int            blocktype;
-   int            lastblocktype;
-   unsigned long  blocklength;
-   unsigned long  samplespeed;
-   unsigned int   tc;
-   int            packtype;
-   int            voicemode;
-   int            done;
+   int            blocktype=0;
+   int            lastblocktype=0;
+   unsigned long  blocklength=0l;
+   unsigned long  samplespeed=0l;
+   unsigned int   tc=0;
+   int            packtype=0;
+   int            voicemode=0;
+   int            done=0;
    unsigned       BitsPerSample;
    unsigned       Channels;
    unsigned       Format;
@@ -666,7 +666,7 @@ playbackstatus MV_GetNextVOCBlock
          case 0 :
             // End of data
             if ( ( voice->LoopStart == NULL ) ||
-               ( voice->LoopStart >= ( ptr - 4 ) ) )
+               ( (unsigned char *)voice->LoopStart >= ( ptr - 4 ) ) )
                {
                voice->Playing = FALSE;
                done = TRUE;
@@ -1421,7 +1421,7 @@ static short *MV_GetVolumeTable
 
    volume = MIX_VOLUME( vol );
 
-   table = &MV_VolumeTable[ volume ];
+   table = (short *)&MV_VolumeTable[ volume ];
 
    return( table );
    }
@@ -2562,7 +2562,7 @@ int MV_PlayLoopedWAV
       length     /= 2;
       }
 
-   loopend    = min( loopend, data->size );
+   loopend    = min( loopend, (long)data->size );
    absloopend = min( absloopend, length );
 
    voice->Playing     = TRUE;
@@ -2581,7 +2581,7 @@ int MV_PlayLoopedWAV
    voice->LoopEnd     = voice->NextBlock + loopend;
    voice->LoopSize    = absloopend - absloopstart;
 
-   if ( ( loopstart >= data->size ) || ( loopstart < 0 ) )
+   if ( ( loopstart >= (long)data->size ) || ( loopstart < 0 ) )
       {
       voice->LoopStart = NULL;
       voice->LoopEnd   = NULL;
@@ -3133,12 +3133,12 @@ int MV_Init
    // Set number of voices before calculating volume table
    MV_MaxVoices = Voices;
 
-   LL_Reset( &VoiceList, next, prev );
-   LL_Reset( &VoicePool, next, prev );
+   LL_Reset( (VoiceNode *)&VoiceList, next, prev );
+   LL_Reset( (VoiceNode *)&VoicePool, next, prev );
 
    for( index = 0; index < Voices; index++ )
       {
-      LL_Add( &VoicePool, &MV_Voices[ index ], next, prev );
+      LL_Add( (VoiceNode *)&VoicePool, &MV_Voices[ index ], next, prev );
       }
 
    // Allocate mix buffer within 1st megabyte
@@ -3377,8 +3377,8 @@ int MV_Shutdown
    MV_Voices      = NULL;
    MV_TotalMemory = 0;
 
-   LL_Reset( &VoiceList, next, prev );
-   LL_Reset( &VoicePool, next, prev );
+   LL_Reset( (VoiceNode *)&VoiceList, next, prev );
+   LL_Reset( (VoiceNode *)&VoicePool, next, prev );
 
    MV_MaxVoices = 1;
 

@@ -28,6 +28,9 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 
 extern char numenvsnds,actor_tog;
 
+// this should be a proper prototype included from a header file
+extern int sgn(int);
+
 void updateinterpolations()  //Stick at beginning of domovethings
 {
 	long i;
@@ -487,7 +490,7 @@ void hitradius( short i, long  r, long  hp1, long  hp2, long  hp3, long  hp4 )
 
     for(x = 0;x<7;x++)
     {
-        j = headspritestat[statlist[x]];
+        j = headspritestat[(int)statlist[x]];
         while(j >= 0)
         {
             nextj = nextspritestat[j];
@@ -1274,7 +1277,7 @@ void moveplayers(void) //Players
                 s->xvel = 128;
                 s->ang = p->ang;
                 s->extra++;
-                IFMOVING;
+                ssp(i,CLIPMASK0);  //IFMOVING;
             }
             else
             {
@@ -1452,7 +1455,7 @@ void movefallers(void)
                 s->lotag-=3;
                 if(s->lotag <= 0)
                 {
-                    s->xvel = (32+TRAND&63);
+                    s->xvel = ((32+TRAND)&63);
                     s->zvel = -(1024+(TRAND&1023));
                 }
             }
@@ -1496,9 +1499,9 @@ void movefallers(void)
 
 void movestandables(void)
 {
-    short i, j, k, m, nexti, nextj, nextk, p, q, sect;
-    long l, x, *t, x1, y1;
-    spritetype *s;
+    short i=0, j=0, k=0, m=0, nexti=0, nextj=0, nextk=0, p=0, q=0, sect=0;
+    long l=0l, x=0l, *t=NULL, x1=0l, y1=0l;
+    spritetype *s=NULL;
 
     i = headspritestat[6];
     while(i >= 0)
@@ -1550,7 +1553,7 @@ void movestandables(void)
                     s->picnum = CRANE+1;
                     s->xvel += 8;
                 }
-                IFMOVING;
+                ssp(i,CLIPMASK0);  //IFMOVING;
                 if(sect == t[1])
                     t[0]++;
             }
@@ -1645,7 +1648,7 @@ void movestandables(void)
                 if( s->xvel < 192 )
                     s->xvel += 8;
                 s->ang = getangle(msx[t[4]]-s->x,msy[t[4]]-s->y);
-                IFMOVING;
+                ssp(i,CLIPMASK0);  //IFMOVING;
                 if( ((s->x-msx[t[4]])*(s->x-msx[t[4]])+(s->y-msy[t[4]])*(s->y-msy[t[4]]) ) < (128*128) )
                     t[0]++;
             }
@@ -4909,11 +4912,11 @@ void moveexplosions(void)  // STATNUM 5
 
 void moveeffectors(void)   //STATNUM 3
 {
-    long q, l, m, x, st, j, *t;
-    short i, k, nexti, nextk, p, sh, nextj;
-    spritetype *s;
-    sectortype *sc;
-    walltype *wal;
+    long q=0l, l=0l, m=0l, x=0l, st=0l, j=0l, *t=NULL;
+    short i=0, k=0, nexti=0, nextk=0, p=0, sh=0, nextj=0;
+    spritetype *s=NULL;
+    sectortype *sc=NULL;
+    walltype *wal=NULL;
 
     fricxv = fricyv = 0;
 
@@ -6717,7 +6720,7 @@ void moveeffectors(void)   //STATNUM 3
                     {
                         if(cansee(s->x,s->y,s->z,SECT,ps[p].posx,ps[p].posy,ps[p].posz,ps[p].cursectnum))
                         {
-                            if(x < (unsigned)sh)
+                            if((unsigned)x < (unsigned)sh)
                             {
                                 ud.camerasprite = i;
                                 t[0] = 999;

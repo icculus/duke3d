@@ -28,6 +28,10 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 
 #include "duke3d.h"
 
+// this should be a proper prototype included from a header file
+extern int sgn(int);
+long tmulscale11(long i1, long i2, long i3, long i4, long i5, long i6);
+
 int32 turnheldtime; //MED
 int32 lastcontroltime; //MED
 
@@ -1222,13 +1226,17 @@ void displaymasks(short snum)
 	 {
         if(ud.screen_size > 4)
         {
-            rotatesprite(43<<16,(200-8-(tilesizy[SCUBAMASK])<<16),65536,0,SCUBAMASK,0,p,2+16,windowx1,windowy1,windowx2,windowy2);
-            rotatesprite((320-43)<<16,(200-8-(tilesizy[SCUBAMASK])<<16),65536,1024,SCUBAMASK,0,p,2+4+16,windowx1,windowy1,windowx2,windowy2);
+//            rotatesprite(43<<16,(200-8-(tilesizy[SCUBAMASK])<<16),65536,0,SCUBAMASK,0,p,2+16,windowx1,windowy1,windowx2,windowy2);
+//            rotatesprite((320-43)<<16,(200-8-(tilesizy[SCUBAMASK])<<16),65536,1024,SCUBAMASK,0,p,2+4+16,windowx1,windowy1,windowx2,windowy2);
+            rotatesprite(43<<16,(200-8-tilesizy[SCUBAMASK])<<16,65536,0,SCUBAMASK,0,p,2+16,windowx1,windowy1,windowx2,windowy2);
+            rotatesprite((320-43)<<16,(200-8-tilesizy[SCUBAMASK])<<16,65536,1024,SCUBAMASK,0,p,2+4+16,windowx1,windowy1,windowx2,windowy2);
         }
         else
         {
-            rotatesprite(43<<16,(200-(tilesizy[SCUBAMASK])<<16),65536,0,SCUBAMASK,0,p,2+16,windowx1,windowy1,windowx2,windowy2);
-            rotatesprite((320-43)<<16,(200-(tilesizy[SCUBAMASK])<<16),65536,1024,SCUBAMASK,0,p,2+4+16,windowx1,windowy1,windowx2,windowy2);
+//            rotatesprite(43<<16,(200-(tilesizy[SCUBAMASK])<<16),65536,0,SCUBAMASK,0,p,2+16,windowx1,windowy1,windowx2,windowy2);
+//            rotatesprite((320-43)<<16,(200-(tilesizy[SCUBAMASK])<<16),65536,1024,SCUBAMASK,0,p,2+4+16,windowx1,windowy1,windowx2,windowy2);
+            rotatesprite(43<<16,(200-tilesizy[SCUBAMASK])<<16,65536,0,SCUBAMASK,0,p,2+16,windowx1,windowy1,windowx2,windowy2);
+            rotatesprite((320-43)<<16,(200-tilesizy[SCUBAMASK])<<16,65536,1024,SCUBAMASK,0,p,2+4+16,windowx1,windowy1,windowx2,windowy2);
         }
 	 }
 }
@@ -1417,7 +1425,7 @@ void displayweapon(short snum)
             else pal = sector[p->cursectnum].floorpal;
 
             weapon_xoffset -= sintable[(768+((*kb)<<7))&2047]>>11;
-            gun_pos += sintable[(768+((*kb)<<7)&2047)]>>11;
+            gun_pos += sintable[(768+((*kb)<<7))&2047]>>11;
 
             if(*kb > 0)
             {
@@ -1808,6 +1816,7 @@ void getinput(short snum)
     tics = totalclock-lastcontroltime;
     lastcontroltime = totalclock;
 
+/*
     if (MouseAiming)
           myaimmode = BUTTON(gamefunc_Mouse_Aiming);
      else
@@ -1819,6 +1828,8 @@ void getinput(short snum)
                 FTA(44+myaimmode,p);
           }
 	 }
+*/
+myaimmode = 1;
 
     if(multiflag == 1)
     {
@@ -2509,12 +2520,12 @@ void processinput(short snum)
                     {
                         if(snum == screenpeek)
                         {
-                            sprintf(&fta_quotes[115][0],"KILLED BY PLAYER %ld",1+p->frag_ps);
+                            sprintf(&fta_quotes[115][0],"KILLED BY PLAYER %d",1+p->frag_ps);
                             FTA(115,p);
                         }
                         else
                         {
-                            sprintf(&fta_quotes[116][0],"KILLED PLAYER %ld",1+snum);
+                            sprintf(&fta_quotes[116][0],"KILLED PLAYER %d",1+snum);
                             FTA(116,&ps[p->frag_ps]);
                         }
                     }
@@ -3121,32 +3132,34 @@ void processinput(short snum)
         k = sintable[p->bobcounter&2047]>>12;
 
         if(truefdist < PHEIGHT+(8<<8) )
-            if( k == 1 || k == 3 )
         {
-            if(p->spritebridge == 0 && p->walking_snd_toggle == 0 && p->on_ground)
+            if( k == 1 || k == 3 ) 
             {
-                switch( psectlotag )
+                if(p->spritebridge == 0 && p->walking_snd_toggle == 0 && p->on_ground)
                 {
-                    case 0:
+                    switch( psectlotag )
+                    {
+                        case 0:
 
-                        if(lz >= 0 && (lz&(MAXSPRITES-1))==49152 )
-                            j = sprite[lz&(MAXSPRITES-1)].picnum;
-                        else j = sector[psect].floorpicnum;
+                            if(lz >= 0 && (lz&(MAXSPRITES-1))==49152 )
+                                j = sprite[lz&(MAXSPRITES-1)].picnum;
+                            else j = sector[psect].floorpicnum;
 
-                        switch(j)
-                        {
-                            case PANNEL1:
-                            case PANNEL2:
-                                spritesound(DUKE_WALKINDUCTS,pi);
-                                p->walking_snd_toggle = 1;
-                                break;
-                        }
-                        break;
-                    case 1:
-                        if((TRAND&1) == 0)
-                            spritesound(DUKE_ONWATER,pi);
-                        p->walking_snd_toggle = 1;
-                        break;
+                            switch(j)
+                            {
+                                case PANNEL1:
+                                case PANNEL2:
+                                    spritesound(DUKE_WALKINDUCTS,pi);
+                                    p->walking_snd_toggle = 1;
+                                    break;
+                            }
+                            break;
+                        case 1:
+                            if((TRAND&1) == 0)
+                                spritesound(DUKE_ONWATER,pi);
+                            p->walking_snd_toggle = 1;
+                            break;
+                    }
                 }
             }
         }

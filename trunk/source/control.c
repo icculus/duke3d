@@ -29,6 +29,15 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #include "mouse.h"
 
 //***************************************************************************
+// FIXME  These will need to be removed once the buildengine directory
+//        structure is figured out and we move to unified SDL codebase
+void _joystick_init(void);
+void _joystick_deinit(void);
+int _joystick_update(void);
+//#include "buildengine/display.h"
+//***************************************************************************
+
+//***************************************************************************
 //
 // GLOBALS
 //

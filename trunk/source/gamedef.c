@@ -363,16 +363,16 @@ long transword(void) //Returns its code #
     textptr += l;
 
     if( tempbuf[0] == '{' && tempbuf[1] != 0)
-        printf("  * ERROR!(L%ld) Expecting a SPACE or CR between '{' and '%s'.\n",line_number,tempbuf+1);
+        printf("  * ERROR!(L%d) Expecting a SPACE or CR between '{' and '%s'.\n",line_number,tempbuf+1);
     else if( tempbuf[0] == '}' && tempbuf[1] != 0)
-        printf("  * ERROR!(L%ld) Expecting a SPACE or CR between '}' and '%s'.\n",line_number,tempbuf+1);
+        printf("  * ERROR!(L%d) Expecting a SPACE or CR between '}' and '%s'.\n",line_number,tempbuf+1);
     else if( tempbuf[0] == '/' && tempbuf[1] == '/' && tempbuf[2] != 0 )
-        printf("  * ERROR!(L%ld) Expecting a SPACE between '//' and '%s'.\n",line_number,tempbuf+2);
+        printf("  * ERROR!(L%d) Expecting a SPACE between '//' and '%s'.\n",line_number,tempbuf+2);
     else if( tempbuf[0] == '/' && tempbuf[1] == '*' && tempbuf[2] != 0 )
-        printf("  * ERROR!(L%ld) Expecting a SPACE between '/*' and '%s'.\n",line_number,tempbuf+2);
+        printf("  * ERROR!(L%d) Expecting a SPACE between '/*' and '%s'.\n",line_number,tempbuf+2);
     else if( tempbuf[0] == '*' && tempbuf[1] == '/' && tempbuf[2] != 0 )
-        printf("  * ERROR!(L%ld) Expecting a SPACE between '*/' and '%s'.\n",line_number,tempbuf+2);
-    else printf("  * ERROR!(L%ld) Expecting key word, but found '%s'.\n",line_number,tempbuf);
+        printf("  * ERROR!(L%d) Expecting a SPACE between '*/' and '%s'.\n",line_number,tempbuf+2);
+    else printf("  * ERROR!(L%d) Expecting key word, but found '%s'.\n",line_number,tempbuf);
 
     error++;
     return -1;
@@ -403,7 +403,7 @@ void transnum(void)
         if( strcmp( label+(labelcnt<<6),keyw[i]) == 0 )
     {
         error++;
-        printf("  * ERROR!(L%ld) Symbol '%s' is a key word.\n",line_number,label+(labelcnt<<6));
+        printf("  * ERROR!(L%d) Symbol '%s' is a key word.\n",line_number,label+(labelcnt<<6));
         textptr+=l;
     }
 
@@ -421,7 +421,7 @@ void transnum(void)
 
     if( isdigit(*textptr) == 0 && *textptr != '-')
     {
-        printf("  * ERROR!(L%ld) Parameter '%s' is undefined.\n",line_number,tempbuf);
+        printf("  * ERROR!(L%d) Parameter '%s' is undefined.\n",line_number,tempbuf);
         error++;
         textptr+=l;
         return;
@@ -459,7 +459,8 @@ char parsecommand(void)
                 if(*textptr == 0x0a) line_number++;
                 if( *textptr == 0 )
                 {
-                    printf("  * ERROR!(L%ld) Found '/*' with no '*/'.\n",j,label+(labelcnt<<6));
+//                    printf("  * ERROR!(L%d) Found '/*' with no '*/'.\n",j,label+(labelcnt<<6));
+                    printf("  * ERROR!(L%ld) Found '/*' with no '*/'.\n",j);
                     error++;
                     return 0;
                 }
@@ -486,7 +487,7 @@ char parsecommand(void)
                 if( strcmp( label+(labelcnt<<6),keyw[i]) == 0 )
                 {
                     error++;
-                    printf("  * ERROR!(L%ld) Symbol '%s' is a key word.\n",line_number,label+(labelcnt<<6));
+                    printf("  * ERROR!(L%d) Symbol '%s' is a key word.\n",line_number,label+(labelcnt<<6));
                     return 0;
                 }
 
@@ -501,7 +502,7 @@ char parsecommand(void)
 
             if(j==labelcnt)
             {
-                printf("  * ERROR!(L%ld) State '%s' not found.\n",line_number,label+(labelcnt<<6));
+                printf("  * ERROR!(L%d) State '%s' not found.\n",line_number,label+(labelcnt<<6));
                 error++;
             }
             scriptptr++;
@@ -518,19 +519,19 @@ char parsecommand(void)
         case 18:
             if( parsing_state == 0 )
             {
-                printf("  * ERROR!(L%ld) Found 'ends' with no 'state'.\n",line_number);
+                printf("  * ERROR!(L%d) Found 'ends' with no 'state'.\n",line_number);
                 error++;
             }
 //            else
             {
                 if( num_squigilly_brackets > 0 )
                 {
-                    printf("  * ERROR!(L%ld) Found more '{' than '}' before 'ends'.\n",line_number);
+                    printf("  * ERROR!(L%d) Found more '{' than '}' before 'ends'.\n",line_number);
                     error++;
                 }
                 if( num_squigilly_brackets < 0 )
                 {
-                    printf("  * ERROR!(L%ld) Found more '}' than '{' before 'ends'.\n",line_number);
+                    printf("  * ERROR!(L%d) Found more '}' than '{' before 'ends'.\n",line_number);
                     error++;
                 }
                 parsing_state = 0;
@@ -544,7 +545,7 @@ char parsecommand(void)
                 if( strcmp( label+(labelcnt<<6),keyw[i]) == 0 )
                 {
                     error++;
-                    printf("  * ERROR!(L%ld) Symbol '%s' is a key word.\n",line_number,label+(labelcnt<<6));
+                    printf("  * ERROR!(L%d) Symbol '%s' is a key word.\n",line_number,label+(labelcnt<<6));
                     return 0;
                 }
 
@@ -553,7 +554,7 @@ char parsecommand(void)
                 if( strcmp(label+(labelcnt<<6),label+(i<<6)) == 0 )
                 {
                     warning++;
-                    printf("  * WARNING.(L%ld) Duplicate definition '%s' ignored.\n",line_number,label+(labelcnt<<6));
+                    printf("  * WARNING.(L%d) Duplicate definition '%s' ignored.\n",line_number,label+(labelcnt<<6));
                     break;
                 }
             }
@@ -605,7 +606,7 @@ char parsecommand(void)
                     if( strcmp( label+(labelcnt<<6),keyw[i]) == 0 )
                 {
                     error++;
-                    printf("  * ERROR!(L%ld) Symbol '%s' is a key word.\n",line_number,label+(labelcnt<<6));
+                    printf("  * ERROR!(L%d) Symbol '%s' is a key word.\n",line_number,label+(labelcnt<<6));
                     return 0;
                 }
 
@@ -613,7 +614,7 @@ char parsecommand(void)
                     if( strcmp(label+(labelcnt<<6),label+(i<<6)) == 0 )
                     {
                         warning++;
-                        printf("  * WARNING.(L%ld) Duplicate move '%s' ignored.\n",line_number,label+(labelcnt<<6));
+                        printf("  * WARNING.(L%d) Duplicate move '%s' ignored.\n",line_number,label+(labelcnt<<6));
                         break;
                     }
                 if(i == labelcnt)
@@ -709,7 +710,7 @@ char parsecommand(void)
             if(fp <= 0)
             {
                 error++;
-                printf("  * ERROR!(L%ld) Could not find '%s'.\n",line_number,label+(labelcnt<<6));
+                printf("  * ERROR!(L%d) Could not find '%s'.\n",line_number,label+(labelcnt<<6));
                 return 0;
             }
 
@@ -751,7 +752,7 @@ char parsecommand(void)
                     if( strcmp( label+(labelcnt<<6),keyw[i]) == 0 )
                     {
                         error++;
-                        printf("  * ERROR!(L%ld) Symbol '%s' is a key word.\n",line_number,label+(labelcnt<<6));
+                        printf("  * ERROR!(L%d) Symbol '%s' is a key word.\n",line_number,label+(labelcnt<<6));
                         return 0;
                     }
 
@@ -759,7 +760,7 @@ char parsecommand(void)
                     if( strcmp(label+(labelcnt<<6),label+(i<<6)) == 0 )
                     {
                         warning++;
-                        printf("  * WARNING.(L%ld) Duplicate ai '%s' ignored.\n",line_number,label+(labelcnt<<6));
+                        printf("  * WARNING.(L%d) Duplicate ai '%s' ignored.\n",line_number,label+(labelcnt<<6));
                         break;
                     }
 
@@ -805,7 +806,7 @@ char parsecommand(void)
                     if( strcmp( label+(labelcnt<<6),keyw[i]) == 0 )
                     {
                         error++;
-                        printf("  * ERROR!(L%ld) Symbol '%s' is a key word.\n",line_number,label+(labelcnt<<6));
+                        printf("  * ERROR!(L%d) Symbol '%s' is a key word.\n",line_number,label+(labelcnt<<6));
                         return 0;
                     }
 
@@ -813,7 +814,7 @@ char parsecommand(void)
                     if( strcmp(label+(labelcnt<<6),label+(i<<6)) == 0 )
                     {
                         warning++;
-                        printf("  * WARNING.(L%ld) Duplicate action '%s' ignored.\n",line_number,label+(labelcnt<<6));
+                        printf("  * WARNING.(L%d) Duplicate action '%s' ignored.\n",line_number,label+(labelcnt<<6));
                         break;
                     }
 
@@ -836,13 +837,13 @@ char parsecommand(void)
         case 1:
             if( parsing_state )
             {
-                printf("  * ERROR!(L%ld) Found 'actor' within 'state'.\n",line_number);
+                printf("  * ERROR!(L%d) Found 'actor' within 'state'.\n",line_number);
                 error++;
             }
 
             if( parsing_actor )
             {
-                printf("  * ERROR!(L%ld) Found 'actor' within 'actor'.\n",line_number);
+                printf("  * ERROR!(L%d) Found 'actor' within 'actor'.\n",line_number);
                 error++;
             }
 
@@ -891,13 +892,13 @@ char parsecommand(void)
 
             if( parsing_state )
             {
-                printf("  * ERROR!(L%ld) Found 'useritem' within 'state'.\n",line_number);
+                printf("  * ERROR!(L%d) Found 'useritem' within 'state'.\n",line_number);
                 error++;
             }
 
             if( parsing_actor )
             {
-                printf("  * ERROR!(L%ld) Found 'useritem' within 'actor'.\n",line_number);
+                printf("  * ERROR!(L%d) Found 'useritem' within 'actor'.\n",line_number);
                 error++;
             }
 
@@ -1001,7 +1002,7 @@ char parsecommand(void)
             {
                 scriptptr--;
                 error++;
-                printf("  * ERROR!(L%ld) Found 'else' with no 'if'.\n",line_number);
+                printf("  * ERROR!(L%d) Found 'else' with no 'if'.\n",line_number);
             }
 
             return 0;
@@ -1090,7 +1091,7 @@ char parsecommand(void)
             num_squigilly_brackets--;
             if( num_squigilly_brackets < 0 )
             {
-                printf("  * ERROR!(L%ld) Found more '}' than '{'.\n",line_number);
+                printf("  * ERROR!(L%d) Found more '}' than '{'.\n",line_number);
                 error++;
             }
             return 1;
@@ -1127,7 +1128,7 @@ char parsecommand(void)
                 textptr++,i++;
                 if(i >= 32)
                 {
-                    printf("  * ERROR!(L%ld) Volume name exceeds character size limit of 32.\n",line_number);
+                    printf("  * ERROR!(L%d) Volume name exceeds character size limit of 32.\n",line_number);
                     error++;
                     while( *textptr != 0x0a ) textptr++;
                     break;
@@ -1154,7 +1155,7 @@ char parsecommand(void)
                 textptr++,i++;
                 if(i >= 32)
                 {
-                    printf("  * ERROR!(L%ld) Skill name exceeds character size limit of 32.\n",line_number);
+                    printf("  * ERROR!(L%d) Skill name exceeds character size limit of 32.\n",line_number);
                     error++;
                     while( *textptr != 0x0a ) textptr++;
                     break;
@@ -1184,7 +1185,7 @@ char parsecommand(void)
                 textptr++,i++;
                 if(i > 127)
                 {
-                    printf("  * ERROR!(L%ld) Level file name exceeds character size limit of 128.\n",line_number);
+                    printf("  * ERROR!(L%d) Level file name exceeds character size limit of 128.\n",line_number);
                     error++;
                     while( *textptr != ' ') textptr++;
                     break;
@@ -1220,7 +1221,7 @@ char parsecommand(void)
                 textptr++,i++;
                 if(i >= 32)
                 {
-                    printf("  * ERROR!(L%ld) Level name exceeds character size limit of 32.\n",line_number);
+                    printf("  * ERROR!(L%d) Level name exceeds character size limit of 32.\n",line_number);
                     error++;
                     while( *textptr != 0x0a ) textptr++;
                     break;
@@ -1239,7 +1240,7 @@ char parsecommand(void)
             k = *(scriptptr-1);
             if(k >= NUMOFFIRSTTIMEACTIVE)
             {
-                printf("  * ERROR!(L%ld) Quote amount exceeds limit of %ld characters.\n",line_number,NUMOFFIRSTTIMEACTIVE);
+                printf("  * ERROR!(L%d) Quote amount exceeds limit of %d characters.\n",line_number,NUMOFFIRSTTIMEACTIVE);
                 error++;
             }
             scriptptr--;
@@ -1253,7 +1254,7 @@ char parsecommand(void)
                 textptr++,i++;
                 if(i >= 64)
                 {
-                    printf("  * ERROR!(L%ld) Quote exceeds character size limit of 64.\n",line_number);
+                    printf("  * ERROR!(L%d) Quote exceeds character size limit of 64.\n",line_number);
                     error++;
                     while( *textptr != 0x0a ) textptr++;
                     break;
@@ -1267,7 +1268,7 @@ char parsecommand(void)
             k = *(scriptptr-1);
             if(k >= NUM_SOUNDS)
             {
-                printf("  * ERROR!(L%ld) Exceeded sound limit of %ld.\n",line_number,NUM_SOUNDS);
+                printf("  * ERROR!(L%d) Exceeded sound limit of %d.\n",line_number,NUM_SOUNDS);
                 error++;
             }
             scriptptr--;
@@ -1282,7 +1283,7 @@ char parsecommand(void)
                 if(i >= 13)
                 {
                     puts(sounds[k]);
-                    printf("  * ERROR!(L%ld) Sound filename exceeded limit of 13 characters.\n",line_number);
+                    printf("  * ERROR!(L%d) Sound filename exceeded limit of 13 characters.\n",line_number);
                     error++;
                     while( *textptr != ' ' ) textptr++;
                     break;
@@ -1310,14 +1311,14 @@ char parsecommand(void)
         case 4:
             if( parsing_actor == 0 )
             {
-                printf("  * ERROR!(L%ld) Found 'enda' without defining 'actor'.\n",line_number);
+                printf("  * ERROR!(L%d) Found 'enda' without defining 'actor'.\n",line_number);
                 error++;
             }
 //            else
             {
                 if( num_squigilly_brackets > 0 )
                 {
-                    printf("  * ERROR!(L%ld) Found more '{' than '}' before 'enda'.\n",line_number);
+                    printf("  * ERROR!(L%d) Found more '{' than '}' before 'enda'.\n",line_number);
                     error++;
                 }
                 parsing_actor = 0;
@@ -1564,7 +1565,7 @@ void loadefs(char *filenam,char *mptr)
     *script = (long) scriptptr;
 
     if(warning|error)
-        printf("Found %ld warning(s), %ld error(s).\n",warning,error);
+        printf("Found %d warning(s), %d error(s).\n",warning,error);
 
     if( error == 0 && warning != 0)
     {
@@ -1656,8 +1657,8 @@ char dodge(spritetype *s)
 
 short furthestangle(short i,short angs)
 {
-    short j, hitsect,hitwall,hitspr,furthest_angle, angincs;
-    long hx, hy, hz, d, greatestd;
+    short j=0, hitsect=0, hitwall=0,hitspr, furthest_angle=0, angincs=0;
+    long hx=0l, hy=0l, hz=0l, d=0l, greatestd=0l;
     spritetype *s = &sprite[i];
 
     greatestd = -(1<<30);
@@ -2352,9 +2353,9 @@ char parse(void)
                         }
                         else if(g_sp->zvel > 2048 && sector[g_sp->sectnum].lotag != 1)
                         {
-
                             j = g_sp->sectnum;
-                            pushmove(&g_sp->x,&g_sp->y,&g_sp->z,&j,128L,(4L<<8),(4L<<8),CLIPMASK0);
+//                            pushmove(&g_sp->x,&g_sp->y,&g_sp->z,&j,128L,(4L<<8),(4L<<8),CLIPMASK0);
+                            pushmove(&g_sp->x, &g_sp->y, &g_sp->z,(short *)&j,128L,(4L<<8),(4L<<8),CLIPMASK0);
                             if(j != g_sp->sectnum && j >= 0 && j < MAXSECTORS)
                                 changespritesect(g_i,j);
 

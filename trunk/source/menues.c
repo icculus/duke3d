@@ -28,6 +28,9 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #include "mouse.h"
 #include "animlib.h"
 
+/* this should be a proper prototype included from a header file */
+extern int stricmp(const char *x, const char *y);
+
 extern char inputloc;
 extern int recfilep;
 extern char vgacompatible;
@@ -412,7 +415,7 @@ int loadplayer(signed char spot)
 
      if(music_changed == 0)
         music_select = (ud.volume_number*11) + ud.level_number;
-     playmusic(&music_fn[0][music_select][0]);
+     playmusic(&music_fn[0][(int)music_select][0]);
 
      ps[myconnectindex].gm = MODE_GAME;
          ud.recstat = 0;
@@ -1260,8 +1263,8 @@ int getfilenames(char kind[6])
 
                 if (add_this)
     			{
-	    			strcpy(menuname[menunamecnt],dent->d_name);
-		    		menuname[menunamecnt][16] = subdirs;
+	    			strcpy(menuname[(int)menunamecnt],dent->d_name);
+		    		menuname[(int)menunamecnt][16] = subdirs;
 			    	menunamecnt++;
                 } /* if */
             } /* if */
@@ -1574,10 +1577,10 @@ void menus(void)
 
             dispnames();
 
-            sprintf(tempbuf,"PLAYERS: %-2d                      ",numplr);
+            sprintf(tempbuf,"PLAYERS: %-2ld                      ",numplr); // int32 = long
             gametext(160,158,tempbuf,0,2+8+16);
 
-            sprintf(tempbuf,"EPISODE: %-2d / LEVEL: %-2d / SKILL: %-2d",1+volnum,1+levnum,plrskl);
+            sprintf(tempbuf,"EPISODE: %-2ld / LEVEL: %-2ld / SKILL: %-2ld",1+volnum,1+levnum,plrskl);
             gametext(160,170,tempbuf,0,2+8+16);
 
             gametext(160,90,"LOAD game:",0,2+8+16);
@@ -1690,10 +1693,10 @@ void menus(void)
             menutext(160,24,0,0,"SAVE GAME");
 
             rotatesprite(101<<16,97<<16,65536L,512,MAXTILES-3,-32,0,4+10+64,0,0,xdim-1,ydim-1);
-            sprintf(tempbuf,"PLAYERS: %-2d                      ",ud.multimode);
+            sprintf(tempbuf,"PLAYERS: %-2ld                      ",ud.multimode);
             gametext(160,158,tempbuf,0,2+8+16);
 
-            sprintf(tempbuf,"EPISODE: %-2d / LEVEL: %-2d / SKILL: %-2d",1+ud.volume_number,1+ud.level_number,ud.player_skill);
+            sprintf(tempbuf,"EPISODE: %-2ld / LEVEL: %-2ld / SKILL: %-2ld",1+ud.volume_number,1+ud.level_number,ud.player_skill);
             gametext(160,170,tempbuf,0,2+8+16);
 
             dispnames();
@@ -2306,7 +2309,7 @@ void menus(void)
                         else
                         {
                             if(ud.recstat != 2 && ps[myconnectindex].gm&MODE_GAME)
-                                playmusic(&music_fn[0][music_select][0]);
+                                playmusic(&music_fn[0][(int)music_select][0]);
                             else playmusic(&env_music_fn[0][0]);
 
                             MUSIC_Continue();
@@ -2418,9 +2421,9 @@ void menus(void)
 
             if(current_menu >= 360 && current_menu <= 369 )
             {
-                sprintf(tempbuf,"PLAYERS: %-2d                      ",ud.multimode);
+                sprintf(tempbuf,"PLAYERS: %-2ld                      ",ud.multimode);
                 gametext(160,158,tempbuf,0,2+8+16);
-                sprintf(tempbuf,"EPISODE: %-2d / LEVEL: %-2d / SKILL: %-2d",1+ud.volume_number,1+ud.level_number,ud.player_skill);
+                sprintf(tempbuf,"EPISODE: %-2ld / LEVEL: %-2ld / SKILL: %-2ld",1+ud.volume_number,1+ud.level_number,ud.player_skill);
                 gametext(160,170,tempbuf,0,2+8+16);
 
                 x = strget((320>>1),184,&ud.savegame[current_menu-360][0],19, 999 );
@@ -2483,9 +2486,9 @@ void menus(void)
                   }
 
                   rotatesprite(101<<16,97<<16,65536L,512,MAXTILES-3,-32,0,4+10+64,0,0,xdim-1,ydim-1);
-                  sprintf(tempbuf,"PLAYERS: %-2d                      ",numplr);
+                  sprintf(tempbuf,"PLAYERS: %-2ld                      ",numplr);
                   gametext(160,158,tempbuf,0,2+8+16);
-                  sprintf(tempbuf,"EPISODE: %-2d / LEVEL: %-2d / SKILL: %-2d",1+volnum,1+levnum,plrskl);
+                  sprintf(tempbuf,"EPISODE: %-2ld / LEVEL: %-2ld / SKILL: %-2ld",1+volnum,1+levnum,plrskl);
                   gametext(160,170,tempbuf,0,2+8+16);
               }
               else menutext(69,70,0,0,"EMPTY");
@@ -2500,9 +2503,9 @@ void menus(void)
                   rotatesprite(101<<16,97<<16,65536L,512,MAXTILES-3,-32,0,4+10+64,0,0,xdim-1,ydim-1);
               }
               else menutext(69,70,0,0,"EMPTY");
-              sprintf(tempbuf,"PLAYERS: %-2d                      ",ud.multimode);
+              sprintf(tempbuf,"PLAYERS: %-2ld                      ",ud.multimode);
               gametext(160,158,tempbuf,0,2+8+16);
-              sprintf(tempbuf,"EPISODE: %-2d / LEVEL: %-2d / SKILL: %-2d",1+ud.volume_number,1+ud.level_number,ud.player_skill);
+              sprintf(tempbuf,"EPISODE: %-2ld / LEVEL: %-2ld / SKILL: %-2ld",1+ud.volume_number,1+ud.level_number,ud.player_skill);
               gametext(160,170,tempbuf,0,2+8+16);
           }
 
@@ -3133,11 +3136,12 @@ void palto(char r,char g,char b,long e)
 
 void drawoverheadmap(long cposx, long cposy, long czoom, short cang)
 {
-        long i, j, k, l, x1, y1, x2, y2, x3, y3, x4, y4, ox, oy, xoff, yoff;
-        long dax, day, cosang, sinang, xspan, yspan, sprx, spry;
-        long xrepeat, yrepeat, z1, z2, startwall, endwall, tilenum, daang;
-        long xvect, yvect, xvect2, yvect2;
-        short p;
+        long i=0l, j=0l, k=0l, l=0l, x1=0l, y1=0l, x2=0l, y2=0l, x3=0l;
+        long y3=0l, x4=0l, y4=0l, ox=0l, oy=0l, xoff=0l, yoff=0l;
+        long dax=0l, day=0l, cosang=0l, sinang=0l, xspan=0l, yspan=0l, sprx=0l, spry=0l;
+        long xrepeat=0l, yrepeat=0l, z1=0l, z2=0l, startwall=0l, endwall=0l, tilenum=0l, daang=0l;
+        long xvect=0l, yvect=0l, xvect2=0l, yvect2=0l;
+        short p=0l;
         char col;
         walltype *wal, *wal2;
         spritetype *spr;
