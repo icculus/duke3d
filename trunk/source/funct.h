@@ -40,7 +40,6 @@ extern int spritesound(unsigned short num, short i);
 extern void stopsound(short num);
 extern void stopenvsound(short num, short i);
 extern void pan3dsound(void);
-extern void TestCallBack(unsigned long num);
 extern void testcallback(unsigned long num);
 extern void clearsoundlocks(void);
 
