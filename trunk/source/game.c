@@ -1898,6 +1898,21 @@ void operatefta(void)
          k -= 4;
      }
 
+    // hardcoded text is wrong for this one ("Press SPACE to continue")  --ryan.
+    if (ps[screenpeek].ftq == 13)
+    {
+        int qq;
+        char *upstr;
+        const char *str = CONTROL_GetMappingName(gamefunc_Open);
+        if (str == NULL)
+            str = "[UNBOUND KEY!]";
+
+        upstr = alloca(strlen(str) + 1);
+        for (qq = 0; str[qq]; qq++) upstr[qq] = toupper(str[qq]);
+        upstr[qq] = '\0';
+        snprintf(fta_quotes[13], sizeof (fta_quotes[13]), "PRESS %s TO RESTART LEVEL", str);
+    }
+
      j = ps[screenpeek].fta;
      if (j > 4)
           gametext(320>>1,k,fta_quotes[ps[screenpeek].ftq],0,2+8+16);
