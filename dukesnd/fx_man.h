@@ -15,6 +15,10 @@
 
 #include "sndcards.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct
    {
    long  MaxVoices;
@@ -113,4 +117,11 @@ int FX_StartDemandFeedPlayback( void ( *function )( char **ptr, unsigned long *l
 int  FX_StartRecording( int MixRate, void ( *function )( char *ptr, int length ) );
 void FX_StopRecord( void );
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif
+
+// end of fx_man.h ...
+

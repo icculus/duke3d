@@ -15,10 +15,6 @@
 #include "SDL_mixer.h"
 #include "fx_man.h"
 
-#if ((defined __WATCOMC__) && (!defined snprintf))
-#define snprintf _snprintf
-#endif
-
 #define __FX_TRUE  (1 == 1)
 #define __FX_FALSE (!__FX_TRUE)
 
@@ -34,12 +30,13 @@ typedef struct __DUKECHANINFO
 } duke_channel_info;
 
 
-static char[50] warningMessage;
-static char[50] errorMessage;
+static char warningMessage[80];
+static char errorMessage[80];
 static int initialized = 0;
 static int numChannels = MIX_CHANNELS;
 static void (*callback)(unsigned long);
 static int reverseStereo = 0;
+static int reverbDelay = 256;
 static int reverbLevel = 0;
 static int fastReverb = 0;
 static FILE *debug_file = NULL;
@@ -131,7 +128,7 @@ static int grabMixerChannel(int priority)
             if ((replaceable == -1) ||
                 (chaninfo[i].birthday < chaninfo[replaceable].birthday))
             {
-                replacable = i;
+                replaceable = i;
             } // if
         } // if
     } // for
@@ -284,6 +281,7 @@ int FX_Init(int SoundCard, int numvoices, int numchannels,
             int samplebits, unsigned mixrate)
 {
     Uint16 audio_format = 0;
+    int blocksize;
 
     init_debugging();
 
@@ -330,7 +328,7 @@ int FX_Init(int SoundCard, int numvoices, int numchannels,
         return(FX_Error);
     } // if
 
-    audio_format = (sample_bits == 8) ? AUDIO_U8 : AUDIO_S16;
+    audio_format = (samplebits == 8) ? AUDIO_U8 : AUDIO_S16;
     if (Mix_OpenAudio(mixrate, audio_format, numchannels, 4096) < 0)
     {
         setErrorMessage(SDL_GetError());
@@ -380,8 +378,8 @@ int FX_Shutdown( void )
 
     Mix_CloseAudio();
     callback = NULL;
-    free(callbackvals);
-    callbackvals = NULL;
+    free(chaninfo);
+    chaninfo = NULL;
     reverseStereo = 0;
     reverbLevel = 0;
     fastReverb = 0;
@@ -548,12 +546,14 @@ int FX_SetPan(int handle, int vol, int left, int right)
 int FX_SetPitch(int handle, int pitchoffset)
 {
     snddebug("FX_SetPitch() ... NOT IMPLEMENTED YET!");
+    return(FX_Ok);
 } // FX_SetPitch
 
 
 int FX_SetFrequency(int handle, int frequency)
 {
     snddebug("FX_SetFrequency() ... NOT IMPLEMENTED YET!");
+    return(FX_Ok);
 } // FX_SetFrequency
 
 
@@ -563,12 +563,12 @@ int FX_SetFrequency(int handle, int frequency)
 //  and the SDL_mixer channel it will play on, respectively.
 //  If the value is not FX_Ok, then the warning or error message is set,
 //  and you should bail.
-static int setupVocPlayback(int priority, unsigned long callbackval,
+static int setupVocPlayback(char *ptr, int priority, unsigned long callbackval,
                             int *chan, Mix_Chunk **chunk)
 {
     SDL_RWops *rw;
 
-    *chan = grab_mixer_channel(priority);
+    *chan = grabMixerChannel(priority);
     if (*chan == -1)
     {
         setErrorMessage("No available channels");
@@ -595,7 +595,7 @@ static int setupVocPlayback(int priority, unsigned long callbackval,
         return(FX_Error);
     } // if
 
-    chaninfo[chan].callbackval = callbackval;
+    chaninfo[*chan].callbackval = callbackval;
     return(FX_Ok);
 } // setupVocPlayback
 
@@ -608,10 +608,10 @@ int FX_PlayVOC(char *ptr, int pitchoffset,
     int chan;
     Mix_Chunk *chunk;
 
-    snddebug("Playing voice at angle (%d), distance (%d), priority (%d).\n",
-                angle, distance, priority);
+    snddebug("Playing voice: mono (%d), left (%d), right (%d), priority (%d).\n",
+                vol, left, right, priority);
 
-    rc = setupVocPlayback(priority, callbackval, &chan, &chunk);
+    rc = setupVocPlayback(ptr, priority, callbackval, &chan, &chunk);
     if (rc != FX_Ok)
         return(rc);
 
@@ -650,10 +650,11 @@ int FX_PlayLoopedVOC(char *ptr, long loopstart, long loopend,
     Uint32 totalsamples;
     Mix_Chunk *chunk;
 
-    snddebug("Playing voice at angle (%d), distance (%d), priority (%d).\n",
-                angle, distance, priority);
+    snddebug("Playing voice: mono (%d), left (%d), right (%d), priority (%d).\n",
+                vol, left, right, priority);
+    snddebug("Looping: start (%ld), end (%ld).\n", loopstart, loopend);
 
-    rc = setupVocPlayback(priority, callbackval, &chan, &chunk);
+    rc = setupVocPlayback(ptr, priority, callbackval, &chan, &chunk);
     if (rc != FX_Ok)
         return(rc);
 
@@ -700,13 +701,13 @@ int FX_PlayVOC3D(char *ptr, int pitchoffset, int angle, int distance,
     snddebug("Playing voice at angle (%d), distance (%d), priority (%d).\n",
                 angle, distance, priority);
 
-    rc = setupVocPlayback(priority, callbackval, &chan, &chunk);
+    rc = setupVocPlayback(ptr, priority, callbackval, &chan, &chunk);
     if (rc != FX_Ok)
         return(rc);
 
     // !!! FIXME: Need to do something with pitchoffset.
 
-    Mix_SetPosition(chan, (Uint8) ((((float) angle) / 31.0) * 255.0, distance);
+    Mix_SetPosition(chan, (Uint8) ((((float) angle) / 31.0) * 255.0), distance);
     Mix_PlayChannel(chan, chunk, 0);
     return(FX_Ok + chan);
 } // FX_PlayVOC3D
@@ -716,7 +717,7 @@ int FX_PlayVOC3D(char *ptr, int pitchoffset, int angle, int distance,
 int FX_PlayWAV( char *ptr, int pitchoffset, int vol, int left, int right,
        int priority, unsigned long callbackval )
 {
-    FX_PlayVOC(ptr, pitchoffset, vol, left, right, priority, callbackval);
+    return(FX_PlayVOC(ptr, pitchoffset, vol, left, right, priority, callbackval));
 } // FX_PlayWAV
 
 
@@ -724,15 +725,15 @@ int FX_PlayLoopedWAV( char *ptr, long loopstart, long loopend,
        int pitchoffset, int vol, int left, int right, int priority,
        unsigned long callbackval )
 {
-    FX_PlayLoopedVOC(ptr, loopstart, loopend, pitchoffset, vol, left,
-                     right, priority, callbackval);
+    return(FX_PlayLoopedVOC(ptr, loopstart, loopend, pitchoffset, vol, left,
+                             right, priority, callbackval));
 } // FX_PlayLoopedWAV
 
 
 int FX_PlayWAV3D( char *ptr, int pitchoffset, int angle, int distance,
        int priority, unsigned long callbackval )
 {
-    FX_PlayVOC3D(ptr, pitchoffset, angle, distance, priority, callbackval);
+    return(FX_PlayVOC3D(ptr, pitchoffset, angle, distance, priority, callbackval));
 } // FX_PlayWAV3D
 
 
@@ -740,7 +741,8 @@ int FX_PlayRaw( char *ptr, unsigned long length, unsigned rate,
        int pitchoffset, int vol, int left, int right, int priority,
        unsigned long callbackval )
 {
-    snddebug("FX_PlayRaw() ... NOT IMPLEMENTED!");
+    setErrorMessage("FX_PlayRaw() ... NOT IMPLEMENTED!");
+    return(FX_Error);
 } // FX_PlayRaw
 
 
@@ -748,7 +750,8 @@ int FX_PlayLoopedRaw( char *ptr, unsigned long length, char *loopstart,
        char *loopend, unsigned rate, int pitchoffset, int vol, int left,
        int right, int priority, unsigned long callbackval )
 {
-    snddebug("FX_PlayLoopedRaw() ... NOT IMPLEMENTED!");
+    setErrorMessage("FX_PlayLoopedRaw() ... NOT IMPLEMENTED!");
+    return(FX_Error);
 } // FX_PlayLoopedRaw
 
 
@@ -764,7 +767,9 @@ int FX_Pan3D(int handle, int angle, int distance)
         setWarningMessage("voice is no longer playing in FX_Pan3D().");
     else
     {
-        Mix_SetPosition(mixchan, angle * 8, distance);
+        Mix_SetPosition(handle,
+                        (Uint8) ((((float) angle) / 31.0) * 255.0),
+                        distance);
         retval = FX_Ok;
     } // else
 
@@ -820,6 +825,7 @@ int FX_StopAllSounds(void)
     snddebug("halting all channels.");
         // !!! FIXME: Should the user callback fire for this?
     Mix_HaltGroup(-1);
+    return(FX_Ok);
 } // FX_StopAllSounds
 
 
@@ -827,19 +833,21 @@ int FX_StartDemandFeedPlayback( void ( *function )( char **ptr, unsigned long *l
        int rate, int pitchoffset, int vol, int left, int right,
        int priority, unsigned long callbackval )
 {
-    snddebug("FX_StartDemandFeedPlayback() ... NOT IMPLEMENTED!");
+    setErrorMessage("FX_StartDemandFeedPlayback() ... NOT IMPLEMENTED!");
+    return(FX_Error);
 }
 
 
 int FX_StartRecording(int MixRate, void (*function)(char *ptr, int length))
 {
-    snddebug("FX_StartRecording() ... NOT IMPLEMENTED!");
+    setErrorMessage("FX_StartRecording() ... NOT IMPLEMENTED!");
+    return(FX_Error);
 } // FX_StartRecording
 
 
 void FX_StopRecord( void )
 {
-    snddebug("FX_StopRecord() ... NOT IMPLEMENTED!");
+    setErrorMessage("FX_StopRecord() ... NOT IMPLEMENTED!");
 } // FX_StopRecord
 
 // end of fx_man.c ...
