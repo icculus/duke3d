@@ -1376,7 +1376,7 @@ static void DoKeybindMenu(char *name, KeyBinds *keybinds, int cnt, int prevmenu)
     rotatesprite(320<<15,10<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
     menutext(320>>1,15,0,0,name);
 
-    rc = probe_with_delete(46,20+16,15,cnt,&hitdelete);
+    rc = probe_with_delete(46,20+16,16,cnt,&hitdelete);
     if (rc == -1) // escape
     {
         cmenu(prevmenu);
@@ -1513,6 +1513,8 @@ static void non3dr_menus(void)
             menutext(320>>1,15+30+16+30,0,0,"PRESS NEW KEY");
             menutext(320>>1,15+30+16+30+16,0,0,"OR");
             menutext(320>>1,15+30+16+30+16+16,0,0,"ESC TO LEAVE AS IS");
+
+            rotatesprite((320>>1)<<16,(15+30+16+30+16+16+20)<<16,65536L,0,SPINNINGNUKEICON+(((totalclock>>3))%7),sh,0,10,0,0,xdim-1,ydim-1);
             
             break;
         }
@@ -1522,7 +1524,7 @@ static void non3dr_menus(void)
             rotatesprite(320<<15,10<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
             menutext(320>>1,15,0,0,"CONTROLS");
 
-            rc = probe(320/4,20+16,15,6);  // !!! FIXME: Move cursor to right more.
+            rc = probe(320/4,20+16,16,6);  // !!! FIXME: Move cursor to right more.
             controlsstackedprobey = rc;
             switch (rc)
             {
