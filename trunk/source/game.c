@@ -276,9 +276,15 @@ int gametextpart(int x,int y,char *t,char s,short p)
     return (x);
 }
 
-int minitext(int x,int y,char *t,char p,char sb)
+int minitext(int x,int y,char *str,char p,char sb)
 {
     short ac;
+    char buf[128];
+    char *t;
+
+    strncpy (buf, str, 128);
+    buf[127] = 0;
+    t = buf;
 
     while(*t)
     {
