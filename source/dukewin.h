@@ -80,4 +80,6 @@ void _dos_getdate(struct dosdate_t *date);
 
 #define F_OK 0
 
+#define HAVE_PRAGMA_PACK 1
+
 #endif

@@ -64,4 +64,8 @@ void _dos_getdate(struct dosdate_t *date);
 
 #define printchrasm(x,y,ch) printf("%c", (char) (ch & 0xFF))
 
+#ifdef __GNUC__
+#define GCC_PACK1_EXT __attribute__((packed,aligned(1)))
+#endif
+
 #endif
