@@ -232,7 +232,7 @@ int loadplayer(signed char spot)
 
      ready2send = 0;
 
-     kdfread32(&bv,1,fil);
+     kdfread(&bv,4,1,fil);
      if(bv != BYTEVERSION)
      {
         FTA(114,&ps[myconnectindex]);
@@ -242,7 +242,7 @@ int loadplayer(signed char spot)
         return 1;
      }
 
-     kdfread32(&nump,1,fil);
+     kdfread(&nump,4,1,fil);
      if(nump != numplayers)
      {
         kclose(fil);
@@ -275,9 +275,9 @@ int loadplayer(signed char spot)
 
      music_changed = (music_select != (ud.volume_number*11) + ud.level_number);
 
-         kdfread32(&ud.volume_number,1,fil);
-         kdfread32(&ud.level_number,1,fil);
-         kdfread32(&ud.player_skill,1,fil);
+         kdfread(&ud.volume_number,4,1,fil);
+         kdfread(&ud.level_number,4,1,fil);
+         kdfread(&ud.player_skill,4,1,fil);
 
          ud.m_level_number = ud.level_number;
          ud.m_volume_number = ud.volume_number;
@@ -289,14 +289,9 @@ int loadplayer(signed char spot)
      tilesizx[MAXTILES-3] = 100; tilesizy[MAXTILES-3] = 160;
      kdfread((char *)waloff[MAXTILES-3],160,100,fil);
 
-#if PLATFORM_BIGENDIAN
-#warning finish byteswapping this...if it is actually used. --ryan.
-STUBBED("Needs byteswapping");
-#endif
-
-         kdfread16(&numwalls,1,fil);
+         kdfread(&numwalls,2,1,fil);
      kdfread(&wall[0],sizeof(walltype),MAXWALLS,fil);
-         kdfread16(&numsectors,1,fil);
+         kdfread(&numsectors,2,1,fil);
      kdfread(&sector[0],sizeof(sectortype),MAXSECTORS,fil);
          kdfread(&sprite[0],sizeof(spritetype),MAXSPRITES,fil);
          kdfread(&headspritesect[0],2,MAXSECTORS+1,fil);
