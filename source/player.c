@@ -1816,7 +1816,6 @@ void getinput(short snum)
     tics = totalclock-lastcontroltime;
     lastcontroltime = totalclock;
 
-/*
     if (MouseAiming)
           myaimmode = BUTTON(gamefunc_Mouse_Aiming);
      else
@@ -1828,8 +1827,6 @@ void getinput(short snum)
                 FTA(44+myaimmode,p);
           }
 	 }
-*/
-myaimmode = 1;
 
     if(multiflag == 1)
     {
