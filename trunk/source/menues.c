@@ -1472,7 +1472,7 @@ static void non3dr_menus(void)
 
             menutext(320>>1,15+30+16+30,0,0,"PRESS NEW KEY");
             menutext(320>>1,15+30+16+30+16,0,0,"OR");
-            menutext(320>>1,15+30+16+30+16+16,0,0,"ESC TO LEAVE AS-IS");
+            menutext(320>>1,15+30+16+30+16+16,0,0,"ESC TO LEAVE AS IS");
             
             break;
         }
