@@ -6664,6 +6664,13 @@ void checkcommandline(int argc,char **argv)
         while(i < argc)
         {
             c = argv[i];
+
+            if (stricmp(c, "-net") == 0)
+            {
+                i += 2;  // skip filename.
+                continue;
+            }
+
             if(*c == '-')
             {
                 if( *(c+1) == '8' ) eightytwofifty = 1;
