@@ -7681,7 +7681,7 @@ void main(int argc,char **argv)
 
 char opendemoread(char which_demo) // 0 = mine
 {
-    char *d = "demo_.dmo";
+    char d[] = "demo_.dmo";
     char ver;
     short i;
 
