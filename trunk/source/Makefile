@@ -70,6 +70,7 @@ all: duke3d
 duke3d: 	\
 	actors.o \
 	animlib.o \
+	control.o \
 	config.o \
 	game.o \
 	gamedef.o \
