@@ -59,8 +59,10 @@ extern "C" {
 #define MAXMOUSEBUTTONS 7
 
 // Number of JOY buttons
+#define MAXJOYBUTTONS 32
 
-#define MAXJOYBUTTONS 8
+// Number of joystick "top hats"
+#define MAXJOYHATS 6
 
 // Number of EXTERNAL buttons
 
@@ -105,7 +107,7 @@ extern "C" {
 
 // Number of JOY axes
 
-#define MAXJOYAXES 4
+#define MAXJOYAXES 6
 
 // Number of GAMEPAD axes
 

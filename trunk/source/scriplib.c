@@ -43,7 +43,8 @@ typedef enum {
 	SCRIPTFLAG_ONESTRING,
 	SCRIPTFLAG_TWOSTRING,
 	SCRIPTFLAG_HEX,
-	SCRIPTFLAG_DECIMAL
+	SCRIPTFLAG_DECIMAL,
+	SCRIPTFLAG_FLOAT
 } scriptflag_t;
 
 typedef struct scriptnode_s {
@@ -54,6 +55,7 @@ typedef struct scriptnode_s {
 	union {
 		char *string[2];
 		int number;
+		float floatnumber;
 	} data;
 } scriptnode_t;
 
@@ -119,6 +121,9 @@ static void SCRIPT_writenode (scriptnode_t *node, FILE *fp)
 		case SCRIPTFLAG_DECIMAL:
 			fprintf (fp, "%s = %d\n", node->key, (unsigned short)node->data.number);
 			break;
+		case SCRIPTFLAG_FLOAT:
+			 fprintf (fp, "%s = %ff\n", node->key, node->data.floatnumber);
+			 break;
 	}
 }
 
@@ -259,6 +264,10 @@ static void SCRIPT_parseline (char *curline, scriptnode_t *node)
 		/* Found a number! */
 		node->type = SCRIPTFLAG_DECIMAL;
 		node->data.number = atoi (token);
+	} else if (token[strlen(token) - 1] == 'f') {
+		/* Found a float */
+		node->type = SCRIPTFLAG_FLOAT;
+		node->data.floatnumber = atof(token);
 	} else if (token[0] == '~') {
 		/* Found a ... who knows */
 		node->type = SCRIPTFLAG_DECIMAL;
@@ -717,6 +726,41 @@ void SCRIPT_GetBoolean
 /*
 ==============
 =
+= SCRIPT_GetFloat
+=
+==============
+*/
+boolean SCRIPT_GetFloat
+   (
+   int32 scripthandle,
+   char * sectionname,
+   char * entryname,
+   float * floatnumber
+   )
+{
+       scriptnode_t *cur;
+
+       if (scripthandle == -1) return false;
+
+       cur = script_headnode[scripthandle];
+
+       cur = SCRIPT_findinchildren (cur, sectionname);
+       cur = SCRIPT_findinchildren (cur, entryname);
+
+       if (cur != NULL && cur->type == SCRIPTFLAG_FLOAT)
+       {
+               *floatnumber = cur->data.floatnumber;
+#ifdef DEBUG_SCRIPLIB
+               printf ("GetFloat: value for %s:%s is %f\n", sectionname, entryname, *floatnumber);
+#endif
+       }
+
+       return (cur != NULL) ? true : false;
+}
+
+/*
++==============
++=
 = SCRIPT_GetDouble
 =
 ==============

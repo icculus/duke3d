@@ -386,10 +386,12 @@ void CONFIG_SetupMouse( int32 scripthandle )
       memset(temp,0,sizeof(temp));
       SCRIPT_GetString(scripthandle, "Controls", str,temp);
       function = CONFIG_AnalogNameToNum(temp);
+      /*
       if (function != -1)
          {
          CONTROL_MapAnalogAxis(i,function);
          }
+	 */
       sprintf(str,"MouseDigitalAxes%ld_0",i);
       memset(temp,0,sizeof(temp));
       SCRIPT_GetString(scripthandle, "Controls", str,temp);
@@ -404,7 +406,9 @@ void CONFIG_SetupMouse( int32 scripthandle )
          CONTROL_MapDigitalAxis( i, function, 1 );
       sprintf(str,"MouseAnalogScale%ld",i);
       SCRIPT_GetNumber(scripthandle, "Controls", str,&scale);
+      /*
       CONTROL_SetAnalogAxisScale( i, scale );
+      */
       }
 
    SCRIPT_GetNumber( scripthandle, "Controls","MouseSensitivity",&function);
@@ -472,10 +476,11 @@ void CONFIG_SetupGamePad( int32 scripthandle )
 
 void CONFIG_SetupJoystick( int32 scripthandle )
    {
-   int32 i;
+   int32 i, j;
    char str[80];
    char temp[80];
-   int32 function, scale;
+   int32 function, deadzone;
+   float scale;
 
    for (i=0;i<MAXJOYBUTTONS;i++)
       {
@@ -484,13 +489,13 @@ void CONFIG_SetupJoystick( int32 scripthandle )
       SCRIPT_GetString( scripthandle,"Controls", str,temp);
       function = CONFIG_FunctionNameToNum(temp);
       if (function != -1)
-         CONTROL_MapButton( function, i, false );
+         CONTROL_MapJoyButton( function, i, false );
       sprintf(str,"JoystickButtonClicked%ld",i);
       memset(temp,0,sizeof(temp));
       SCRIPT_GetString( scripthandle,"Controls", str,temp);
       function = CONFIG_FunctionNameToNum(temp);
       if (function != -1)
-         CONTROL_MapButton( function, i, true );
+         CONTROL_MapJoyButton( function, i, true );
       }
    // map over the axes
    for (i=0;i<MAXJOYAXES;i++)
@@ -499,10 +504,10 @@ void CONFIG_SetupJoystick( int32 scripthandle )
       memset(temp,0,sizeof(temp));
       SCRIPT_GetString(scripthandle, "Controls", str,temp);
       function = CONFIG_AnalogNameToNum(temp);
-      if (function != -1)
-         {
+      //if (function != -1)
+         //{
          CONTROL_MapAnalogAxis(i,function);
-         }
+         //}
       sprintf(str,"JoystickDigitalAxes%ld_0",i);
       memset(temp,0,sizeof(temp));
       SCRIPT_GetString(scripthandle, "Controls", str,temp);
@@ -516,14 +521,35 @@ void CONFIG_SetupJoystick( int32 scripthandle )
       if (function != -1)
          CONTROL_MapDigitalAxis( i, function, 1 );
       sprintf(str,"JoystickAnalogScale%ld",i);
-      SCRIPT_GetNumber(scripthandle, "Controls", str,&scale);
+      SCRIPT_GetFloat(scripthandle, "Controls", str,&scale);
       CONTROL_SetAnalogAxisScale( i, scale );
+        deadzone = 0;
+        sprintf(str,"JoystickAnalogDeadzone%ld",i);
+        SCRIPT_GetNumber(scripthandle, "Controls", str, &deadzone);
+        CONTROL_SetAnalogAxisDeadzone( i, deadzone);
       }
-   // read in JoystickPort
-   SCRIPT_GetNumber( scripthandle, "Controls","JoystickPort",&function);
-   CONTROL_JoystickPort = function;
-   // read in rudder state
-   SCRIPT_GetNumber( scripthandle, "Controls","EnableRudder",&CONTROL_RudderEnabled);
+
+   // map over the "top hats"
+   for (i=0; i < MAXJOYHATS; i++)
+   {
+         for(j=0; j < 8; j++) // 8? because hats can have 8 different values
+         { 
+                 sprintf(str,"JoystickHat%ld_%ld",i, j);
+                 memset(temp,0,sizeof(temp));
+                 SCRIPT_GetString( scripthandle,"Controls", str,temp);
+                 function = CONFIG_FunctionNameToNum(temp);
+                 if (function != -1)
+                 {
+                         CONTROL_MapJoyHat( function, i, j);      
+                 }
+         }
+     }
+
+  // read in JoystickPort
+  SCRIPT_GetNumber( scripthandle, "Controls","JoystickPort",&function);
+  CONTROL_JoystickPort = function;
+  // read in rudder state
+  SCRIPT_GetNumber( scripthandle, "Controls","EnableRudder",&CONTROL_RudderEnabled);
    }
 
 void readsavenames(void)
@@ -696,17 +722,22 @@ void CONFIG_ReadSetup( void )
       case controltype_keyboardandmouse:
          CONFIG_SetupMouse(scripthandle);
          break;
-      default:
-         CONFIG_SetupMouse(scripthandle);
       case controltype_keyboardandjoystick:
       case controltype_keyboardandflightstick:
       case controltype_keyboardandthrustmaster:
+	 CONTROL_JoystickEnabled = 1;
          CONFIG_SetupJoystick(scripthandle);
          break;
       case controltype_keyboardandgamepad:
          CONFIG_SetupGamePad(scripthandle);
          break;
-
+      case controltype_joystickandmouse:
+	 CONTROL_JoystickEnabled = 1;
+	 CONFIG_SetupJoystick(scripthandle);
+	 CONFIG_SetupMouse(scripthandle);
+	 break;
+      default:
+	 CONFIG_SetupMouse(scripthandle);
       }
    setupread = 1;
    }
@@ -757,6 +788,7 @@ void CONFIG_WriteSetup( void )
    switch (ControllerType)
       {
       case controltype_keyboardandmouse:
+      case controltype_joystickandmouse:
          dummy = CONTROL_GetMouseSensitivity();
          SCRIPT_PutNumber( scripthandle, "Controls","MouseSensitivity",dummy,false,false);
          break;
