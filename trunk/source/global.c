@@ -664,6 +664,10 @@ void SafeFree (void * ptr)
 #endif
 #endif
 
+#ifdef PLATFORM_WIN32
+#define BYTE_ORDER LITTLE_ENDIAN
+#endif
+
 #ifndef BYTE_ORDER
 #error Please define your platform.
 #endif

@@ -131,7 +131,7 @@ void KB_FlushKeyboardQueue( void )
 
 void KB_ClearKeysDown( void )
 {
-    memset(KB_KeyDown, '\0', sizeof (KB_KeyDown));
+    memset((void *) KB_KeyDown, '\0', sizeof (KB_KeyDown));
 	keyIsWaiting = false;
 }
 

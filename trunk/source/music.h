@@ -27,13 +27,8 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #ifndef __MUSIC_H
 #define __MUSIC_H
 
+#include "duke3d.h"
 #include "sndcards.h"
-
-#if !PLATFORM_DOS
-#  ifndef cdecl
-#    define cdecl
-#  endif
-#endif
 
 extern int MUSIC_ErrorCode;
 
