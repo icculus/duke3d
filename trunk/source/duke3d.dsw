@@ -3,22 +3,14 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
-Project: "Engine"="..\..\buildengine\Engine.dsp" - Package Owner=<4>
+Project: "Duke3d"=.\Duke3d.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "Duke3d"=".\Duke3d.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
+    begin source code control
+    Perforce Project
+    .
+    end source code control
 }}}
 
 Package=<4>
@@ -26,6 +18,22 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name Engine
     End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "Engine"=.\buildengine\Engine.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    Perforce Project
+    .\buildengine
+    end source code control
+}}}
+
+Package=<4>
+{{{
 }}}
 
 ###############################################################################

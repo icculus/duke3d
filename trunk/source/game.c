@@ -7554,7 +7554,7 @@ int main(int argc,char **argv)
     puts("Please read LICENSE.DOC for further information about this special version.");
     puts("NOTE: DUKE NUKEM 3D CONTAINS MATURE CONTENT.\n");
     puts("Press any key to continue.");
-    getch();
+    getchar();
 #endif
 
     Startup();
