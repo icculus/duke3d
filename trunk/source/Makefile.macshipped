@@ -1,0 +1,185 @@
+#-----------------------------------------------------------------------------#
+# Duke3D makefile.
+#-----------------------------------------------------------------------------#
+
+linux_ppc := false
+beos := false
+macosx := true
+solaris := false
+shareware := false
+controls_menu := true
+#use_asm := true
+
+#-----------------------------------------------------------------------------#
+# If this makefile fails to detect Cygwin correctly, or you want to force
+#  the build process's behaviour, set it to "true" or "false" (w/o quotes).
+#-----------------------------------------------------------------------------#
+#cygwin := true
+#cygwin := false
+cygwin := autodetect
+
+# you only need to set these for Cygwin at the moment.
+SDL_INC_DIR = /cygdrive/c/SDL/include
+SDL_LIB_DIR = /cygdrive/c/SDL/lib
+
+# need this for now.
+ifeq ($(strip $(beos)),true)
+  use_asm := false
+endif
+
+# Don't touch anything below this line unless you know what you're doing.
+
+ifeq ($(strip $(cygwin)),autodetect)
+  ifneq ($(strip $(shell gcc -v 2>&1 |grep "cygwin")),)
+    cygwin := true
+  else
+    cygwin := false
+  endif
+endif
+
+
+ifeq ($(strip $(cygwin)),true)
+  ifeq ($(strip $(SDL_INC_DIR)),please_set_me_cygwin_users)
+    $(error Cygwin users need to set the SDL_INC_DIR envr var.)
+  else
+    SDL_CFLAGS := -I$(SDL_INC_DIR)
+  endif
+
+  ifeq ($(strip $(SDL_LIB_DIR)),please_set_me_cygwin_users)
+    $(error Cygwin users need to set the SDL_LIB_DIR envr var.)
+  else
+    SDL_LDFLAGS := -L$(SDL_LIB_DIR) -lSDL
+  endif
+else
+  #SDL_CFLAGS := $(shell sdl-config --cflags)
+  #SDL_LDFLAGS := $(shell sdl-config --libs) -L.
+  SDL_CFLAGS := -I/usr/local/include/SDL -D_THREAD_SAFE
+  SDL_LDFLAGS := ./libSDL-1.2.0.dylib ./libSDL_mixer-1.2.0.dylib ./libSDLmain.a -framework Cocoa -framework OpenGL
+endif
+
+ifeq ($(strip $(macosx)),true)
+  EXTRACFLAGS += -DPLATFORM_MACOSX=1
+  #EXTRALDFLAGS += -lSDLmain
+endif
+
+ifeq ($(strip $(linux_ppc)),true)
+  EXTRACFLAGS += -DPLATFORM_LINUXPPC=1
+endif
+
+ifneq ($(strip $(cygwin)),true)
+  ifneq ($(strip $(macosx)),true)
+    ifneq ($(strip $(beos)),true)
+      EXTRACFLAGS += -DUSE_EXECINFO=1
+    endif
+  endif
+endif
+
+ifeq ($(strip $(solaris)),true)
+  EXTRALDFLAGS += -lsocket -lnsl
+endif
+
+ifeq ($(strip $(shareware)),true)
+  EXTRACFLAGS += -DVOLUMEONE
+else
+  EXTRACFLAGS += -DVOLUMEALL
+endif
+
+ifeq ($(strip $(controls_menu)),true)
+  EXTRACFLAGS += -DCONTROLS_CONFIG_MENU=1
+endif
+
+# check out buildengine in this directory:
+#  cvs -z3 -d:pserver:anonymous@cvs.icculus.org:/cvs/cvsroot login
+#   (password is "anonymous", without the quotes.)
+#  cvs -z3 -d:pserver:anonymous@cvs.icculus.org:/cvs/cvsroot co buildengine
+#  cd buildengine
+#  make
+#  cd ..
+#  This sucks. We'll figure out something better.
+BUILDOBJS := \
+	buildengine/cache1d.o \
+	buildengine/engine.o \
+	buildengine/sdl_driver.o \
+	buildengine/mmulti.o \
+	buildengine/pragmas.o \
+	buildengine/unix_compat.o
+
+ifeq ($(strip $(use_asm)),true)
+	BUILDOBJS += buildengine/a_gnu.o buildengine/a_nasm.o
+else
+	BUILDOBJS += buildengine/a.o
+endif
+
+CC = gcc
+CFLAGS = -c -g $(SDL_CFLAGS) -DUSE_SDL=1 -DPLATFORM_UNIX=1 -W -Wall -Wno-unused $(EXTRACFLAGS) -funsigned-char
+
+ifeq ($(strip $(macosx)),true)
+OPTIMIZE = -O3 -mdynamic-no-pic -falign-loops=16
+else
+OPTIMIZE = -O2
+endif
+
+# Always turn OFF strict aliasing, even when optimizing. Otherwise, this is
+#  just an accident waiting to happen...  --ryan.
+CFLAGS += -fno-strict-aliasing
+
+# Uncomment this to compile with the Intel compiler (v6.0)
+#CC = icc
+#CFLAGS = -g $(SDL_CFLAGS) -DUSE_SDL=1 -DPLATFORM_UNIX=1 -DUSE_I386_ASM=1 $(EXTRACFLAGS) -O2
+
+LDLIBS = $(SDL_LDFLAGS) $(EXTRALDFLAGS)
+
+# !!! FIXME: Do we even need this? It doesn't fly on MacOS X.  --ryan.
+#LDLIBS += -Wl,-E
+
+all: duke3d build
+
+
+%.o : %.c
+	$(CC) $(CFLAGS) $(OPTIMIZE) -o $@ $<
+
+# Animation playback crashes due to optimization error on MacOS X. --ryan.
+ifeq ($(strip $(macosx)),true)
+animlib.o : animlib.c
+	$(CC) $(CFLAGS) -o $@ $<
+endif
+
+# Animation playback crashes due to optimization error on Linux PPC. --Felipe Barriga.
+ifeq ($(strip $(linux_ppc)),true)
+animlib.o : animlib.c
+	$(CC) $(CFLAGS) -o $@ $<
+endif
+
+audiolib/audiolib.a:
+	$(MAKE) -C audiolib CC="$(CC)" CFLAGS="$(CFLAGS)" LDLIBS="$(LDLIBS)"
+
+duke3d: 	\
+	actors.o \
+	animlib.o \
+	control.o \
+	config.o \
+	game.o \
+	gamedef.o \
+	global.o \
+	keyboard.o \
+	menues.o \
+	player.o \
+	premap.o \
+	rts.o \
+	scriplib.o \
+	sector.o \
+	sounds.o \
+	dukemusc.o \
+	audiolib/audiolib.a
+	$(CC) $^ $(BUILDOBJS) $(LDLIBS) -o $@
+
+build: astub.o
+	$(CC) $^ $(BUILDOBJS) buildengine/build.o $(LDLIBS) -o $@
+
+clean:
+	$(MAKE) -C audiolib clean
+	rm -rf duke3d build *.o
+
+distclean: clean
+	$(MAKE) -C audiolib distclean
+	rm -rf *~
