@@ -151,7 +151,7 @@ int   DSL_BeginBufferedPlayback( char *BufferStart,
 
 	_remainder = 0;
 	
-	format = (MixMode & SIXTEEN_BIT) ? AUDIO_S16LSB : AUDIO_U8;
+	format = (MixMode & SIXTEEN_BIT) ? AUDIO_S16SYS : AUDIO_U8;
 	channels = (MixMode & STEREO) ? 2 : 1;
 
 /*
