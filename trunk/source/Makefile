@@ -64,7 +64,8 @@ rott: 	\
 	premap.o \
 	rts.o \
 	sector.o \
-	sounds.o
+	sounds.o \
+	pragmas_gnu.o
 	$(CC) $^ $(LDLIBS) -o $@
 
 clean:

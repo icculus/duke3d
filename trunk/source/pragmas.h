@@ -1911,6 +1911,14 @@ long ksgn(long i1);
         parm nomemory [ebx]\
         modify exact [eax ebx]\
 
+long sgn(long i1);
+#pragma aux sgn =\
+        "add ebx, ebx",\
+        "sbb eax, eax",\
+        "cmp eax, ebx",\
+        "adc eax, 0",\
+        parm [ebx]\
+
         /* eax = (unsigned min)umin(eax,ebx) */
 long umin(long i1, long i2);
 #pragma aux umin =\
@@ -2607,6 +2615,7 @@ void clearbuf(void *buffer, int size, long fill_value);
 void clearbufbyte(void *buffer, int size, long fill_value);
 void copybufbyte(void *source, void *dest, int size);
 int ksgn(int i1);
+int sgn(int i1);
 int klabs (int i1);
 int mul3 (int i1);
 int mul5 (int i1);
