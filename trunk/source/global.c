@@ -863,6 +863,7 @@ int setup_homedir (void)
 	int err;
 
 #if PLATFORM_MACOSX
+    char *cfgpath;
 	snprintf (ApogeePath, sizeof (ApogeePath), "%s/Library/", getenv ("HOME"));
 	mkdir (ApogeePath, S_IRWXU);
 	snprintf (ApogeePath, sizeof (ApogeePath), "%s/Library/Application Support/", getenv ("HOME"));
@@ -879,6 +880,27 @@ int setup_homedir (void)
 				strerror (errno));
 		return -1;
 	}
+
+    /* copy duke3d.cfg to prefpath if it doesn't exist... */
+    cfgpath = alloca(strlen(ApogeePath) + strlen(SETUPFILENAME) + 1);
+    strcpy(cfgpath, ApogeePath);
+    strcat(cfgpath, SETUPFILENAME);
+    if (access(cfgpath, F_OK) == -1)
+    {
+        FILE *in = fopen(SETUPFILENAME, "rb");
+        if (in)
+        {
+            FILE *out = fopen(cfgpath, "wb");
+            if (out)
+            {
+                int ch;
+                while ((ch = fgetc(in)) != EOF)
+                    fputc(ch, out);
+                fclose(out);
+            }
+            fclose(in);
+        }
+    }
 #else
     sprintf(ApogeePath, ".%s", PATH_SEP_STR);
 #endif

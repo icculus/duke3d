@@ -1313,8 +1313,338 @@ void sortfilenames()
 
 long quittimer = 0;
 
+
+#define MENU_CONTROLS 30000
+#define MENU_CONTROLS_MOVEMENT 30001
+#define MENU_CONTROLS_MOREMOVEMENT 30002
+#define MENU_CONTROLS_ACTIONS 30003
+#define MENU_CONTROLS_WEAPONS 30004
+#define MENU_CONTROLS_ITEMS 30005
+#define MENU_CONTROLS_MISC 30006
+#define MENU_CONTROLS_KEYBINDER 30007
+
+#if CONTROLS_CONFIG_MENU
+
+static int controlsstackedprobey = -1;
+
+#define ALEN(x) (sizeof (x) / sizeof (x[0]))
+
+typedef struct
+{
+    char *name;
+    int32 which;
+} KeyBinds;
+
+static void keybindtext(int pos, char *name, int32 which)
+{
+    char *binding = (char *) CONTROL_GetMappingName(which);
+    if (binding == NULL)
+        binding = "?";
+    pos++;
+    menutext(45,20+(16*pos),SHX(-pos),PHX(-pos),name);
+    menutext(235,20+(16*pos),SHX(-pos),PHX(-pos),binding);
+}
+
+
+static KeyBinds *currentbind = NULL;
+static int prevbindmenu = 0;
+static int keybindprobey = 0;
+
+static void DoKeybindMenu(char *name, KeyBinds *keybinds, int cnt, int prevmenu)
+{
+    int i;
+    int rc;
+    rotatesprite(320<<15,10<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
+    menutext(320>>1,15,0,0,name);
+
+    rc = probe(46,20+16,15,cnt);  // !!! FIXME: Move cursor to right more?
+    if (rc == -1) // escape
+    {
+        cmenu(prevmenu);
+        if (controlsstackedprobey >= 0)
+        {
+            probey = controlsstackedprobey;
+            controlsstackedprobey = -1;
+        }
+    }
+    else if (rc >= 0)  // chose an option.
+    {
+        prevbindmenu = current_menu;
+        currentbind = &keybinds[rc];
+        keybindprobey = probey;
+        KB_FlushKeyboardQueue();
+        KB_ClearKeysDown();
+        cmenu(MENU_CONTROLS_KEYBINDER);
+    }
+    else  // unknown option or none chosen, so draw menu.
+    {
+        for (i = 0; i < cnt; i++)
+            keybindtext(i, keybinds[i].name, keybinds[i].which);
+    }
+}
+#endif
+
+static void non3dr_menus(void)
+{
+    short c = (320>>1);
+    int rc;
+
+    switch(current_menu)
+    {
+#if CONTROLS_CONFIG_MENU
+        case MENU_CONTROLS_KEYBINDER:  // binding a new key.
+        {
+            int bound = 0;
+            char *binding;
+            if (currentbind == NULL)  // sanity check.
+            {
+                cmenu(prevbindmenu ? prevbindmenu : MENU_CONTROLS);
+                break;
+            }
+
+            if (KB_KeyWaiting())
+            {
+                kb_scancode sc = KB_GetLastScanCode();
+                char *scstr = KB_ScanCodeToString(sc);
+                KB_FlushKeyboardQueue();
+                KB_ClearKeysDown();
+
+                if (scstr == NULL)  // make sure it maps.
+                    sound(KICK_HIT);
+                else
+                {
+                    if (sc == sc_Escape)  // cancel request?
+                        sound(EXITMENUSOUND);
+                    else
+                    {
+                        char *fname = CONFIG_FunctionNumToName(currentbind->which);
+                        CONTROL_MapKey(currentbind->which, sc, 0);
+                        CONFIG_PutString("KeyDefinitions", fname, scstr);
+                    }
+                    bound = 1;
+                }
+            }
+
+            #if 0  // !!! FIXME...yuck.
+            else
+            {
+                int32 buttons = MOUSE_GetButtons();
+                if (buttons)
+                {
+                    int i;
+                    int32 b = 1;
+                    for (i = 0; i < MAXMOUSEBUTTONS; i++, b <<= 1)
+                    {
+                        if (b & buttons)
+                        {
+                            char *fname = CONFIG_FunctionNumToName(currentbind->which);
+                            char buf[64];
+                            snprintf(buf, sizeof (buf), "MouseButton%d", i);
+                            CONTROL_MapButton(currentbind->which, i, 0);
+                            CONFIG_PutString("Controls", buf, fname);
+                            break;
+                        }
+                    }
+                    bound = ((b & buttons) != 0);
+                }
+            }
+            #endif
+
+            if (bound)
+            {
+                cmenu(prevbindmenu ? prevbindmenu : MENU_CONTROLS);
+                prevbindmenu = 0;
+                currentbind = NULL;
+                probey = keybindprobey;
+                break;  // we're done.
+            }
+
+            // still waiting for valid user input...draw UI.
+
+            rotatesprite(320<<15,10<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
+            menutext(320>>1,15,0,0,currentbind->name);
+
+            binding = (char *) CONTROL_GetMappingName(currentbind->which);
+            if (binding != NULL)
+            {
+                menutext(320>>1,15+30,0,0,"CURRENTLY BOUND TO:");
+                menutext(320>>1,15+30+16,0,0,binding);
+            }
+            else
+            {
+                menutext(320>>1,15+30+16,0,0,"NOT CURRENTLY BOUND");
+            }
+
+            menutext(320>>1,15+30+16+30,0,0,"PRESS NEW KEY");
+            menutext(320>>1,15+30+16+30+16,0,0,"OR");
+            menutext(320>>1,15+30+16+30+16+16,0,0,"ESC TO LEAVE AS-IS");
+            
+            break;
+        }
+
+        case MENU_CONTROLS:  // main config menu.
+        {
+            rotatesprite(320<<15,10<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
+            menutext(320>>1,15,0,0,"CONTROLS");
+
+            rc = probe(320/4,20+16,15,6);  // !!! FIXME: Move cursor to right more.
+            controlsstackedprobey = rc;
+            switch (rc)
+            {
+                case -1: // escape
+                    cmenu(200);  // options menu
+                    break;
+                case 0:  // movement
+                    cmenu(MENU_CONTROLS_MOVEMENT);
+                    break;
+                case 1:  // more movement
+                    cmenu(MENU_CONTROLS_MOREMOVEMENT);
+                    break;
+                case 2:  // actions
+                    cmenu(MENU_CONTROLS_ACTIONS);
+                    break;
+                case 3:  // weapons
+                    cmenu(MENU_CONTROLS_WEAPONS);
+                    break;
+                case 4:  // items
+                    cmenu(MENU_CONTROLS_ITEMS);
+                    break;
+                case 5:  // misc
+                    cmenu(MENU_CONTROLS_MISC);
+                    break;
+                default:
+                    menutext(c,20+16,SHX(-1),PHX(-1),"MOVEMENT");
+                    menutext(c,20+16+16,SHX(-2),PHX(-2),"MORE MOVEMENT");
+                    menutext(c,20+16+16+16,SHX(-3),PHX(-3),"ACTIONS");
+                    menutext(c,20+16+16+16+16,SHX(-4),PHX(-4),"WEAPONS");
+                    menutext(c,20+16+16+16+16+16,SHX(-5),PHX(-5),"ITEMS");
+                    menutext(c,20+16+16+16+16+16+16,SHX(-6),PHX(-6),"MISC");
+                    break;
+            }
+            break;
+        }
+
+        case MENU_CONTROLS_MOVEMENT:  // movement controls.
+        {
+            static KeyBinds keybinds[] =
+            {
+                { "MOVE FORWARD", gamefunc_Move_Forward },
+                { "MOVE BACKWARD", gamefunc_Move_Backward },
+                { "STRAFE LEFT", gamefunc_Strafe_Left },
+                { "STRAFE RIGHT", gamefunc_Strafe_Right },
+                { "TURN LEFT",gamefunc_Turn_Left },
+                { "TURN RIGHT",gamefunc_Turn_Right },
+                { "STRAFE", gamefunc_Strafe }
+            };
+
+            DoKeybindMenu("MOVEMENT", keybinds, ALEN(keybinds), MENU_CONTROLS);
+            break;
+        }
+
+        case MENU_CONTROLS_MOREMOVEMENT:  // more movement controls.
+        {
+            static KeyBinds keybinds[] =
+            {
+                { "JUMP", gamefunc_Jump },
+                { "CROUCH", gamefunc_Crouch },
+                { "RUN", gamefunc_Strafe_Left },
+                { "AUTORUN", gamefunc_Strafe_Right },
+                { "AIM UP", gamefunc_Aim_Up },
+                { "AIM DOWN", gamefunc_Aim_Down },
+                { "CENTER VIEW", gamefunc_Center_View },
+                { "MOUSE AIM", gamefunc_Mouse_Aiming }
+            };
+
+            DoKeybindMenu("MORE MOVEMENT", keybinds, ALEN(keybinds), MENU_CONTROLS);
+            break;
+        }
+
+        case MENU_CONTROLS_ACTIONS:   // actions controls
+        {
+            static KeyBinds keybinds[] =
+            {
+                { "FIRE OR ATTACK", gamefunc_Fire },
+                { "OPEN OR USE", gamefunc_Open },
+                { "QUICK KICK", gamefunc_Quick_Kick },
+                { "TURN AROUND", gamefunc_TurnAround },
+                { "HOLSTER WEAPON" ,gamefunc_Holster_Weapon },
+                { "VIEW MAP", gamefunc_Map },
+                { "CHAT MESSAGE", gamefunc_SendMessage },
+            };
+
+            DoKeybindMenu("ACTIONS", keybinds, ALEN(keybinds), MENU_CONTROLS);
+            break;
+        }
+
+        case MENU_CONTROLS_WEAPONS:   // weapon controls
+        {
+            static KeyBinds keybinds[] =
+            {
+                { "NEXT WEAPON", gamefunc_Next_Weapon },
+                { "PREVIOUS WEAPON", gamefunc_Previous_Weapon },
+/*
+   gamefunc_Weapon_1,
+   gamefunc_Weapon_2,
+   gamefunc_Weapon_3,
+   gamefunc_Weapon_4,
+   gamefunc_Weapon_5,
+   gamefunc_Weapon_6,
+   gamefunc_Weapon_7,
+   gamefunc_Weapon_8,
+   gamefunc_Weapon_9,
+   gamefunc_Weapon_10,
+*/
+            };
+
+            DoKeybindMenu("WEAPONS", keybinds, ALEN(keybinds), MENU_CONTROLS);
+            break;
+        }
+
+        case MENU_CONTROLS_ITEMS:   // item controls
+        {
+            static KeyBinds keybinds[] =
+            {
+                { "INVENTORY", gamefunc_Inventory },
+                { "NEXT ITEM", gamefunc_Inventory_Right },
+                { "PREVIOUS ITEM", gamefunc_Inventory_Left },
+                { "USE HOLODUKE", gamefunc_Holo_Duke},
+                { "USE JETPACK", gamefunc_Jetpack },
+                { "USE NIGHTVISION", gamefunc_NightVision },
+                { "USE MEDKIT", gamefunc_MedKit },
+                { "USE STEROIDS", gamefunc_Steroids }
+            };
+
+            DoKeybindMenu("ITEMS", keybinds, ALEN(keybinds), MENU_CONTROLS);
+            break;
+        }
+
+        case MENU_CONTROLS_MISC:   // misc controls
+        {
+            static KeyBinds keybinds[] =
+            {
+                { "SHRINK SCREEN", gamefunc_Shrink_Screen },
+                { "ENLARGE SCREEN", gamefunc_Enlarge_Screen },
+                { "SHOW WEAPONS", gamefunc_Show_Opponents_Weapon },
+                { "MAP FOLLOW MODE", gamefunc_Map_Follow_Mode },
+                { "SEE COOP VIEW", gamefunc_See_Coop_View },
+                { "TOGGLE CROSSHAIR", gamefunc_Toggle_Crosshair },
+            };
+
+            DoKeybindMenu("MISC", keybinds, ALEN(keybinds), MENU_CONTROLS);
+            break;
+        }
+#endif
+
+        default:
+            //gameexit("\nERROR: Unknown menu?!\n");
+            cmenu(0);  // main menu
+    }
+}
+
+
 void menus(void)
 {
+    int count;
     short shorttmp = 0;
     short c,x;
     volatile long l;
@@ -1353,7 +1683,10 @@ void menus(void)
     if(!(current_menu >= 1000 && current_menu <= 2999 && current_menu >= 300 && current_menu <= 369))
         vscrn();
 
-    switch(current_menu)
+    // icculus.org-added menus?
+    if (current_menu >= 30000)
+        non3dr_menus();
+    else switch(current_menu)
     {
         case 25000:
             gametext(160,90,"SELECT A SAVE SPOT BEFORE",0,2+8+16);
@@ -1808,11 +2141,15 @@ void menus(void)
 
         case 0:
             c = (320>>1);
-            rotatesprite(c<<16,28<<16,65536L,0,INGAMEDUKETHREEDEE,0,0,10,0,0,xdim-1,ydim-1);
-            rotatesprite((c+100)<<16,36<<16,65536L,0,PLUTOPAKSPRITE+2,(sintable[(totalclock<<4)&2047]>>11),0,2+8,0,0,xdim-1,ydim-1);
+            rotatesprite(c<<16,(28<<16)-5,65536L,0,INGAMEDUKETHREEDEE,0,0,10,0,0,xdim-1,ydim-1);
+            rotatesprite((c+100)<<16,(36<<16)-5,65536L,0,PLUTOPAKSPRITE+2,(sintable[(totalclock<<4)&2047]>>11),0,2+8,0,0,xdim-1,ydim-1);
 // CTW - MODIFICATION
-//          x = probe(c,67,16,7);
-            x = probe(c,67,16,6);
+//          x = probe(c,67-3,16,7);
+            count = 6;
+#if NET_MENU
+            count++;
+#endif
+            x = probe(c,67-3,16,count);
 // CTW END - MODIFICATION
             if(x >= 0)
             {
@@ -1873,7 +2210,13 @@ void menus(void)
                             break;
                         case 3: KB_FlushKeyboardQueue();cmenu(400);break;
                         case 4: cmenu(990);break;
+#if NET_MENU
+                        case 5: cmenu(30000);break;
+                        case 6: cmenu(500);break;
+#else
                         case 5: cmenu(500);break;
+#endif
+
 // CTW END - MODIFICATION
                     }
                 }
@@ -1894,37 +2237,42 @@ void menus(void)
             if(movesperpacket == 4)
             {
                 if( myconnectindex == connecthead )
-                    menutext(c,67,SHX(-2),PHX(-2),"NEW GAME");
+                    menutext(c,67-3,SHX(-2),PHX(-2),"NEW GAME");
                 else
-                    menutext(c,67,SHX(-2),1,"NEW GAME");
+                    menutext(c,67-3,SHX(-2),1,"NEW GAME");
             }
             else
-                menutext(c,67,SHX(-2),PHX(-2),"NEW GAME");
+                menutext(c,67-3,SHX(-2),PHX(-2),"NEW GAME");
 
 // CTW - REMOVED
 /*          if(movesperpacket != 4 && numplayers < 2)
-                menutext(c,67+16,SHX(-3),PHX(-3),"PLAY ON TEN");
+                menutext(c,67-3+16,SHX(-3),PHX(-3),"PLAY ON TEN");
             else
-                menutext(c,67+16,SHX(-3),1,"PLAY ON TEN");*/
+                menutext(c,67-3+16,SHX(-3),1,"PLAY ON TEN");*/
 // CTW END - REMOVED
 
 // CTW - MODIFICATION - Not going to comment out the exact old code here.
 // I shifted up every menu option by 16.
 // I shifted up every menu result by 1.
-            menutext(c,67+16,SHX(-3),PHX(-3),"OPTIONS");
+            menutext(c,67-3+16,SHX(-3),PHX(-3),"OPTIONS");
 
             if(movesperpacket == 4 && connecthead != myconnectindex)
-                menutext(c,67+16+16,SHX(-4),1,"LOAD GAME");
-            else menutext(c,67+16+16,SHX(-4),PHX(-4),"LOAD GAME");
+                menutext(c,67-3+16+16,SHX(-4),1,"LOAD GAME");
+            else menutext(c,67-3+16+16,SHX(-4),PHX(-4),"LOAD GAME");
 
 #ifndef VOLUMEALL
-            menutext(c,67+16+16+16,SHX(-5),PHX(-5),"HOW TO ORDER");
+            menutext(c,67-3+16+16+16,SHX(-5),PHX(-5),"HOW TO ORDER");
 #else
-            menutext(c,67+16+16+16,SHX(-5),PHX(-5),"HELP");
+            menutext(c,67-3+16+16+16,SHX(-5),PHX(-5),"HELP");
 #endif
-            menutext(c,67+16+16+16+16,SHX(-6),PHX(-6),"CREDITS");
+            menutext(c,67-3+16+16+16+16,SHX(-6),PHX(-6),"CREDITS");
 
-            menutext(c,67+16+16+16+16+16,SHX(-7),PHX(-7),"QUIT");
+#if NET_MENU
+            menutext(c,67-3+16+16+16+16+16,SHX(-7),PHX(-7),"NETWORK GAME");
+            menutext(c,67-3+16+16+16+16+16+16,SHX(-8),PHX(-8),"QUIT");
+#else
+            menutext(c,67-3+16+16+16+16+16,SHX(-7),PHX(-7),"QUIT");
+#endif
 
             break;
 // CTW END - MODIFICATION
@@ -2166,7 +2514,11 @@ void menus(void)
             c = (320>>1)-120;
 
             onbar = (probey == 3 || probey == 4 || probey == 5);
-            x = probe(c+6,31,15,10);
+            count = 10;
+#if CONTROLS_CONFIG_MENU
+            count++;
+#endif
+            x = probe(c+6,31,15,count);
 
             if(x == -1)
                 { if(ps[myconnectindex].gm&MODE_GAME) cmenu(50);else cmenu(0); }
@@ -2202,6 +2554,11 @@ void menus(void)
                     }
                     ud.m_recstat = !ud.m_recstat;
                     break;
+#if CONTROLS_CONFIG_MENU
+                case 10:
+                    cmenu(MENU_CONTROLS);
+                    break;
+#endif
             }
 
             if(ud.detail) menutext(c+160+40,31,0,0,"HIGH");
@@ -2278,6 +2635,9 @@ void menus(void)
                 else menutext(c+160+40,31+15+15+15+15+15+15+15+15+15,SHX(-10),PHX(-10),"OFF");
             }
 
+#if CONTROLS_CONFIG_MENU
+            menutext(c,31+15+15+15+15+15+15+15+15+15+15,SHX(-11),PHX(-11),"CONTROLS...");
+#endif
             break;
 
         case 700:

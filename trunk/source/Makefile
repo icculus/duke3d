@@ -6,6 +6,7 @@ beos := false
 macosx := false
 solaris := false
 shareware := false
+controls_menu := true
 #use_asm := true
 
 #-----------------------------------------------------------------------------#
@@ -74,6 +75,10 @@ ifeq ($(strip $(shareware)),true)
   EXTRACFLAGS += -DVOLUMEONE
 else
   EXTRACFLAGS += -DVOLUMEALL
+endif
+
+ifeq ($(strip $(controls_menu)),true)
+  EXTRACFLAGS += -DCONTROLS_CONFIG_MENU=1
 endif
 
 # check out buildengine in this directory:
