@@ -1979,8 +1979,14 @@ void gameexit(char *msg)
     if(numplayers > 1)
         allowtimetocorrecterrorswhenquitting();
 
-    if(ud.recstat == 1) closedemowrite();
-    else if(ud.recstat == 2) { fclose(frecfilep); }
+    if(ud.recstat == 1)
+        closedemowrite();
+
+    if(frecfilep != NULL)
+    {
+        fclose(frecfilep);
+        frecfilep = NULL;
+    }
 
     if(qe || cp)
         goto GOTOHERE;
@@ -7772,7 +7778,7 @@ char opendemoread(char which_demo) // 0 = mine
 
 void opendemowrite(void)
 {
-    char *d = "demo1.dmo";
+    char d[] = "demo1.dmo";
     long dummylong = 0;
     char ver;
     short i;
@@ -7839,6 +7845,7 @@ void closedemowrite(void)
             ud.recstat = ud.m_recstat = 0;
         }
         fclose(frecfilep);
+        frecfilep = NULL;
     }
 }
 
