@@ -4,6 +4,7 @@
 
 beos := false
 macosx := false
+solaris := false
 #use_asm := true
 
 #-----------------------------------------------------------------------------#
@@ -48,7 +49,7 @@ ifeq ($(strip $(cygwin)),true)
   endif
 else
   SDL_CFLAGS := $(shell sdl-config --cflags)
-  SDL_LDFLAGS := $(shell sdl-config --libs)
+  SDL_LDFLAGS := $(shell sdl-config --libs) -L.
 endif
 
 ifeq ($(strip $(macosx)),true)
@@ -62,6 +63,10 @@ ifneq ($(strip $(cygwin)),true)
       EXTRACFLAGS += -DUSE_EXECINFO=1
     endif
   endif
+endif
+
+ifeq ($(strip $(solaris)),true)
+  EXTRALDFLAGS += -lsocket -lnsl
 endif
 
 # check out buildengine in this directory:
@@ -88,7 +93,12 @@ endif
 
 CC = gcc
 CFLAGS = -c -g $(SDL_CFLAGS) -DUSE_SDL=1 -DPLATFORM_UNIX=1 -W -Wall -Wno-unused $(EXTRACFLAGS) -funsigned-char
+
+ifeq ($(strip $(macosx)),true)
+OPTIMIZE = -O3 -mdynamic-no-pic -falign-loops=16
+else
 OPTIMIZE = -O2
+endif
 
 # Uncomment this to compile with the Intel compiler (v6.0)
 #CC = icc
