@@ -282,7 +282,9 @@ static void MV_Mix
    unsigned long  rate;
    unsigned long  FixedPointBufferSize;
 
-   if ( ( voice->length == 0 ) && ( voice->GetSound( voice ) != KeepPlaying ) )
+   if ( ( voice->length == 0 ) &&
+        ( voice->GetSound != NULL ) &&
+        ( voice->GetSound( voice ) != KeepPlaying ) )
       {
       return;
       }
