@@ -48,6 +48,10 @@ typedef struct
 #define MUSIC_LoopSong ( 1 == 1 )
 #define MUSIC_PlayOnce ( !MUSIC_LoopSong )
 
+#if (!defined __WATCOMC__)
+#define cdecl
+#endif
+
 char *MUSIC_ErrorString( int ErrorNumber );
 int   MUSIC_Init( int SoundCard, int Address );
 int   MUSIC_Shutdown( void );

@@ -11,10 +11,15 @@
 #include <stdarg.h>
 #include <string.h>
 #include <assert.h>
+
+#if (defined __WATCOMC__)
 #include "dukesnd_watcom.h"
+#endif
+
 #include "SDL.h"
 #include "SDL_mixer.h"
 #include "fx_man.h"
+#include "music.h"
 
 #define __FX_TRUE  (1 == 1)
 #define __FX_FALSE (!__FX_TRUE)
@@ -33,7 +38,7 @@ typedef struct __DUKECHANINFO
 
 static char warningMessage[80];
 static char errorMessage[80];
-static int initialized = 0;
+static int fx_initialized = 0;
 static int numChannels = MIX_CHANNELS;
 static void (*callback)(unsigned long);
 static int reverseStereo = 0;
@@ -76,6 +81,24 @@ static void snddebug(const char *fmt, ...)
     if (debug_file)
     {
         fprintf(debug_file, "DUKESND: ");
+        va_start(ap, fmt);
+        vfprintf(debug_file, fmt, ap);
+        va_end(ap);
+        fprintf(debug_file, "\n");
+        fflush(debug_file);
+    } // if
+} // snddebug
+
+
+// FIXME: Consolidate this code.
+// Same as snddebug(), but a different tag is put on each line.
+static void musdebug(const char *fmt, ...)
+{
+    va_list ap;
+
+    if (debug_file)
+    {
+        fprintf(debug_file, "DUKEMUS: ");
         va_start(ap, fmt);
         vfprintf(debug_file, fmt, ap);
         va_end(ap);
@@ -293,7 +316,7 @@ int FX_Init(int SoundCard, int numvoices, int numchannels,
     snddebug("INIT! card=>%d, voices=>%d, chan=>%d, bits=>%d, rate=>%du...",
                 SoundCard, numvoices, numchannels, samplebits, mixrate);
 
-    if (initialized)
+    if (fx_initialized)
     {
         setErrorMessage("Sound system is already initialized.");
         return(FX_Error);
@@ -366,7 +389,7 @@ int FX_Init(int SoundCard, int numvoices, int numchannels,
     Mix_QuerySpec(NULL, NULL, &mixerIsStereo);
     mixerIsStereo = (mixerIsStereo == 2);
 
-    initialized = 1;
+    fx_initialized = 1;
     return(FX_Ok);
 } // FX_Init
 
@@ -375,7 +398,7 @@ int FX_Shutdown( void )
 {
     snddebug("shutting down sound subsystem.");
 
-    if (!initialized)
+    if (!fx_initialized)
     {
         setErrorMessage("Sound system is not currently initialized.");
         return(FX_Error);
@@ -388,7 +411,7 @@ int FX_Shutdown( void )
     reverseStereo = 0;
     reverbLevel = 0;
     fastReverb = 0;
-    initialized = 0;
+    fx_initialized = 0;
     maxReverbDelay = 256;
     return(FX_Ok);
 } // FX_Shutdown
@@ -854,6 +877,284 @@ void FX_StopRecord( void )
 {
     setErrorMessage("FX_StopRecord() ... NOT IMPLEMENTED!");
 } // FX_StopRecord
+
+
+
+// The music functions...
+
+
+char *MUSIC_ErrorString(int ErrorNumber)
+{
+    switch (ErrorNumber)
+    {
+        case MUSIC_Warning:
+            return(warningMessage);
+
+        case MUSIC_Error:
+            return(errorMessage);
+
+        case MUSIC_Ok:
+            return("OK; no error.");
+
+        case MUSIC_ASSVersion:
+            return("Incorrect sound library version.");
+
+        case MUSIC_SoundCardError:
+            return("General sound card error.");
+
+        case MUSIC_InvalidCard:
+            return("Invalid sound card.");
+
+        case MUSIC_MidiError:
+            return("MIDI error.");
+
+        case MUSIC_MPU401Error:
+            return("MPU401 error.");
+
+        case MUSIC_TaskManError:
+            return("Task Manager error.");
+
+        case MUSIC_FMNotDetected:
+            return("FM not detected error.");
+
+        case MUSIC_DPMI_Error:
+            return("DPMI error.");
+
+        default:
+            return("Unknown error.");
+    } // switch
+
+    assert(0);    // shouldn't hit this point.
+    return(NULL);
+} // MUSIC_ErrorString
+
+
+static int music_initialized = 0;
+static int music_context = 0;
+static int music_loopflag = MUSIC_PlayOnce;
+static char *music_songdata = NULL;
+static Mix_Music *music_musicchunk = NULL;
+
+int MUSIC_Init(int SoundCard, int Address)
+{
+    init_debugging();
+
+    musdebug("INIT! card=>%d, address=>%d...", SoundCard, Address);
+
+    if (music_initialized)
+    {
+        setErrorMessage("Music system is already initialized.");
+        return(MUSIC_Error);
+    } // if
+    
+    if (SoundCard != SoundScape) // We pretend there's a SoundScape installed.
+    {
+        setErrorMessage("Card not found.");
+        musdebug("We pretend to be an Ensoniq SoundScape only.");
+        return(MUSIC_Error);
+    } // if
+
+    music_initialized = 1;
+    return(MUSIC_Ok);
+} // MUSIC_Init
+
+
+int MUSIC_Shutdown(void)
+{
+    musdebug("shutting down sound subsystem.");
+
+    if (!music_initialized)
+    {
+        setErrorMessage("Music system is not currently initialized.");
+        return(MUSIC_Error);
+    } // if
+
+    MUSIC_StopSong();
+    music_context = 0;
+    music_initialized = 0;
+    music_loopflag = MUSIC_PlayOnce;
+
+    return(MUSIC_Ok);
+} // MUSIC_Shutdown
+
+
+void MUSIC_SetMaxFMMidiChannel(int channel)
+{
+    musdebug("STUB ... MUSIC_SetMaxFMMidiChannel(%d).\n", channel);
+} // MUSIC_SetMaxFMMidiChannel
+
+
+void MUSIC_SetVolume(int volume)
+{
+    Mix_VolumeMusic(volume >> 1);  // convert 0-255 to 0-128.
+} // MUSIC_SetVolume
+
+
+void MUSIC_SetMidiChannelVolume(int channel, int volume)
+{
+    musdebug("STUB ... MUSIC_SetMidiChannelVolume(%d, %d).\n", channel, volume);
+} // MUSIC_SetMidiChannelVolume
+
+
+void MUSIC_ResetMidiChannelVolumes(void)
+{
+    musdebug("STUB ... MUSIC_ResetMidiChannelVolumes().\n");
+} // MUSIC_ResetMidiChannelVolumes
+
+
+int MUSIC_GetVolume(void)
+{
+    return(Mix_VolumeMusic(-1) << 1);  // convert 0-128 to 0-255.
+} // MUSIC_GetVolume
+
+
+void MUSIC_SetLoopFlag(int loopflag)
+{
+    music_loopflag = loopflag;
+} // MUSIC_SetLoopFlag
+
+
+int MUSIC_SongPlaying(void)
+{
+    return((Mix_PlayingMusic()) ? __FX_TRUE : __FX_FALSE);
+} // MUSIC_SongPlaying
+
+
+void MUSIC_Continue(void)
+{
+    if (Mix_PausedMusic())
+        Mix_ResumeMusic();
+    else if (music_songdata)
+        MUSIC_PlaySong(music_songdata, MUSIC_PlayOnce);
+} // MUSIC_Continue
+
+
+void MUSIC_Pause(void)
+{
+    Mix_PauseMusic();
+} // MUSIC_Pause
+
+
+int MUSIC_StopSong(void)
+{
+    if (!fx_initialized)
+    {
+        setErrorMessage("Need FX system initialized, too. Sorry.");
+        return(MUSIC_Error);
+    } // if
+
+    if ( (Mix_PlayingMusic()) || (Mix_PausedMusic()) )
+        Mix_HaltMusic();
+
+    if (music_musicchunk);
+        Mix_FreeMusic(music_musicchunk);
+
+    music_songdata = NULL;
+    music_musicchunk = NULL;
+    return(MUSIC_Ok);
+} // MUSIC_StopSong
+
+
+int MUSIC_PlaySong(unsigned char *song, int loopflag)
+{
+    //SDL_RWops *rw;
+
+    MUSIC_StopSong();
+
+    music_songdata = song;
+
+    // !!! FIXME: This could be a problem...SDL/SDL_mixer wants a RWops, which
+    // !!! FIXME:  is an i/o abstraction. Since we already have the MIDI data
+    // !!! FIXME:  in memory, we fake it with a memory-based RWops. None of
+    // !!! FIXME:  this is a problem, except the RWops wants to know how big
+    // !!! FIXME:  its memory block is (so it can do things like seek on an
+    // !!! FIXME:  offset from the end of the block), and since we don't have
+    // !!! FIXME:  this information, we have to give it SOMETHING.
+
+    /* !!! ARGH! There's no LoadMUS_RW  ?!
+    rw = SDL_RWFromMem((void *) song, (10 * 1024) * 1024);  // yikes.
+    music_musicchunk = Mix_LoadMUS_RW(rw);
+    Mix_PlayMusic(music_musicchunk, (loopflag == MUSIC_PlayOnce) ? 0 : -1);
+    */
+
+    return(MUSIC_Ok);
+} // MUSIC_PlaySong
+
+
+void MUSIC_SetContext(int context)
+{
+    musdebug("STUB ... MUSIC_SetContext().\n");
+    music_context = context;
+} // MUSIC_SetContext
+
+
+int MUSIC_GetContext(void)
+{
+    return(music_context);
+} // MUSIC_GetContext
+
+
+void MUSIC_SetSongTick(unsigned long PositionInTicks)
+{
+    musdebug("STUB ... MUSIC_SetSongTick().\n");
+} // MUSIC_SetSongTick
+
+
+void MUSIC_SetSongTime(unsigned long milliseconds)
+{
+    musdebug("STUB ... MUSIC_SetSongTime().\n");
+}// MUSIC_SetSongTime
+
+
+void MUSIC_SetSongPosition(int measure, int beat, int tick)
+{
+    musdebug("STUB ... MUSIC_SetSongPosition().\n");
+} // MUSIC_SetSongPosition
+
+
+void MUSIC_GetSongPosition(songposition *pos)
+{
+    musdebug("STUB ... MUSIC_GetSongPosition().\n");
+} // MUSIC_GetSongPosition
+
+
+void MUSIC_GetSongLength(songposition *pos)
+{
+    musdebug("STUB ... MUSIC_GetSongLength().\n");
+} // MUSIC_GetSongLength
+
+
+int MUSIC_FadeVolume(int tovolume, int milliseconds)
+{
+    Mix_FadeOutMusic(milliseconds);
+    return(MUSIC_Ok);
+} // MUSIC_FadeVolume
+
+
+int MUSIC_FadeActive(void)
+{
+    return((Mix_FadingMusic() == MIX_FADING_OUT) ? __FX_TRUE : __FX_FALSE);
+} // MUSIC_FadeActive
+
+
+void MUSIC_StopFade(void)
+{
+    musdebug("STUB ... MUSIC_StopFade().\n");
+} // MUSIC_StopFade
+
+
+void MUSIC_RerouteMidiChannel(int channel, int cdecl function( int event, int c1, int c2 ))
+{
+    musdebug("STUB ... MUSIC_RerouteMidiChannel().\n");
+} // MUSIC_RerouteMidiChannel
+
+
+void MUSIC_RegisterTimbreBank(unsigned char *timbres)
+{
+    musdebug("STUB ... MUSIC_RegisterTimbreBank().\n");
+} // MUSIC_RegisterTimbreBank
+
+
 
 // end of fx_man.c ...
 
