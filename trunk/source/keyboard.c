@@ -38,6 +38,8 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 volatile byte  KB_KeyDown[ MAXKEYBOARDSCAN ];   // Keyboard state array
 volatile kb_scancode KB_LastScan;
 
+static boolean keyIsWaiting = 0;
+
 /*
 =============================================================================
 FUNCTIONS
@@ -46,7 +48,19 @@ FUNCTIONS
 
 void keyhandler(void)
 {
-	STUBBED("hook this up from buildengine");
+    int lastkey = _readlastkeyhit();
+    if (lastkey >= MAXKEYBOARDSCAN)
+    {
+        STUBBED("Scancode out of range!");
+        return;
+    }
+
+    KB_LastScan = lastkey;
+
+    // 128 bit means key was released.
+    KB_KeyDown[lastkey] = (lastkey & 128) ? 0 : 1;
+
+    keyIsWaiting = ((keyIsWaiting) || (KB_KeyDown[lastkey]));
 }
 
 void KB_KeyEvent( int scancode, boolean keypressed )
@@ -56,8 +70,7 @@ void KB_KeyEvent( int scancode, boolean keypressed )
 
 boolean KB_KeyWaiting( void )
 {
-	STUBBED("KB_KeyWaiting");
-	return true;
+    return keyIsWaiting;
 }
 
 char KB_Getch( void )
@@ -73,12 +86,14 @@ void KB_Addch( char ch )
 
 void KB_FlushKeyboardQueue( void )
 {
-	STUBBED("KB_FlushKeyboardQueue");
+    _handle_events();
+	keyIsWaiting = false;
 }
 
 void KB_ClearKeysDown( void )
 {
-	STUBBED("KB_ClearKeysDown");
+    memset(KB_KeyDown, '\0', sizeof (KB_KeyDown));
+	keyIsWaiting = false;
 }
 
 char *KB_ScanCodeToString( kb_scancode scancode )
@@ -111,11 +126,11 @@ boolean KB_KeypadActive( void )
 
 void KB_Startup( void )
 {
-	STUBBED("KB_Startup");
+	KB_ClearKeysDown();
 }
 
 void KB_Shutdown( void )
 {
-	STUBBED("KB_Shutdown");
+	KB_ClearKeysDown();
 }
 

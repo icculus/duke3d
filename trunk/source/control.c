@@ -91,6 +91,7 @@ void CONTROL_GetUserInput( UserInput *info )
 void CONTROL_GetInput( ControlInfo *info )
 {
 	STUBBED("CONTROL_GetInput");
+    memset(info, '\0', sizeof (ControlInfo));
 }
 
 void CONTROL_ClearButton( int32 whichbutton )
