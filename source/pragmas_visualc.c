@@ -2591,7 +2591,7 @@ long divscale32(long i1, long i2)
 {
     __asm
     {
-        mov eax, i1
+        mov edx, i1
         mov ebx, i2
         xor eax, eax
         idiv ebx
@@ -2928,6 +2928,22 @@ long ksgn(long i1)
     } /* asm */
     return(i1);
 }
+
+
+int sgn(int i1)
+{
+	__asm
+	{
+		mov ebx, i1
+		add ebx, ebx
+        sbb eax, eax
+        cmp eax, ebx
+        adc eax, 0
+		mov i1, eax
+	}
+	return(i1);
+}
+
 
         /* eax = (unsigned min)umin(eax,ebx) */
 long umin(long i1, long i2)

@@ -3982,6 +3982,7 @@ void computergetinput(long snum, input *syn)
     syn->horz = 0;
     syn->bits = 0;
 
+    z2 = y2 = x2 = 0;
     x1 = sprite[p->i].x;
     y1 = sprite[p->i].y;
     z1 = sprite[p->i].z;

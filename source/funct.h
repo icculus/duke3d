@@ -410,7 +410,7 @@ extern void Startup(void );
 //#line "game.c" 6284
 extern void getnames(void );
 //#line "game.c" 6309
-extern void main(int argc,char **argv);
+extern int main(int argc,char **argv);
 //#line "game.c" 6563
 extern char opendemoread(char which_demo);
 //#line "game.c" 6589

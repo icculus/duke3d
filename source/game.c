@@ -42,7 +42,6 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
 
 #ifdef VOLUMEONE
     #define VERSION "1.4"
@@ -2631,7 +2630,7 @@ long tempsectorz[MAXSECTORS];
 long tempsectorpicnum[MAXSECTORS];
 //short tempcursectnum;
 
-SE40_Draw(int spnum,long x,long y,long z,short a,short h,long smoothratio)
+void SE40_Draw(int spnum,long x,long y,long z,short a,short h,long smoothratio)
 {
  int i=0,j=0,k=0;
  int floor1=0,floor2=0,ok=0,fofmode=0;
@@ -7383,7 +7382,7 @@ void copyprotect(void)
     }
 }
 
-void main(int argc,char **argv)
+int main(int argc,char **argv)
 {
     long i, j, k, l;
     int32 tempautorun;
@@ -7396,6 +7395,8 @@ void main(int argc,char **argv)
 #if !PLATFORM_DOS
     _platform_init(argc, argv, "Duke Nukem 3D", "Duke3D");
 #endif
+
+	setmmxoverlay(getenv("BUILD_NOPENTIUM") == NULL);
 
     todd[0] = 'T';
     sixteen[0] = 'D';
@@ -7690,6 +7691,7 @@ void main(int argc,char **argv)
     }
 
     gameexit(" ");
+	return(0);
 }
 
 char opendemoread(char which_demo) // 0 = mine
@@ -8502,13 +8504,13 @@ char domovethings(void)
 
             if(multiwho != myconnectindex)
             {
-                strcpy(&fta_quotes[122],&ud.user_name[multiwho][0]);
-                strcat(&fta_quotes[122]," SAVED A MULTIPLAYER GAME");
+                strcpy(fta_quotes[122],&ud.user_name[multiwho][0]);
+                strcat(fta_quotes[122]," SAVED A MULTIPLAYER GAME");
                 FTA(122,&ps[myconnectindex]);
             }
             else
             {
-                strcpy(&fta_quotes[122],"MULTIPLAYER GAME SAVED");
+                strcpy(fta_quotes[122],"MULTIPLAYER GAME SAVED");
                 FTA(122,&ps[myconnectindex]);
             }
             break;
@@ -8525,13 +8527,13 @@ char domovethings(void)
             {
                 if(multiwho != myconnectindex)
                 {
-                    strcpy(&fta_quotes[122],&ud.user_name[multiwho][0]);
-                    strcat(&fta_quotes[122]," LOADED A MULTIPLAYER GAME");
+                    strcpy(fta_quotes[122],&ud.user_name[multiwho][0]);
+                    strcat(fta_quotes[122]," LOADED A MULTIPLAYER GAME");
                     FTA(122,&ps[myconnectindex]);
                 }
                 else
                 {
-                    strcpy(&fta_quotes[122],"MULTIPLAYER GAME LOADED");
+                    strcpy(fta_quotes[122],"MULTIPLAYER GAME LOADED");
                     FTA(122,&ps[myconnectindex]);
                 }
                 return 1;

@@ -50,4 +50,7 @@ void SoundShutdown( void );
 void MusicStartup( void );
 void MusicShutdown( void );
 
+/* dunno where this came from; I added it. --ryan. */
+void testcallback(unsigned long num);
+
 #endif

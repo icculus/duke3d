@@ -144,7 +144,7 @@ void getangplayers(short snum)
     }
 }
 
-loadpheader(char spot,int32 *vn,int32 *ln,int32 *psk,int32 *nump)
+int loadpheader(char spot,int32 *vn,int32 *ln,int32 *psk,int32 *nump)
 {
 
      long i;
@@ -183,7 +183,7 @@ loadpheader(char spot,int32 *vn,int32 *ln,int32 *psk,int32 *nump)
 }
 
 
-loadplayer(signed char spot)
+int loadplayer(signed char spot)
 {
      short k,music_changed;
      char fn[] = "game0.sav";
@@ -500,7 +500,7 @@ loadplayer(signed char spot)
      return(0);
 }
 
-saveplayer(signed char spot)
+int saveplayer(signed char spot)
 {
      long i, j;
          char fn[] = "game0.sav";
@@ -700,7 +700,7 @@ saveplayer(signed char spot)
 
      if(ud.multimode < 2)
      {
-         strcpy(&fta_quotes[122],"GAME SAVED");
+         strcpy(fta_quotes[122],"GAME SAVED");
          FTA(122,&ps[myconnectindex]);
      }
 
@@ -1135,7 +1135,7 @@ void dispnames(void)
 //  We DO have a _dos_findfirst implementation now...maybe use that instead?
 //     --ryan.
 #if ORIGINAL_DUKE3D_GETFILENAMES
-getfilenames(char kind[6])
+int getfilenames(char kind[6])
 {
         short type;
         struct find_t fileinfo;

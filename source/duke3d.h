@@ -23,6 +23,8 @@ Original Source: 1996 - Todd Replogle
 Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 */
 //-------------------------------------------------------------------------
+#ifndef _INCL_DUKE3D_H_
+#define _INCL_DUKE3D_H_
 
 #include <stdio.h>
 #include <string.h>
@@ -576,3 +578,6 @@ extern long stereomode, stereowidth, stereopixelwidth;
 extern long myaimmode, myaimstat, omyaimstat;
 
 extern int32 dukever13; // indicate old version
+
+#endif  // include-once header.
+
