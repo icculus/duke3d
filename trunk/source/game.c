@@ -306,9 +306,15 @@ int minitext(int x,int y,char *str,char p,char sb)
     return (x);
 }
 
-int minitextshade(int x,int y,char *t,char s,char p,char sb)
+int minitextshade(int x,int y,char *str,char s,char p,char sb)
 {
     short ac;
+    char buf[128];
+    char *t;
+
+    strncpy (buf, str, 128);
+    buf[127] = 0;
+    t = buf;
 
     while(*t)
     {
