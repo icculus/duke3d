@@ -60,6 +60,7 @@ BUILDOBJS := \
 	buildengine/engine.o \
 	buildengine/sdl_driver.o \
 	buildengine/mmulti.o \
+	buildengine/pragmas.o \
 	buildengine/unix_compat.o
 
 CC = gcc
@@ -84,8 +85,7 @@ duke3d: 	\
 	scriplib.o \
 	sector.o \
 	sounds.o \
-	fx_man.o \
-	pragmas_gnu.o
+	fx_man.o
 	$(CC) $^ $(BUILDOBJS) $(LDLIBS) -o $@
 
 clean:
