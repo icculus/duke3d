@@ -103,7 +103,7 @@ task *TimerPtr=NULL;
 
 extern long lastvisinc;
 
-void timerhandler()
+void timerhandler(task *unused)
 {
     totalclock++;
 }
@@ -7272,7 +7272,7 @@ void writestring(long a1,long a2,long a3,short a4,long vx,long vy,long vz)
 
 char testcd( char *fn )
 {
-
+#if PLATFORM_DOS
  short drive_count, drive;
  long dalen = 0;
  struct find_t dafilet;
@@ -7326,6 +7326,10 @@ char testcd( char *fn )
 
   return( dalen != IDFSIZE );
 
+#else
+    STUBBED("CD detection.");
+    return 0;
+#endif
 }
 
 

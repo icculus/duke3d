@@ -1130,6 +1130,11 @@ void dispnames(void)
 
 }
 
+
+// This is the same thing as was in build.c ...
+//  We DO have a _dos_findfirst implementation now...maybe use that instead?
+//     --ryan.
+#if ORIGINAL_DUKE3D_GETFILENAMES
 getfilenames(char kind[6])
 {
         short type;
@@ -1162,6 +1167,103 @@ getfilenames(char kind[6])
 
         return(0);
 }
+
+#else
+
+int getfilenames(char kind[6])
+{
+/* !!! FIXME: Visual C? */
+#if (defined __WATCOMC__)
+	short type;
+	struct find_t fileinfo;
+
+	if (strcmp(kind,"SUBD") == 0)
+	{
+		strcpy(kind,"*.*");
+		if (_dos_findfirst(kind,_A_SUBDIR,&fileinfo) != 0)
+			return(-1);
+		type = 1;
+	}
+	else
+	{
+		if (_dos_findfirst(kind,_A_NORMAL,&fileinfo) != 0)
+			return(-1);
+		type = 0;
+	}
+	do
+	{
+		if ((type == 0) || ((fileinfo.attrib&16) > 0))
+			if ((fileinfo.name[0] != '.') || (fileinfo.name[1] != 0))
+			{
+				strcpy(menuname[menunamecnt],fileinfo.name);
+				menuname[menunamecnt][16] = type;
+				menunamecnt++;
+			}
+	}
+	while (_dos_findnext(&fileinfo) == 0);
+
+#elif (defined PLATFORM_UNIX)
+
+    DIR *dir;
+    struct dirent *dent;
+    struct stat statbuf;
+    int add_this;
+    char *ptr = NULL;
+    int len = 0;
+    int subdirs = 0;
+
+	if (strcmp(kind,"SUBD") == 0)
+        subdirs = 1;
+
+    dir = opendir(".");
+    if (dir == NULL)
+        return(-1);
+
+    do
+    {
+        add_this = 0;
+        dent = readdir(dir);
+        if (dent != NULL)
+        {
+            if (stat(dent->d_name, &statbuf) == 0)
+            {
+                if (subdirs)
+                {
+                    if (S_ISDIR(statbuf.st_mode))
+                    add_this = 1;
+                } /* if */
+                else
+                {
+                    /* need to expand support if this assertion ever fails. */
+                    assert(stricmp(kind, "*.MAP") == 0);
+                    len = strlen(dent->d_name);
+                    if (len >= 5)
+                    {
+                        ptr = ((char *) dent->d_name) + len;
+                        ptr += strlen(ptr) - 4;
+                        if (stricmp(ptr, ".MAP") == 0)
+                    add_this = 1;
+                    } /* if */
+                } /* else */
+
+                if (add_this)
+    			{
+	    			strcpy(menuname[menunamecnt],dent->d_name);
+		    		menuname[menunamecnt][16] = subdirs;
+			    	menunamecnt++;
+                } /* if */
+            } /* if */
+        } /* if */
+    } while (dent != NULL);
+
+    closedir(dir);
+
+#endif
+	return(0);
+}
+
+#endif
+
 
 void sortfilenames()
 {
