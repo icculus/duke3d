@@ -8110,7 +8110,8 @@ long playback(void)
         if( (ps[myconnectindex].gm&MODE_MENU) && (ps[myconnectindex].gm&MODE_EOL) )
             goto RECHECK;
 
-        if (KB_KeyPressed(sc_Escape))
+        extern int ignore_escape;  // Hacky McHack.  --ryan.
+        if ((KB_KeyPressed(sc_Escape)) && (!ignore_escape))
         {
             KB_ClearKeyDown(sc_Escape);
             FX_StopAllSounds();
