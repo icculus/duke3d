@@ -397,7 +397,7 @@ void KB_Startup( void )
     shiftedScancodeToASCII[sc_Comma] = '<';
     shiftedScancodeToASCII[sc_Period] = '>';
     shiftedScancodeToASCII[sc_Kpad_Star] = '*';
-    shiftedScancodeToASCII[sc_Slash] = '?;
+    shiftedScancodeToASCII[sc_Slash] = '?';
     shiftedScancodeToASCII[sc_SemiColon] = ':';
     shiftedScancodeToASCII[sc_Quote] = '\"';
     shiftedScancodeToASCII[sc_Tilde] = '~';
