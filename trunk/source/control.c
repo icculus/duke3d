@@ -126,15 +126,15 @@ void CONTROL_CenterJoystick
 	STUBBED("CONTROL_CenterJoystick");
 }
 
+static int32 mouseSensitivity = 0;
 int32 CONTROL_GetMouseSensitivity( void )
 {
-	STUBBED("CONTROL_GetMouseSensitivity");
-	return 0;
+    return mouseSensitivity;
 }
 
 void CONTROL_SetMouseSensitivity( int32 newsensitivity )
 {
-	STUBBED("CONTROL_SetMouseSensitivity");
+	mouseSensitivity = newsensitivity;
 }
 
 void CONTROL_Startup
@@ -189,7 +189,7 @@ void CONTROL_PrintAxes( void )
 
 boolean MOUSE_Init( void )
 {
-	STUBBED("MOUSE_Init");
+	//STUBBED("MOUSE_Init");  // buildengine handles this.
 	return true;
 }
 
@@ -208,19 +208,43 @@ void    MOUSE_HideCursor( void )
 	STUBBED("MOUSE_HideCursor");
 }
 
+static int32 mousePositionX = 0;
+static int32 mousePositionY = 0;
+static int32 mouseRelativeX = 0;
+static int32 mouseRelativeY = 0;
+static short mouseButtons = 0;
+
+static void updateMouse(void)
+{
+    // this is in buildengine.
+    short x, y;
+    getmousevalues(&x, &y, &mouseButtons);
+
+    mouseRelativeX += x;
+    mouseRelativeY += y;
+    mousePositionX += x;
+    mousePositionY += y;
+}
+
 int32   MOUSE_GetButtons( void )
 {
-	STUBBED("MOUSE_GetButtons");
-	return 0;
+    updateMouse();
+    return ((int32) mouseButtons);
 }
 
 void    MOUSE_GetPosition( int32*x, int32*y  )
 {
-	STUBBED("MOUSE_GetPosition");
+    if (x) *x = mousePositionX;
+    if (y) *y = mousePositionY;
 }
 
 void    MOUSE_GetDelta( int32*x, int32*y  )
 {
-	STUBBED("MOUSE_GetDelta");
+    updateMouse();
+
+    if (x) *x = mouseRelativeX;
+    if (y) *y = mouseRelativeY;
+
+    mouseRelativeX = mouseRelativeY = 0;
 }
 
