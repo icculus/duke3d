@@ -27,7 +27,7 @@
 				ImproveFloatingPointConsistency="TRUE"
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="TRUE"
-				AdditionalIncludeDirectories="buildengine\SDL-1.2.5\include;buildengine\SDL_mixer-1.2.5;.\buildengine;.\buildengine"
+				AdditionalIncludeDirectories="buildengine\SDL-1.2.5\include;buildengine\SDL_mixer-1.2.5\include;.\buildengine;.\buildengine"
 				PreprocessorDefinitions="NDEBUG;WIN32;_CONSOLE;USE_I386_ASM;PLATFORM_WIN32"
 				RuntimeLibrary="4"
 				DefaultCharIsUnsigned="TRUE"
@@ -79,7 +79,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="buildengine\SDL-1.2.5\include;buildengine\SDL_mixer-1.2.5;.\buildengine"
+				AdditionalIncludeDirectories="buildengine\SDL-1.2.5\include;buildengine\SDL_mixer-1.2.5\include;.\buildengine"
 				PreprocessorDefinitions="_DEBUG;WIN32;_CONSOLE;USE_I386_ASM;PLATFORM_WIN32"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="5"
