@@ -251,6 +251,24 @@ static struct {
 	{ "KpdSl",	sc_kpad_Slash	},
 	{ "KpdEnt",	sc_kpad_Enter	},
 	{ "PrtScn",	sc_PrintScreen	},
+
+    // AZERTY hacks...
+	{ "INTL1",	sc_INTL1	},
+	{ "INTL2",	sc_INTL2	},
+	{ "INTL3",	sc_INTL3	},
+	{ "INTL4",	sc_INTL4	},
+	{ "INTL5",	sc_INTL5	},
+	{ "INTL6",	sc_INTL6	},
+	{ "INTL7",	sc_INTL7	},
+	{ "INTL8",	sc_INTL8	},
+	{ "INTL9",	sc_INTL9	},
+	{ "INTL10",	sc_INTL10	},
+	{ "INTL11",	sc_INTL11	},
+	{ "INTL12",	sc_INTL12	},
+	{ "INTL13",	sc_INTL13	},
+	{ "INTL14",	sc_INTL14	},
+	{ "INTL15",	sc_INTL15	},
+
 	{ NULL,		0		}
 };
 
