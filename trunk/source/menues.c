@@ -154,7 +154,7 @@ static int loadpheader(char spot,int32 *vn,int32 *ln,int32 *psk,int32 *nump)
      char filename[] = "game0.sav";
      char fullname[128];
      long fil;
-     long bv;
+     long bv = 0;
 
      filename[4] = spot+'0';
      GetPathFromEnvironment(fullname, 128, filename);
@@ -163,7 +163,7 @@ static int loadpheader(char spot,int32 *vn,int32 *ln,int32 *psk,int32 *nump)
 
      walock[MAXTILES-3] = 255;
 
-     kdfread(&bv,4,1,fil);
+     kdfread32(&bv,1,fil);
      if(bv != BYTEVERSION)
      {
         FTA(114,&ps[myconnectindex]);
@@ -171,12 +171,12 @@ static int loadpheader(char spot,int32 *vn,int32 *ln,int32 *psk,int32 *nump)
         return 1;
      }
 
-     kdfread(nump,sizeof(int32),1,fil);
+     kdfread32(nump,1,fil);
 
      kdfread(tempbuf,19,1,fil);
-         kdfread(vn,sizeof(int32),1,fil);
-         kdfread(ln,sizeof(int32),1,fil);
-     kdfread(psk,sizeof(int32),1,fil);
+         kdfread32(vn,1,fil);
+         kdfread32(ln,1,fil);
+     kdfread32(psk,1,fil);
 
      if (waloff[MAXTILES-3] == 0) allocache(&waloff[MAXTILES-3],160*100,&walock[MAXTILES-3]);
      tilesizx[MAXTILES-3] = 100; tilesizy[MAXTILES-3] = 160;
@@ -232,7 +232,7 @@ int loadplayer(signed char spot)
 
      ready2send = 0;
 
-     kdfread(&bv,4,1,fil);
+     kdfread32(&bv,1,fil);
      if(bv != BYTEVERSION)
      {
         FTA(114,&ps[myconnectindex]);
@@ -242,7 +242,7 @@ int loadplayer(signed char spot)
         return 1;
      }
 
-     kdfread(&nump,sizeof(nump),1,fil);
+     kdfread32(&nump,1,fil);
      if(nump != numplayers)
      {
         kclose(fil);
@@ -275,9 +275,9 @@ int loadplayer(signed char spot)
 
      music_changed = (music_select != (ud.volume_number*11) + ud.level_number);
 
-         kdfread(&ud.volume_number,sizeof(ud.volume_number),1,fil);
-         kdfread(&ud.level_number,sizeof(ud.level_number),1,fil);
-         kdfread(&ud.player_skill,sizeof(ud.player_skill),1,fil);
+         kdfread32(&ud.volume_number,1,fil);
+         kdfread32(&ud.level_number,1,fil);
+         kdfread32(&ud.player_skill,1,fil);
 
          ud.m_level_number = ud.level_number;
          ud.m_volume_number = ud.volume_number;
@@ -289,9 +289,14 @@ int loadplayer(signed char spot)
      tilesizx[MAXTILES-3] = 100; tilesizy[MAXTILES-3] = 160;
      kdfread((char *)waloff[MAXTILES-3],160,100,fil);
 
-         kdfread(&numwalls,2,1,fil);
+#if PLATFORM_BIGENDIAN
+#warning finish byteswapping this...if it is actually used. --ryan.
+STUBBED("Needs byteswapping");
+#endif
+
+         kdfread16(&numwalls,1,fil);
      kdfread(&wall[0],sizeof(walltype),MAXWALLS,fil);
-         kdfread(&numsectors,2,1,fil);
+         kdfread16(&numsectors,1,fil);
      kdfread(&sector[0],sizeof(sectortype),MAXSECTORS,fil);
          kdfread(&sprite[0],sizeof(spritetype),MAXSPRITES,fil);
          kdfread(&headspritesect[0],2,MAXSECTORS+1,fil);
@@ -1310,6 +1315,7 @@ long quittimer = 0;
 
 void menus(void)
 {
+    short shorttmp = 0;
     short c,x;
     volatile long l;
 // CTW - REMOVED
@@ -2215,11 +2221,14 @@ void menus(void)
             menutext(c,31+15,SHX(-3),PHX(-3),"SHADOWS");
             menutext(c,31+15+15,SHX(-4),PHX(-4),"SCREEN TILTING");
             menutext(c,31+15+15+15,SHX(-5),PHX(-5),"SCREEN SIZE");
-
-                bar(c+167+40,31+15+15+15,(short *)&ud.screen_size,-4,x==3,SHX(-5),PHX(-5));
+                shorttmp = (short) ud.screen_size;
+                bar(c+167+40,31+15+15+15,(short *)&shorttmp,-4,x==3,SHX(-5),PHX(-5));
+                ud.screen_size = (int32) shorttmp;
 
             menutext(c,31+15+15+15+15,SHX(-6),PHX(-6),"BRIGHTNESS");
-                bar(c+167+40,31+15+15+15+15,(short *)&ud.brightness,8,x==4,SHX(-6),PHX(-6));
+                shorttmp = (short) ud.brightness;
+                bar(c+167+40,31+15+15+15+15,(short *)&shorttmp,8,x==4,SHX(-6),PHX(-6));
+                ud.brightness = (int32) shorttmp;
                 if(x==4) setbrightness(ud.brightness>>2,&ps[myconnectindex].palette[0]);
 
             if ( ControllerType == controltype_keyboardandmouse )
@@ -2357,7 +2366,9 @@ void menus(void)
             {
                 l = FXVolume;
                 FXVolume >>= 2;
-                bar(c+167+40,50+16+16,(short *)&FXVolume,4,(FXDevice!=NumSoundCards)&&x==2,SHX(-4),SoundToggle==0||(FXDevice==NumSoundCards));
+                shorttmp = (short) FXVolume;
+                bar(c+167+40,50+16+16,(short *)&shorttmp,4,(FXDevice!=NumSoundCards)&&x==2,SHX(-4),SoundToggle==0||(FXDevice==NumSoundCards));
+                FXVolume = (int32) shorttmp;
                 if(l != FXVolume)
                     FXVolume <<= 2;
                 if(l != FXVolume)
@@ -2368,10 +2379,12 @@ void menus(void)
             {
                 l = MusicVolume;
                 MusicVolume >>= 2;
+                shorttmp = (short) MusicVolume;
                 bar(c+167+40,50+16+16+16,
                     (short *)&MusicVolume,4,
                     (eightytwofifty==0||numplayers < 2) && (MusicDevice!=NumSoundCards) && x==3,SHX(-5),
                     (numplayers > 1 && eightytwofifty)||MusicToggle==0||(MusicDevice==NumSoundCards));
+                MusicVolume = (int32) shorttmp;
                 MusicVolume <<= 2;
                 if(l != MusicVolume)
                 {

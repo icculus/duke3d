@@ -294,12 +294,18 @@ extern void spriteglass(short i, short n);
 extern void ceilingglass(short i, short sectnum, short n);
 extern void lotsofcolourglass(short i, short wallnum, short n);
 extern void SetupGameButtons(void);
-extern long GetTime(void);
 extern void CenterCenter(void);
 extern void UpperLeft(void);
 extern void LowerRight(void);
 extern void CenterThrottle(void);
 extern void CenterRudder(void);
+
+/*
+ * (This was originally "GetTime", but that conflicts with a function in
+ *  in MacOSX's Carbon. --ryan.)
+ */
+extern long DUKE3D_GetTime(void);
+
 
 /* Global.c */
 extern void FixFilePath(char *filename);

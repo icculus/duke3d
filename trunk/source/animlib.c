@@ -29,6 +29,7 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #include <string.h>
 #include <fcntl.h>
 
+#include "duke3d.h"
 #include "types.h"
 #include "develop.h"
 #include "util_lib.h"
@@ -105,7 +106,15 @@ void loadpage (uint16 pagenumber, uint16 *pagepointer)
       buffer += 0xb00 + (pagenumber*0x10000);
       size = sizeof(lp_descriptor);
       memcpy(&anim->curlp,buffer,size);
+      #if PLATFORM_BIGENDIAN
+      anim->curlp.baseRecord = BUILDSWAP_INTEL16(anim->curlp.baseRecord);
+      anim->curlp.nRecords = BUILDSWAP_INTEL16(anim->curlp.nRecords);
+      anim->curlp.nBytes = BUILDSWAP_INTEL16(anim->curlp.nBytes);
+      #endif
       buffer += size + sizeof(uint16);
+
+      // most of pagepointer is 8-bit data, the 16-bit stuff is byteswapped
+      //  on the fly in renderframe() and CPlayRunSkipDump(), below.  --ryan.
       memcpy(pagepointer,buffer,anim->curlp.nBytes+(anim->curlp.nRecords*2));
       }
    }
@@ -123,7 +132,6 @@ void CPlayRunSkipDump (char *srcP, char *dstP)
    signed char cnt;
    uint16 wordCnt;
    byte pixel;
-
 
 nextOp:
    cnt = (signed char) *srcP++;
@@ -154,6 +162,11 @@ run:
    goto nextOp;
 longOp:
    wordCnt = *((uint16 *)srcP);
+
+#if PLATFORM_BIGENDIAN
+   wordCnt = BUILDSWAP_INTEL16(wordCnt);
+#endif
+
    srcP += sizeof(uint16);
    if ((int16)wordCnt <= 0)
       goto notLongSkip;       /* Do SIGNED test. */
@@ -190,7 +203,6 @@ stop:   /* all done */
    }
 
 
-
 //****************************************************************************
 //
 //      renderframe ()
@@ -203,6 +215,7 @@ void renderframe (uint16 framenumber, uint16 *pagepointer)
    uint16 offset=0;
    uint16 i;
    uint16 destframe;
+   uint16 pp1;
    byte *ppointer;
 
    CheckAnimStarted ( "renderframe" );
@@ -210,14 +223,15 @@ void renderframe (uint16 framenumber, uint16 *pagepointer)
 
    for(i = 0; i < destframe; i++)
       {
-      offset += pagepointer[i];
+      offset += BUILDSWAP_INTEL16(pagepointer[i]);
       }
    ppointer = (byte *)pagepointer;
 
    ppointer+=anim->curlp.nRecords*2+offset;
    if(ppointer[1])
       {
-      ppointer += (4 + (((uint16 *)ppointer)[1] + (((uint16 *)ppointer)[1] & 1)));
+      uint16 pp1 = BUILDSWAP_INTEL16(((uint16 *)ppointer)[1]);
+      ppointer += (4 + (pp1 + (pp1 & 1)));
       }
    else
       {
@@ -250,9 +264,13 @@ void drawframe (uint16 framenumber)
 //****************************************************************************
 
 void ANIM_LoadAnim (char * buffer)
-   {
+{
    uint16 i;
    int32 size;
+
+   assert(sizeof(lp_descriptor) == 6);
+   assert(sizeof(lpfileheader) == 128);
+   assert(sizeof(anim->LpArray) == 1536);
 
    if (!Anim_Started) Anim_Started = true;
 
@@ -261,6 +279,22 @@ void ANIM_LoadAnim (char * buffer)
    anim->currentframe = -1;
    size = sizeof(lpfileheader);
    memcpy(&anim->lpheader, buffer, size );
+
+#if PLATFORM_BIGENDIAN
+   anim->lpheader.id = BUILDSWAP_INTEL32(anim->lpheader.id);
+   anim->lpheader.maxLps = BUILDSWAP_INTEL16(anim->lpheader.maxLps);
+   anim->lpheader.nLps = BUILDSWAP_INTEL16(anim->lpheader.nLps);
+   anim->lpheader.nRecords = BUILDSWAP_INTEL32(anim->lpheader.nRecords);
+   anim->lpheader.maxRecsPerLp = BUILDSWAP_INTEL16(anim->lpheader.maxRecsPerLp);
+   anim->lpheader.lpfTableOffset = BUILDSWAP_INTEL16(anim->lpheader.lpfTableOffset);
+   anim->lpheader.contentType = BUILDSWAP_INTEL32(anim->lpheader.contentType);
+   anim->lpheader.width = BUILDSWAP_INTEL16(anim->lpheader.width);
+   anim->lpheader.height = BUILDSWAP_INTEL16(anim->lpheader.height);
+   anim->lpheader.nFrames = BUILDSWAP_INTEL32(anim->lpheader.nFrames);
+   anim->lpheader.framesPerSecond = BUILDSWAP_INTEL16(anim->lpheader.framesPerSecond);
+   //uint16 pad2[29]; // 58 bytes of filler to round up to 128 bytes total.
+#endif
+
    buffer += size+128;
    // load the color palette
    for (i = 0; i < 768; i += 3)
@@ -273,7 +307,17 @@ void ANIM_LoadAnim (char * buffer)
         // read in large page descriptors
    size = sizeof(anim->LpArray);
    memcpy(&anim->LpArray,buffer,size);
+
+#if PLATFORM_BIGENDIAN
+   for (i = 0; i < sizeof (anim->LpArray) / sizeof (anim->LpArray[0]); i++)
+   {
+      lp_descriptor *d = &anim->LpArray[i];
+      d->baseRecord = BUILDSWAP_INTEL16(d->baseRecord);
+      d->nRecords = BUILDSWAP_INTEL16(d->nRecords);
+      d->nBytes = BUILDSWAP_INTEL16(d->nBytes);
    }
+#endif
+}
 
 //****************************************************************************
 //
