@@ -81,6 +81,7 @@ duke3d: 	\
 	player.o \
 	premap.o \
 	rts.o \
+	scriplib.o \
 	sector.o \
 	sounds.o \
 	fx_man.o \
