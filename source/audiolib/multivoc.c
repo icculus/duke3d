@@ -594,14 +594,18 @@ void MV_ServiceRightGus( char **ptr, unsigned long *length )
 ---------------------------------------------------------------------*/
 static inline unsigned int get_le32(void *p0)
 {
-	unsigned char *p = p0;
-	return p[0] | (p[1]<<8) | (p[2]<<16) | (p[3]<<24);
+	//unsigned char *p = p0;
+	//return p[0] | (p[1]<<8) | (p[2]<<16) | (p[3]<<24);
+	unsigned int val = *((unsigned int *) p0);
+	return(BUILDSWAP_INTEL32(val));
 }
 
 static inline unsigned int get_le16(void *p0)
 {
-	unsigned char *p = p0;
-	return p[0] | (p[1]<<8);
+	//unsigned char *p = p0;
+	//return p[0] | (p[1]<<8);
+	unsigned short val = *((unsigned short *) p0);
+	return( (unsigned int) (BUILDSWAP_INTEL16(val)) );
 }
 
 playbackstatus MV_GetNextVOCBlock
@@ -2713,6 +2717,7 @@ int MV_PlayLoopedVOC
    {
    VoiceNode   *voice;
    int          status;
+   unsigned short nextpos;
 
    if ( !MV_Installed )
       {
@@ -2739,7 +2744,10 @@ int MV_PlayLoopedVOC
    voice->wavetype    = VOC;
    voice->bits        = 8;
    voice->GetSound    = MV_GetNextVOCBlock;
-   voice->NextBlock   = ptr + *( unsigned short int * )( ptr + 0x14 );
+
+   nextpos = *( unsigned short * )( ptr + 0x14 );
+   voice->NextBlock   = ptr + BUILDSWAP_INTEL16(nextpos);
+
    voice->DemandFeed  = NULL;
    voice->LoopStart   = NULL;
    voice->LoopCount   = 0;

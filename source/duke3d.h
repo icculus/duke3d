@@ -29,7 +29,10 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
+#if !PLATFORM_MACOSX
 #include <malloc.h>
+#endif
 
 #include <fcntl.h>
 #include <time.h>

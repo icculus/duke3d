@@ -7209,7 +7209,7 @@ void Startup(void)
 
 #endif
 
-   CONTROL_Startup( ControllerType, &GetTime, TICRATE );
+   CONTROL_Startup( ControllerType, DUKE3D_GetTime, TICRATE );
 
 // CTW - MODIFICATION
 // initengine(ScreenMode,ScreenWidth,ScreenHeight);
@@ -7793,8 +7793,8 @@ char opendemoread(char which_demo) // 0 = mine
      else
        if ((recfilep = kopen4load(d,loadfromgrouponly)) == -1) return(0);
 
-     kread(recfilep,&ud.reccnt,sizeof(long));
-     kread(recfilep,&ver,sizeof(char));
+     kread32(recfilep,&ud.reccnt);
+     kread8(recfilep,&ver);
      if( (ver != BYTEVERSION) ) // || (ud.reccnt < 512) )
      {
         printf("%s is a version %d demo, but we want version %d.\n",
@@ -7802,19 +7802,42 @@ char opendemoread(char which_demo) // 0 = mine
         kclose(recfilep);
         return 0;
      }
-         kread(recfilep,(char *)&ud.volume_number,sizeof(char));
-         kread(recfilep,(char *)&ud.level_number,sizeof(char));
-         kread(recfilep,(char *)&ud.player_skill,sizeof(char));
-     kread(recfilep,(char *)&ud.m_coop,sizeof(char));
-     kread(recfilep,(char *)&ud.m_ffire,sizeof(char));
-     kread(recfilep,(short *)&ud.multimode,sizeof(short));
-     kread(recfilep,(short *)&ud.m_monsters_off,sizeof(short));
-     kread(recfilep,(int32 *)&ud.m_respawn_monsters,sizeof(int32));
-     kread(recfilep,(int32 *)&ud.m_respawn_items,sizeof(int32));
-     kread(recfilep,(int32 *)&ud.m_respawn_inventory,sizeof(int32));
-     kread(recfilep,(int32 *)&ud.playerai,sizeof(int32));
+
+     // Ugh...these are all int32 vars read as 8 and 16 bits...yuck.  --ryan.
+     ud.volume_number = 0;
+     kread8(recfilep,(char *)&ud.volume_number);
+     ud.volume_number = BUILDSWAP_INTEL32(ud.volume_number);
+
+     ud.level_number = 0;
+     kread8(recfilep,(char *)&ud.level_number);
+     ud.level_number = BUILDSWAP_INTEL32(ud.level_number);
+
+     ud.player_skill = 0;
+     kread8(recfilep,(char *)&ud.player_skill);
+     ud.player_skill = BUILDSWAP_INTEL32(ud.player_skill);
+
+     ud.m_coop = 0;
+     kread8(recfilep,(char *)&ud.m_coop);
+     ud.m_coop = BUILDSWAP_INTEL32(ud.m_coop);
+
+     ud.m_ffire = 0;
+     kread8(recfilep,(char *)&ud.m_ffire);
+     ud.m_ffire = BUILDSWAP_INTEL32(ud.m_ffire);
+
+     ud.multimode = 0;
+     kread(recfilep,(short *)&ud.multimode,2);
+     ud.multimode = BUILDSWAP_INTEL32(ud.multimode);
+
+     ud.m_monsters_off = 0;
+     kread(recfilep,(short *)&ud.m_monsters_off,2);
+     ud.m_monsters_off = BUILDSWAP_INTEL32(ud.m_monsters_off);
+
+     kread32(recfilep,(int32 *)&ud.m_respawn_monsters);
+     kread32(recfilep,(int32 *)&ud.m_respawn_items);
+     kread32(recfilep,(int32 *)&ud.m_respawn_inventory);
+     kread32(recfilep,(int32 *)&ud.playerai);
      kread(recfilep,(char *)&ud.user_name[0][0],sizeof(ud.user_name));
-     kread(recfilep,(int32 *)&ud.auto_run,sizeof(int32));
+     kread32(recfilep,(int32 *)&ud.auto_run);
      kread(recfilep,(char *)boardfilename,sizeof(boardfilename));
      if( boardfilename[0] != 0 )
      {
@@ -7823,13 +7846,18 @@ char opendemoread(char which_demo) // 0 = mine
      }
 
      for(i=0;i<ud.multimode;i++)
-        kread(recfilep,(int32 *)&ps[i].aim_mode,sizeof(char));
+     {
+        ps[i].aim_mode = 0;
+        kread8(recfilep,(char *)&ps[i].aim_mode);
+        ps[i].aim_mode = BUILDSWAP_INTEL32(ps[i].aim_mode);
+     }
+
      ud.god = ud.cashman = ud.eog = ud.showallmap = 0;
      ud.clipping = ud.scrollmode = ud.overhead_on = 0;
      ud.showweapons =  ud.pause_on = ud.auto_run = 0;
 
-         newgame(ud.volume_number,ud.level_number,ud.player_skill);
-         return(1);
+     newgame(ud.volume_number,ud.level_number,ud.player_skill);
+     return(1);
 }
 
 
@@ -7839,6 +7867,8 @@ void opendemowrite(void)
     long dummylong = 0;
     char ver;
     short i;
+    short val16;
+    int val32;
 
     if(ud.recstat == 2) kclose(recfilep);
 
@@ -7855,18 +7885,28 @@ void opendemowrite(void)
     fwrite((char *)&ud.player_skill,sizeof(char),1,frecfilep);
     fwrite((char *)&ud.m_coop,sizeof(char),1,frecfilep);
     fwrite((char *)&ud.m_ffire,sizeof(char),1,frecfilep);
-    fwrite((short *)&ud.multimode,sizeof(short),1,frecfilep);
-    fwrite((short *)&ud.m_monsters_off,sizeof(short),1,frecfilep);
-    fwrite((int32 *)&ud.m_respawn_monsters,sizeof(int32),1,frecfilep);
-    fwrite((int32 *)&ud.m_respawn_items,sizeof(int32),1,frecfilep);
-    fwrite((int32 *)&ud.m_respawn_inventory,sizeof(int32),1,frecfilep);
-    fwrite((int32 *)&ud.playerai,sizeof(int32),1,frecfilep);
+    val16 = BUILDSWAP_INTEL16(ud.multimode);
+    fwrite((short *)&val16,sizeof(short),1,frecfilep);
+    val16 = BUILDSWAP_INTEL16(ud.m_monsters_off);
+    fwrite((short *)&val16,sizeof(short),1,frecfilep);
+    val32 = BUILDSWAP_INTEL32(ud.m_respawn_monsters);
+    fwrite((int32 *)&val32,sizeof(int32),1,frecfilep);
+    val32 = BUILDSWAP_INTEL32(ud.m_respawn_items);
+    fwrite((int32 *)&val32,sizeof(int32),1,frecfilep);
+    val32 = BUILDSWAP_INTEL32(ud.m_respawn_inventory);
+    fwrite((int32 *)&val32,sizeof(int32),1,frecfilep);
+    val32 = BUILDSWAP_INTEL32(ud.playerai);
+    fwrite((int32 *)&val32,sizeof(int32),1,frecfilep);
     fwrite((char *)&ud.user_name[0][0],sizeof(ud.user_name),1,frecfilep);
-    fwrite((int32 *)&ud.auto_run,sizeof(int32),1,frecfilep);
+    val32 = BUILDSWAP_INTEL32(ud.auto_run);
+    fwrite((int32 *)&val32,sizeof(int32),1,frecfilep);
     fwrite((char *)boardfilename,sizeof(boardfilename),1,frecfilep);
 
     for(i=0;i<ud.multimode;i++)
-        fwrite((int32 *)&ps[i].aim_mode,sizeof(char),1,frecfilep);
+    {
+        val32 = BUILDSWAP_INTEL32(ps[i].aim_mode);
+        fwrite(&val32,sizeof(char),1,frecfilep);
+    }
 
     totalreccnt = 0;
     ud.reccnt = 0;
@@ -7876,6 +7916,9 @@ void record(void)
 {
     short i;
 
+#if PLATFORM_BIGENDIAN
+    STUBBED("This needs byteswapping!");
+#else
     for(i=connecthead;i>=0;i=connectpoint2[i])
          {
          copybufbyte(&sync[i],&recsync[ud.reccnt],sizeof(input));
@@ -7887,18 +7930,23 @@ void record(void)
                           ud.reccnt = 0;
                  }
          }
+#endif
+
 }
 
 void closedemowrite(void)
 {
-         if (ud.recstat == 1)
-         {
+    long val32;
+
+    if (ud.recstat == 1)
+    {
         if (ud.reccnt > 0)
         {
             dfwrite(recsync,sizeof(input)*ud.multimode,ud.reccnt/ud.multimode,frecfilep);
 
             fseek(frecfilep,SEEK_SET,0L);
-            fwrite(&totalreccnt,sizeof(long),1,frecfilep);
+            val32 = BUILDSWAP_INTEL32(totalreccnt);
+            fwrite(&val32,sizeof(long),1,frecfilep);
             ud.recstat = ud.m_recstat = 0;
         }
         fclose(frecfilep);
@@ -7982,9 +8030,22 @@ long playback(void)
         {
             if ((i == 0) || (i >= RECSYNCBUFSIZ))
             {
-                i = 0;
+                long cnt;
                 l = min(ud.reccnt,RECSYNCBUFSIZ);
-                kdfread(recsync,sizeof(input)*ud.multimode,l/ud.multimode,recfilep);
+                cnt = l/ud.multimode;
+                kdfread(recsync,sizeof(input)*ud.multimode,cnt,recfilep);
+                #if PLATFORM_BIGENDIAN
+                input *inptr = (input *) recsync;
+                cnt *= ud.multimode;
+                for (i = 0; i < cnt; i++)
+                {
+                    inptr->fvel = BUILDSWAP_INTEL16(inptr->fvel);
+                    inptr->svel = BUILDSWAP_INTEL16(inptr->svel);
+                    inptr->bits = BUILDSWAP_INTEL32(inptr->bits);
+                    inptr++;
+                }
+                #endif
+                i = 0;
             }
 
             for(j=connecthead;j>=0;j=connectpoint2[j])
@@ -9571,7 +9632,11 @@ void SetupGameButtons( void )
 ===================
 */
 
-long GetTime(void)
+/*
+ * (This was originally "GetTime", but that conflicts with a function in
+ *  in MacOSX's Carbon. --ryan.)
+ */
+long DUKE3D_GetTime(void)
    {
    return totalclock;
    }

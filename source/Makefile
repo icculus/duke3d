@@ -3,6 +3,7 @@
 #-----------------------------------------------------------------------------#
 
 beos := false
+macosx := true
 #use_asm := true
 
 #-----------------------------------------------------------------------------#
@@ -48,7 +49,19 @@ ifeq ($(strip $(cygwin)),true)
 else
   SDL_CFLAGS := $(shell sdl-config --cflags)
   SDL_LDFLAGS := $(shell sdl-config --libs)
-  EXTRACFLAGS += -DUSE_EXECINFO=1
+endif
+
+ifeq ($(strip $(macosx)),true)
+  EXTRACFLAGS += -DPLATFORM_MACOSX=1
+  EXTRALDFLAGS += -lSDLmain
+endif
+
+ifneq ($(strip $(cygwin)),true)
+  ifneq ($(strip $(macosx)),true)
+    ifneq ($(strip $(beos)),true)
+      EXTRACFLAGS += -DUSE_EXECINFO=1
+    endif
+  endif
 endif
 
 # check out buildengine in this directory:
@@ -74,15 +87,29 @@ else
 endif
 
 CC = gcc
-CFLAGS = -g $(SDL_CFLAGS) -DUSE_SDL=1 -DPLATFORM_UNIX=1 -W -Wall -Wno-unused $(EXTRACFLAGS) -O2 -funsigned-char
+CFLAGS = -c -g $(SDL_CFLAGS) -DUSE_SDL=1 -DPLATFORM_UNIX=1 -W -Wall -Wno-unused $(EXTRACFLAGS) -funsigned-char
+OPTIMIZE = -O2
 
 # Uncomment this to compile with the Intel compiler (v6.0)
 #CC = icc
 #CFLAGS = -g $(SDL_CFLAGS) -DUSE_SDL=1 -DPLATFORM_UNIX=1 -DUSE_I386_ASM=1 $(EXTRACFLAGS) -O2
 
-LDLIBS = $(SDL_LDFLAGS) -lSDL -lSDL_mixer $(EXTRALDFLAGS) -Wl,-E
+LDLIBS = $(SDL_LDFLAGS) -lSDL -lSDL_mixer $(EXTRALDFLAGS)
+
+# !!! FIXME: Do we even need this? It doesn't fly on MacOS X.  --ryan.
+#LDLIBS += -Wl,-E
 
 all: duke3d
+
+
+%.o : %.c
+	$(CC) $(CFLAGS) $(OPTIMIZE) -o $@ $<
+
+# Animation playback crashes due to optimization error on MacOS X. --ryan.
+ifeq ($(strip $(macosx)),true)
+animlib.o : animlib.c
+	$(CC) $(CFLAGS) -o $@ $<
+endif
 
 audiolib/audiolib.a:
 	$(MAKE) -C audiolib CC="$(CC)" CFLAGS="$(CFLAGS)" LDLIBS="$(LDLIBS)"

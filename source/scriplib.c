@@ -33,7 +33,7 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #include "duke3d.h"
 #include "scriplib.h"
 
-/* #define DEBUG_SCRIPLIB */
+//#define DEBUG_SCRIPLIB 1
 
 #define MAX_SCRIPTS 5
 
@@ -678,7 +678,6 @@ boolean SCRIPT_GetNumber
 {
 	scriptnode_t *cur;
 
-	/* STUBBED("GetNumber"); */
 	if (scripthandle == -1) return false;
 
 	cur = script_headnode[scripthandle];
