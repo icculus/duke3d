@@ -234,7 +234,7 @@ char menunum=0;
 void intomenusounds(void)
 {
     short i;
-    short menusnds[] =
+    static const short menusnds[] =
     {
         LASERTRIP_EXPLODE,
         DUKE_GRUNT,
@@ -283,6 +283,9 @@ void playmusic(char *fn)
     kclose( fp );
     MUSIC_PlaySong( MusicPtr, MUSIC_LoopSong );
 #else
+    if(MusicToggle == 0) return;
+    if(MusicDevice == NumSoundCards) return;
+
     // the SDL_mixer version does more or less this same thing.  --ryan.
     PlayMusic(fn);
 #endif
