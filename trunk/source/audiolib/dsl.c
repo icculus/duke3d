@@ -204,7 +204,7 @@ void DSL_StopPlayback( void )
 	if (blank != NULL) {
 		Mix_FreeChunk(blank);
 	}
-	
+
 	blank = NULL;
 	
 	if (blank_buf  != NULL) {
@@ -212,8 +212,9 @@ void DSL_StopPlayback( void )
 	}
 	
 	blank_buf = NULL;
-	
+
 	if (mixer_initialized) {
+		SDL_UnlockAudio();  /* just in case */
 		Mix_CloseAudio();
 	}
 	
@@ -227,9 +228,12 @@ unsigned DSL_GetPlaybackRate( void )
 
 unsigned long DisableInterrupts( void )
 {
+    SDL_LockAudio();
 	return 0;
 }
 
 void RestoreInterrupts( unsigned long flags )
 {
+    SDL_UnlockAudio();
 }
+
