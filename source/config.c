@@ -571,10 +571,10 @@ void readsavenames(void)
         GetPathFromEnvironment(fullname, 128, filename);
 
         if ((fil = fopen(fullname,"rb")) == NULL ) continue;
-        dfread32(&dummy,1,fil);
+        dfread(&dummy,4,1,fil);
 
         if(dummy != BYTEVERSION) return;
-        dfread32(&dummy,1,fil);
+        dfread(&dummy,4,1,fil);
         dfread(&ud.savegame[i][0],19,1,fil);
         fclose(fil);
     }
