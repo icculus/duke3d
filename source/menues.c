@@ -1240,11 +1240,17 @@ int getfilenames(char kind[6])
         dent = readdir(dir);
         if (dent != NULL)
         {
+#ifndef DC
             if (stat(dent->d_name, &statbuf) == 0)
+#endif
             {
                 if (subdirs)
                 {
+#ifdef DC
+		    if (dent->size==-1)
+#else
                     if (S_ISDIR(statbuf.st_mode))
+#endif
                     add_this = 1;
                 } /* if */
                 else

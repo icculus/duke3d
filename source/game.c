@@ -2060,6 +2060,9 @@ void gameexit(char *msg)
 
     unlink("duke3d.tmp");
 
+#ifdef DC
+    platform_exit();
+#endif
     exit(0);
 }
 
@@ -7184,6 +7187,11 @@ void Startup(void)
 
    CONFIG_GetSetupFilename();
    CONFIG_ReadSetup();
+#ifdef DC
+   /* force change mode */
+   ScreenWidth = 320;
+   ScreenHeight = 240;
+#endif
 
    compilecons();
 
@@ -7439,6 +7447,10 @@ int main(int argc,char **argv)
 {
     long i, j, k, l;
     int32 tempautorun;
+
+#ifdef DC
+    platform_init(&argc,&argv);
+#endif
 
     copyprotect();
 

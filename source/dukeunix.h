@@ -57,10 +57,22 @@ void _dos_getdate(struct dosdate_t *date);
 
 #define FP_OFF(x) ((long) (x))
 
+#ifndef strcmpi
 #define strcmpi(x, y) strcasecmp(x, y)
+#endif
 
+#ifdef DC
+#undef stderr
+#undef stdout
+#undef getchar
+/* kos compat */
+#define stderr ((FILE*)2)
+#define stdout ((FILE*)2)
+#define Z_AvailHeap() ((10 * 1024) * 1024)
+#else
 // 64 megs should be enough for anybody.  :)  --ryan.
 #define Z_AvailHeap() ((64 * 1024) * 1024)
+#endif
 
 #define printchrasm(x,y,ch) printf("%c", (char) (ch & 0xFF))
 

@@ -195,7 +195,7 @@ static char ApogeePath[256];
 
 void FixFilePath(char *filename)
 {
-#if PLATFORM_UNIX
+#if defined(PLATFORM_UNIX) && !defined(DC)
     char *ptr;
     char *lastsep = filename;
 
@@ -852,7 +852,9 @@ char getch(void)
 
 int setup_homedir (void)
 {
-#if PLATFORM_UNIX
+#ifdef DC
+	strcpy (ApogeePath, "/ram/");
+#elif PLATFORM_UNIX
 	int err;
 
 	snprintf (ApogeePath, sizeof (ApogeePath), "%s/.duke3d/", getenv ("HOME"));
