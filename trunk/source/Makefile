@@ -117,6 +117,10 @@ else
 OPTIMIZE = -O2
 endif
 
+# Always turn OFF strict aliasing, even when optimizing. Otherwise, this is
+#  just an accident waiting to happen...  --ryan.
+CFLAGS += -fno-strict-aliasing
+
 # Uncomment this to compile with the Intel compiler (v6.0)
 #CC = icc
 #CFLAGS = -g $(SDL_CFLAGS) -DUSE_SDL=1 -DPLATFORM_UNIX=1 -DUSE_I386_ASM=1 $(EXTRACFLAGS) -O2
