@@ -28,8 +28,8 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #include <stdlib.h>
 #include <string.h>
 
+#include "duke3d.h"
 #include "scriplib.h"
-#include "duke3d.h" /* STUBBED()... */
 
 /*
 ==============
