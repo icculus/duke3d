@@ -833,3 +833,15 @@ int setup_homedir (void)
 }
 
 
+char   CheckParm (char *check)
+{
+    int i;
+    for (i = 1; i < _argc; i++)
+    {
+        if (strcmpi(_argv[i], check) == 0)
+            return(i);
+    }
+
+    return(0);
+}
+
