@@ -707,3 +707,116 @@ void SwapIntelShortArray(short *s, int num)
         s++;
     }
 }
+
+
+/* 
+  Copied over from Wolf3D Linux: http://www.icculus.org/wolf3d/
+  Modified for ROTT.
+  Stolen for Duke3D, too.
+ */
+ 
+#if PLATFORM_UNIX
+char *strlwr(char *s)
+{
+	char *p = s;
+	
+	while (*p) {
+		*p = tolower(*p);
+		p++;
+	}
+	
+	return s;
+}
+
+char *strupr(char *s)
+{
+	char *p = s;
+	
+	while (*p) {
+		*p = toupper(*p);
+		p++;
+	}
+	
+	return s;
+}
+	
+char *itoa(int value, char *string, int radix)
+{
+	switch (radix) {
+		case 10:
+			sprintf(string, "%d", value);
+			break;
+		case 16:
+			sprintf(string, "%x", value);
+			break;
+		default:
+			STUBBED("unknown radix");
+			break;
+	}
+	
+	return string;
+}
+
+char *ltoa(long value, char *string, int radix)
+{
+	switch (radix) {
+		case 10:
+			sprintf(string, "%ld", value);
+			break;
+		case 16:
+			sprintf(string, "%lx", value);
+			break;
+		default:
+			STUBBED("unknown radix");
+			break;
+	}
+	
+	return string;
+}
+
+char *ultoa(unsigned long value, char *string, int radix)
+{
+	switch (radix) {
+		case 10:
+			sprintf(string, "%lu", value);
+			break;
+		case 16:
+			sprintf(string, "%lux", value);
+			break;
+		default:
+			STUBBED("unknown radix");
+			break;
+	}
+	
+	return string;
+}
+#endif
+
+char getch(void)
+{
+	getchar();
+	return 0;
+}
+
+extern char ApogeePath[256];
+
+int setup_homedir (void)
+{
+#if PLATFORM_UNIX
+	int err;
+
+	snprintf (ApogeePath, sizeof (ApogeePath), "%s/.duke3d/", getenv ("HOME"));
+
+	err = mkdir (ApogeePath, S_IRWXU);
+	if (err == -1 && errno != EEXIST)
+	{
+		fprintf (stderr, "Couldn't create preferences directory: %s\n", 
+				strerror (errno));
+		return -1;
+	}
+#else
+    sprintf(ApogeePath, ".%s", PATH_SEP_STR);
+#endif
+
+	return 0;
+}

@@ -7371,6 +7371,11 @@ void main(int argc,char **argv)
 
     copyprotect();
 
+// This is needed for the icculus.org ported Build Engine.
+#if !PLATFORM_DOS
+    _platform_init(argc, argv, "Duke Nukem 3D", "Duke3D");
+#endif
+
     todd[0] = 'T';
     sixteen[0] = 'D';
     trees[0] = 'I';
