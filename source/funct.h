@@ -298,7 +298,7 @@ extern void execute(short i,short p,long x);
 //#line "game.c" 63
 extern void overwritesprite(long thex,long they,short tilenum,signed char shade,char stat,char dapalnum);
 //#line "game.c" 70
-extern void timerhandler(void);
+extern void timerhandler(task *unused);
 //#line "game.c" 75
 extern void inittimer(void);
 //#line "game.c" 81

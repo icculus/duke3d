@@ -47,6 +47,8 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #include <dos.h>
 #include <bios.h>
 #include <io.h>
+#define PATH_SEP_CHAR '\\'
+#define PATH_SEP_STR  "\\"
 #endif
 
 #if PLATFORM_UNIX
@@ -270,6 +272,8 @@ typedef struct
     unsigned long bits;
 } input;
 
+/* !!! FIXME: "sync" is defined in unistd.h ... :(  --ryan. */
+#define sync duke_sync
 extern input inputfifo[MOVEFIFOSIZ][MAXPLAYERS], sync[MAXPLAYERS];
 extern input recsync[RECSYNCBUFSIZ];
 
