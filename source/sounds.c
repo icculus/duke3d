@@ -301,8 +301,10 @@ char loadsound(unsigned short num)
     fp = kopen4load(sounds[num],loadfromgrouponly);
     if(fp == -1)
     {
+        #if 0  // commented out, since game legitimately triggers it.
         sprintf(&fta_quotes[113][0],"Sound %s(#%d) not found.",sounds[num],num);
         FTA(113,&ps[myconnectindex]);
+        #endif
         return 0;
     }
 
