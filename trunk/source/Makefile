@@ -59,6 +59,7 @@ BUILDOBJS := \
 	buildengine/cache1d.o \
 	buildengine/engine.o \
 	buildengine/sdl_driver.o \
+	buildengine/mmulti.o \
 	buildengine/unix_compat.o
 
 CC = gcc

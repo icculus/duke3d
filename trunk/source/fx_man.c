@@ -12,6 +12,8 @@
 #include <string.h>
 #include <assert.h>
 
+#include "duke3d.h"
+
 #if PLATFORM_DOS
 // Use the original Apogee Sound System libs instead.  --ryan.
 #error you probably should not compile this.
@@ -1220,6 +1222,8 @@ int MUSIC_PlaySong(unsigned char *song, int loopflag)
     music_musicchunk = Mix_LoadMUS_RW(rw);
     Mix_PlayMusic(music_musicchunk, (loopflag == MUSIC_PlayOnce) ? 0 : -1);
     */
+
+STUBBED("Need to use PlaySongROTT.  :(");
 
     return(MUSIC_Ok);
 } // MUSIC_PlaySong

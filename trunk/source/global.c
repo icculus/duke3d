@@ -611,3 +611,99 @@ void SafeFree (void * ptr)
     free(ptr);
 #endif
 }
+
+
+#ifndef LITTLE_ENDIAN
+#define LITTLE_ENDIAN 1234
+#endif
+
+#ifndef BIG_ENDIAN
+#define BIG_ENDIAN 4321
+#endif
+
+#if PLATFORM_DOS
+#ifndef BYTE_ORDER
+#define BYTE_ORDER LITTLE_ENDIAN
+#endif
+#endif
+
+#ifndef BYTE_ORDER
+#error Please define your platform.
+#endif
+
+#if (BYTE_ORDER == LITTLE_ENDIAN)
+#define KeepShort IntelShort
+#define SwapShort MotoShort
+#define KeepLong IntelLong
+#define SwapLong MotoLong
+#else
+#define KeepShort MotoShort
+#define SwapShort IntelShort
+#define KeepLong MotoLong
+#define SwapLong IntelLong
+#endif
+
+short	SwapShort (short l)
+{
+	byte	b1,b2;
+
+	b1 = l&255;
+	b2 = (l>>8)&255;
+
+	return (b1<<8) + b2;
+}
+
+short	KeepShort (short l)
+{
+	return l;
+}
+
+
+long	SwapLong (long l)
+{
+	byte	b1,b2,b3,b4;
+
+	b1 = l&255;
+	b2 = (l>>8)&255;
+	b3 = (l>>16)&255;
+	b4 = (l>>24)&255;
+
+	return ((long)b1<<24) + ((long)b2<<16) + ((long)b3<<8) + b4;
+}
+
+long	KeepLong (long l)
+{
+	return l;
+}
+
+
+#undef KeepShort
+#undef KeepLong
+#undef SwapShort
+#undef SwapLong
+
+void SwapIntelLong(long *l)
+{
+    *l = IntelLong(*l);
+}
+
+void SwapIntelShort(short *s)
+{
+    *s = IntelShort(*s);
+}
+
+void SwapIntelLongArray(long *l, int num)
+{
+    while (num--) {
+        SwapIntelLong(l);
+        l++;
+    }
+}
+
+void SwapIntelShortArray(short *s, int num)
+{
+    while (num--) {
+        SwapIntelShort(s);
+        s++;
+    }
+}
