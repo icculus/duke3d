@@ -35,6 +35,9 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 void _joystick_init(void);
 void _joystick_deinit(void);
 int _joystick_update(void);
+int _joystick_axis(int axis);
+int _joystick_button(int button);
+int _joystick_hat(int hat);
 //#include "buildengine/display.h"
 //***************************************************************************
 
