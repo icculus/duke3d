@@ -2205,6 +2205,19 @@ int ksgn(int i1) {
   return(retval);
 }
 
+
+int sgn(int i1) {
+  int retval = 0;
+  __asm__ __volatile__ (
+    "addl %%ebx, %%ebx  \n\t"
+    "sbbl %%eax, %%eax  \n\t"
+    "cmpl %%ebx, %%eax  \n\t"
+    "adcl $0, %%eax     \n\t"
+   : "=a" (retval) : "b" (i1) : "cc");
+  return(retval);
+}
+
+
 void swapchar(int i1, int i2) {
   __asm__ __volatile__ (
 	"movb (%%eax), %%cl   \n\t"

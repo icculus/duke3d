@@ -73,6 +73,8 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 
 #define FOURSLEIGHT (1<<8)
 
+struct player_struct;
+
 #include "types.h"
 #include "file_lib.h"
 #include "develop.h"
@@ -103,13 +105,6 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 // #define GC (TICSPERFRAME*44)
 
 #define NUM_SOUNDS 450
-
-#pragma aux sgn =\
-        "add ebx, ebx",\
-        "sbb eax, eax",\
-        "cmp eax, ebx",\
-        "adc eax, 0",\
-        parm [ebx]\
 
 #define    ALT_IS_PRESSED ( KB_KeyPressed( sc_RightAlt ) || KB_KeyPressed( sc_LeftAlt ) )
 #define    SHIFTS_IS_PRESSED ( KB_KeyPressed( sc_RightShift ) || KB_KeyPressed( sc_LeftShift ) )
