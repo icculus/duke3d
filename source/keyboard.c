@@ -41,6 +41,7 @@ volatile kb_scancode KB_LastScan;
 static volatile boolean keyIsWaiting = 0;
 
 static char scancodeToASCII[ MAXKEYBOARDSCAN ];
+static char extscanToSC[ MAXKEYBOARDSCAN ];
 
 /*
 =============================================================================
@@ -66,76 +67,17 @@ void keyhandler(void)
 
     if (rawkey == 0xe1)
     {
+    	/* SBF - build doesn't actually generate this for Pause/Break */
     	STUBBED("Another extended key!");
     	return;
     }
         
-    if (gotextended) {
+    if (gotextended)
+    {
     	gotextended = false;
     	
-    	switch (lastkey) {
-    	    case 0x35: /* kp divide */
-    	        /* no suitable mapping */
-    	        return;
-    	    case 0x47: /* home */
-    	        lastkey = sc_Home;
-    	        break;
-    	    case 0x48: /* up */
-    	        lastkey = sc_UpArrow;
-    	        break;
-    	    case 0x49: /* page up */
-    	        lastkey = sc_PgUp;
-    	        // SBF - SEE BUILDENGINE'S sdl_driver.c
-    	        // scancodes[SDLK_PAGEUP]          = 0xE0C9;
-    	        pressed = !pressed; /* invert */
-    	        
-    	        break;
-    	    case 0x4A: /* kpad minus */
-    	        lastkey = sc_kpad_Minus;
-    	        break;
-    	    case 0x4B: /* left */
-    	        lastkey = sc_LeftArrow;
-    	        break;
-    	    case 0x4D: /* right */
-    	        lastkey = sc_RightArrow;
-    	        break;
-    	    case 0x4E: /* kpad plus */
-    	        lastkey = sc_kpad_Plus;
-    	        break;
-    	    case 0x4F: /* end */
-    	    	lastkey = sc_End;
-    	    	break;
-    	    case 0x50: /* down */
-    	        lastkey = sc_DownArrow;
-    	        break;
-    	    case 0x51: /* page down */
-    	    	lastkey = sc_PgDn;
-    	    	// SBF - SEE BUILDENGINE'S sdl_driver.c
-    	    	// scancodes[SDLK_PAGEDOWN]        = 0xE0D1;
-    	    	pressed = !pressed; /* invert */
-    	    	
-    	    	// printf("PAGE DOWN: last: 0x%x raw: 0x%x pressed: %d\n",
-    	    	//	lastkey, rawkey, pressed);
-    	    	break;
-    	    case 0x53: /* delete */
-    	    	lastkey = sc_Delete;
-    	    	// SBF - SEE BUILDENGINE'S sdl_driver.c
-    	    	// scancodes[SDLK_DELETE]          = 0xE0D3;
-    	    	pressed = !pressed; /* invert */
-    	    	
-    	    	//printf("DELETE: last: 0x%x raw: 0x%x pressed: %d\n",
-    	    	//	lastkey, rawkey, pressed);
-    	    	break;
-    	    case 0x52: /* kpad 0 */
-    	    	lastkey = sc_kpad_0;
-    	    	break;
-    	    case 0x1C: /* kpad enter */
-    	    	lastkey = sc_kpad_Enter;
-    	    	break;
-    	    default:
-    	    	STUBBED("Unknown extended key!");
-    	    	return;
-    	}
+    	/* remap extended key to Duke3D equivalent */
+    	lastkey = extscanToSC[lastkey];
     }
     
     if (lastkey >= MAXKEYBOARDSCAN)
@@ -390,6 +332,25 @@ void KB_Startup( void )
     scancodeToASCII[sc_Enter] = asc_Enter;
     scancodeToASCII[sc_BackSpace] = asc_BackSpace;
 
+    memset(extscanToSC, '\0', sizeof (extscanToSC));
+    
+    /* map extended keys to their Duke3D equivalents */
+    extscanToSC[0x1C] = sc_kpad_Enter;
+    extscanToSC[0x1D] = sc_RightControl;
+    extscanToSC[0x35] = sc_kpad_Slash;
+    extscanToSC[0x37] = sc_PrintScreen;
+    extscanToSC[0x38] = sc_RightAlt;
+    extscanToSC[0x47] = sc_Home;
+    extscanToSC[0x48] = sc_UpArrow;
+    extscanToSC[0x49] = sc_PgUp;
+    extscanToSC[0x4B] = sc_LeftArrow;
+    extscanToSC[0x4D] = sc_RightArrow;
+    extscanToSC[0x4F] = sc_End;
+    extscanToSC[0x50] = sc_DownArrow;
+    extscanToSC[0x51] = sc_PgDn;
+    extscanToSC[0x52] = sc_Insert;
+    extscanToSC[0x53] = sc_Delete;
+    
 	KB_ClearKeysDown();
 }
 
