@@ -16,7 +16,7 @@
  */
 
 #if (defined __WATCOMC__)
-  #if ((defined PLATFORM_DOS) || (defined PLATFORM_WIN32))
+  #if ((PLATFORM_DOS) || (PLATFORM_WIN32))
     #error Do not compile this. Just include pragmas.h instead.
   #endif
 #endif
