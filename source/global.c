@@ -492,6 +492,17 @@ int32 SafeOpenAppend (const char *_filename, int32 filetype)
 	return handle;
 }
 
+boolean SafeFileExists ( const char * _filename )
+{
+    char filename[MAX_PATH];
+    strncpy(filename, _filename, sizeof (filename));
+    filename[sizeof (filename) - 1] = '\0';
+    FixFilePath(filename);
+
+    return(access(filename, F_OK) == 0);
+}
+
+
 int32 SafeOpenWrite (const char *_filename, int32 filetype)
 {
 	int	handle;
@@ -820,3 +831,5 @@ int setup_homedir (void)
 
 	return 0;
 }
+
+
