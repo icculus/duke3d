@@ -1248,15 +1248,21 @@ void waitforeverybody()
     if (numplayers < 2) return;
     packbuf[0] = 250;
     for(i=connecthead;i>=0;i=connectpoint2[i])
+    {
         if (i != myconnectindex)
             sendpacket(i,packbuf,1);
+    }
 
     playerreadyflag[myconnectindex]++;
     do
     {
+        _idle();  /* let input queue run... */
         getpackets();
         for(i=connecthead;i>=0;i=connectpoint2[i])
-            if (playerreadyflag[i] < playerreadyflag[myconnectindex]) break;
+        {
+            if (playerreadyflag[i] < playerreadyflag[myconnectindex])
+                break;
+        }
     } while (i >= 0);
 }
 
