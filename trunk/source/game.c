@@ -1973,10 +1973,7 @@ void gameexit(char *msg)
     if(*t != 0) ps[myconnectindex].palette = (char *) &palette[0];
 
     if(numplayers > 1)
-    {
         allowtimetocorrecterrorswhenquitting();
-        uninitmultiplayers();
-    }
 
     if(ud.recstat == 1) closedemowrite();
     else if(ud.recstat == 2) { fclose(frecfilep); }
@@ -1992,6 +1989,10 @@ void gameexit(char *msg)
         setgamemode(ScreenMode,ScreenWidth,ScreenHeight);
 // CTW END - MODIFICATION
     }
+
+    if(playerswhenstarted > 1)
+        uninitmultiplayers();  /* deinits network transport. */
+
 #ifdef ONELEVELDEMO
     doorders();
     // DDOI
