@@ -143,7 +143,13 @@
 				RelativePath="control.c">
 			</File>
 			<File
-				RelativePath="fx_man.c">
+				RelativePath="audiolib\dsl.c">
+			</File>
+			<File
+				RelativePath="dukemusc.c">
+			</File>
+			<File
+				RelativePath="audiolib\fx_man.c">
 			</File>
 			<File
 				RelativePath="game.c">
@@ -158,7 +164,25 @@
 				RelativePath="keyboard.c">
 			</File>
 			<File
+				RelativePath="audiolib\ll_man.c">
+			</File>
+			<File
 				RelativePath="menues.c">
+			</File>
+			<File
+				RelativePath="audiolib\multivoc.c">
+			</File>
+			<File
+				RelativePath="audiolib\mv_mix.c">
+			</File>
+			<File
+				RelativePath="audiolib\mvreverb.c">
+			</File>
+			<File
+				RelativePath="audiolib\nodpmi.c">
+			</File>
+			<File
+				RelativePath="audiolib\pitch.c">
 			</File>
 			<File
 				RelativePath="player.c">
@@ -177,6 +201,9 @@
 			</File>
 			<File
 				RelativePath="sounds.c">
+			</File>
+			<File
+				RelativePath="audiolib\user.c">
 			</File>
 		</Filter>
 		<Filter
@@ -207,6 +234,9 @@
 				RelativePath="develop.h">
 			</File>
 			<File
+				RelativePath="audiolib\dsl.h">
+			</File>
+			<File
 				RelativePath="duke3d.h">
 			</File>
 			<File
@@ -222,6 +252,9 @@
 				RelativePath="function.h">
 			</File>
 			<File
+				RelativePath="audiolib\fx_man.h">
+			</File>
+			<File
 				RelativePath="fx_man.h">
 			</File>
 			<File
@@ -231,13 +264,22 @@
 				RelativePath="keyboard.h">
 			</File>
 			<File
+				RelativePath="audiolib\ll_man.h">
+			</File>
+			<File
 				RelativePath="mouse.h">
+			</File>
+			<File
+				RelativePath="audiolib\multivoc.h">
 			</File>
 			<File
 				RelativePath="music.h">
 			</File>
 			<File
 				RelativePath="names.h">
+			</File>
+			<File
+				RelativePath="audiolib\pitch.h">
 			</File>
 			<File
 				RelativePath="pragmas.h">
@@ -262,6 +304,12 @@
 			</File>
 			<File
 				RelativePath="types.h">
+			</File>
+			<File
+				RelativePath="audiolib\user.h">
+			</File>
+			<File
+				RelativePath="audiolib\usrhooks.h">
 			</File>
 			<File
 				RelativePath="util_lib.h">

@@ -104,7 +104,15 @@ SOURCE=.\control.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\fx_man.c
+SOURCE=.\audiolib\dsl.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\dukemusc.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\audiolib\fx_man.c
 # End Source File
 # Begin Source File
 
@@ -124,7 +132,31 @@ SOURCE=.\keyboard.c
 # End Source File
 # Begin Source File
 
+SOURCE=.\audiolib\ll_man.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\menues.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\audiolib\multivoc.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\audiolib\mv_mix.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\audiolib\mvreverb.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\audiolib\nodpmi.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\audiolib\pitch.c
 # End Source File
 # Begin Source File
 
@@ -149,6 +181,10 @@ SOURCE=.\sector.c
 # Begin Source File
 
 SOURCE=.\sounds.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\audiolib\user.c
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -188,6 +224,10 @@ SOURCE=.\develop.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\audiolib\dsl.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\duke3d.h
 # End Source File
 # Begin Source File
@@ -212,6 +252,10 @@ SOURCE=.\function.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\audiolib\fx_man.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\fx_man.h
 # End Source File
 # Begin Source File
@@ -224,7 +268,15 @@ SOURCE=.\keyboard.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\audiolib\ll_man.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\mouse.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\audiolib\multivoc.h
 # End Source File
 # Begin Source File
 
@@ -233,6 +285,10 @@ SOURCE=.\music.h
 # Begin Source File
 
 SOURCE=.\names.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\audiolib\pitch.h
 # End Source File
 # Begin Source File
 
@@ -265,6 +321,10 @@ SOURCE=.\task_man.h
 # Begin Source File
 
 SOURCE=.\types.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\audiolib\user.h
 # End Source File
 # Begin Source File
 
