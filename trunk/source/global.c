@@ -30,6 +30,10 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #include <stdarg.h>
 #include <errno.h>
 
+#ifdef __BEOS__
+#include <endian.h>
+#endif
+
 #include "duke3d.h"
 
 char *mymembuf;
