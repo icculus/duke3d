@@ -624,7 +624,19 @@ void CONFIG_ReadSetup( void )
     }
 
    SCRIPT_GetNumber( scripthandle, "Sound Setup", "FXDevice",&FXDevice);
+
+    #if !PLATFORM_DOS   // reimplementation of ASS expects a "SoundScape".
+    if (FXDevice != NumSoundCards)
+        FXDevice = SoundScape;
+    #endif
+
    SCRIPT_GetNumber( scripthandle, "Sound Setup", "MusicDevice",&MusicDevice);
+
+    #if !PLATFORM_DOS   // reimplementation of ASS expects a "SoundScape".
+    if (MusicDevice != NumSoundCards)
+        MusicDevice = SoundScape;
+    #endif
+
    SCRIPT_GetNumber( scripthandle, "Sound Setup", "FXVolume",&FXVolume);
    SCRIPT_GetNumber( scripthandle, "Sound Setup", "MusicVolume",&MusicVolume);
    SCRIPT_GetNumber( scripthandle, "Sound Setup", "SoundToggle",&SoundToggle);
