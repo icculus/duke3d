@@ -1,0 +1,28 @@
+Microsoft Visual Studio Solution File, Format Version 7.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Duke3d", "Duke3d.vcproj", "{F83AC009-740D-4980-8B9B-E414E8CAE826}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "buildengine\Engine.vcproj", "{2960B59D-CA80-4C18-A4DD-038C38A4113B}"
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		ConfigName.0 = Debug
+		ConfigName.1 = Release
+	EndGlobalSection
+	GlobalSection(ProjectDependencies) = postSolution
+		{F83AC009-740D-4980-8B9B-E414E8CAE826}.0 = {2960B59D-CA80-4C18-A4DD-038C38A4113B}
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{F83AC009-740D-4980-8B9B-E414E8CAE826}.Debug.ActiveCfg = Debug|Win32
+		{F83AC009-740D-4980-8B9B-E414E8CAE826}.Debug.Build.0 = Debug|Win32
+		{F83AC009-740D-4980-8B9B-E414E8CAE826}.Release.ActiveCfg = Release|Win32
+		{F83AC009-740D-4980-8B9B-E414E8CAE826}.Release.Build.0 = Release|Win32
+		{2960B59D-CA80-4C18-A4DD-038C38A4113B}.Debug.ActiveCfg = Debug|Win32
+		{2960B59D-CA80-4C18-A4DD-038C38A4113B}.Debug.Build.0 = Debug|Win32
+		{2960B59D-CA80-4C18-A4DD-038C38A4113B}.Release.ActiveCfg = Release|Win32
+		{2960B59D-CA80-4C18-A4DD-038C38A4113B}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
