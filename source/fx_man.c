@@ -219,6 +219,9 @@ static int grabMixerChannel(int priority)
     int replaceable = -1;
     int i;
 
+    if (!fx_initialized)
+        return(-1);
+
     for (i = 0; i < numChannels; i++)
     {
         if (chaninfo[i].in_use == 0)
