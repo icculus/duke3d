@@ -2,6 +2,8 @@
 # Duke3D makefile.
 #-----------------------------------------------------------------------------#
 
+beos := false
+use_asm := true
 
 #-----------------------------------------------------------------------------#
 # If this makefile fails to detect Cygwin correctly, or you want to force
@@ -15,6 +17,10 @@ cygwin := autodetect
 SDL_INC_DIR = /cygdrive/c/SDL/include
 SDL_LIB_DIR = /cygdrive/c/SDL/lib
 
+# need this for now.
+ifeq ($(strip $(beos)),true)
+  use_asm := false
+endif
 
 # Don't touch anything below this line unless you know what you're doing.
 
@@ -54,14 +60,18 @@ endif
 #  cd ..
 #  This sucks. We'll figure out something better.
 BUILDOBJS := \
-	buildengine/a_gnu.o \
-	buildengine/a_nasm.o \
 	buildengine/cache1d.o \
 	buildengine/engine.o \
 	buildengine/sdl_driver.o \
 	buildengine/mmulti.o \
 	buildengine/pragmas.o \
 	buildengine/unix_compat.o
+
+ifeq ($(strip $(use_asm)),true)
+	BUILDOBJS += buildengine/a_gnu.o buildengine/a_nasm.o
+else
+	BUILDOBJS += buildengine/a.o
+endif
 
 CC = gcc
 CFLAGS = -g $(SDL_CFLAGS) -DUSE_SDL=1 -DPLATFORM_UNIX=1 -W -Wall -Wno-unused $(EXTRACFLAGS) -O2 -funsigned-char
