@@ -2381,7 +2381,7 @@ void menus(void)
                 MusicVolume >>= 2;
                 shorttmp = (short) MusicVolume;
                 bar(c+167+40,50+16+16+16,
-                    (short *)&MusicVolume,4,
+                    &shorttmp,4,
                     (eightytwofifty==0||numplayers < 2) && (MusicDevice!=NumSoundCards) && x==3,SHX(-5),
                     (numplayers > 1 && eightytwofifty)||MusicToggle==0||(MusicDevice==NumSoundCards));
                 MusicVolume = (int32) shorttmp;
