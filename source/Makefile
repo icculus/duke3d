@@ -5,6 +5,7 @@
 linux_ppc := false
 beos := false
 macosx := false
+freebsd := false
 solaris := false
 shareware := false
 controls_menu := true
@@ -50,14 +51,23 @@ ifeq ($(strip $(cygwin)),true)
   else
     SDL_LDFLAGS := -L$(SDL_LIB_DIR) -lSDL
   endif
+
 else
-  SDL_CFLAGS := $(shell sdl-config --cflags)
-  SDL_LDFLAGS := $(shell sdl-config --libs) -L.
+  ifneq ($(strip $(freebsd)),true)
+    SDL_CFLAGS := $(shell sdl-config --cflags)
+    SDL_LDFLAGS := $(shell sdl-config --libs) -L.
+  endif
 endif
 
 ifeq ($(strip $(macosx)),true)
   EXTRACFLAGS += -DPLATFORM_MACOSX=1
   EXTRALDFLAGS += -lSDLmain
+endif
+
+ifeq ($(strip $(freebsd)),true)
+  EXTRACFLAGS += -DPLATFORM_FREEBSD=1
+  SDL_CFLAGS := $(shell sdl11-config --cflags)
+  SDL_LDFLAGS := $(shell sdl11-config --libs) -L.
 endif
 
 ifeq ($(strip $(linux_ppc)),true)
@@ -126,6 +136,10 @@ CFLAGS += -fno-strict-aliasing
 #CFLAGS = -g $(SDL_CFLAGS) -DUSE_SDL=1 -DPLATFORM_UNIX=1 -DUSE_I386_ASM=1 $(EXTRACFLAGS) -O2
 
 LDLIBS = $(SDL_LDFLAGS) -lSDL -lSDL_mixer $(EXTRALDFLAGS)
+
+ifeq ($(strip $(freebsd)),true)
+LDLIBS = $(SDL_LDFLAGS) -lSDL_mixer $(EXTRALDFLAGS)
+endif
 
 # !!! FIXME: Do we even need this? It doesn't fly on MacOS X.  --ryan.
 #LDLIBS += -Wl,-E
