@@ -96,14 +96,6 @@ ifeq ($(strip $(controls_menu)),true)
   EXTRACFLAGS += -DCONTROLS_CONFIG_MENU=1
 endif
 
-# check out buildengine in this directory:
-#  cvs -z3 -d:pserver:anonymous@cvs.icculus.org:/cvs/cvsroot login
-#   (password is "anonymous", without the quotes.)
-#  cvs -z3 -d:pserver:anonymous@cvs.icculus.org:/cvs/cvsroot co buildengine
-#  cd buildengine
-#  make
-#  cd ..
-#  This sucks. We'll figure out something better.
 BUILDOBJS := \
 	buildengine/cache1d.o \
 	buildengine/engine.o \
@@ -144,6 +136,7 @@ endif
 # !!! FIXME: Do we even need this? It doesn't fly on MacOS X.  --ryan.
 #LDLIBS += -Wl,-E
 
+.PHONY: duke3d build buildengine clean distclean
 all: duke3d build
 
 
@@ -165,7 +158,10 @@ endif
 audiolib/audiolib.a:
 	$(MAKE) -C audiolib CC="$(CC)" CFLAGS="$(CFLAGS)" LDLIBS="$(LDLIBS)"
 
-duke3d: 	\
+buildengine:
+	make -C buildengine
+
+duke3d: buildengine
 	actors.o \
 	animlib.o \
 	control.o \
@@ -185,7 +181,7 @@ duke3d: 	\
 	audiolib/audiolib.a
 	$(CC) $^ $(BUILDOBJS) $(LDLIBS) -o $@
 
-build: astub.o
+build: buildengine astub.o
 	$(CC) $^ $(BUILDOBJS) buildengine/build.o $(LDLIBS) -o $@
 
 clean:
