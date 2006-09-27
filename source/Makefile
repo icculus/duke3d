@@ -161,7 +161,7 @@ audiolib/audiolib.a:
 buildengine:
 	make -C buildengine
 
-duke3d: buildengine
+duke3d: buildengine \
 	actors.o \
 	animlib.o \
 	control.o \
@@ -186,8 +186,10 @@ build: buildengine astub.o
 
 clean:
 	$(MAKE) -C audiolib clean
+	$(MAKE) -C buildengine clean
 	rm -rf duke3d build *.o
 
 distclean: clean
 	$(MAKE) -C audiolib distclean
+	$(MAKE) -C buildengine distclean
 	rm -rf *~
