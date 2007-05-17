@@ -137,7 +137,7 @@ endif
 #LDLIBS += -Wl,-E
 
 .PHONY: duke3d build buildengine clean distclean
-all: duke3d build
+all: buildengine duke3d build
 
 
 %.o : %.c
@@ -161,7 +161,7 @@ audiolib/audiolib.a:
 buildengine:
 	make -C buildengine
 
-duke3d: buildengine \
+duke3d: \
 	actors.o \
 	animlib.o \
 	control.o \
@@ -181,7 +181,7 @@ duke3d: buildengine \
 	audiolib/audiolib.a
 	$(CC) $^ $(BUILDOBJS) $(LDLIBS) -o $@
 
-build: buildengine astub.o
+build: astub.o
 	$(CC) $^ $(BUILDOBJS) buildengine/build.o $(LDLIBS) -o $@
 
 clean:
