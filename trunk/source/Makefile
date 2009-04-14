@@ -23,6 +23,8 @@ cygwin := autodetect
 SDL_INC_DIR = /cygdrive/c/SDL/include
 SDL_LIB_DIR = /cygdrive/c/SDL/lib
 
+CC = gcc
+
 # need this for now.
 ifeq ($(strip $(beos)),true)
   use_asm := false
@@ -83,7 +85,9 @@ ifneq ($(strip $(cygwin)),true)
 endif
 
 ifeq ($(strip $(solaris)),true)
+  CC = cc
   EXTRALDFLAGS += -lsocket -lnsl
+  CFLAGS += -DPLATFORM_SOLARIS
 endif
 
 ifeq ($(strip $(shareware)),true)
@@ -110,18 +114,21 @@ else
 	BUILDOBJS += buildengine/a.o
 endif
 
-CC = gcc
-CFLAGS = -c -g $(SDL_CFLAGS) -DUSE_SDL=1 -DPLATFORM_UNIX=1 -W -Wall -Wno-unused $(EXTRACFLAGS) -funsigned-char
+CFLAGS = -c -g $(SDL_CFLAGS) -DUSE_SDL=1 -DPLATFORM_UNIX=1 $(EXTRACFLAGS)
 
-ifeq ($(strip $(macosx)),true)
-OPTIMIZE = -O3 -mdynamic-no-pic -falign-loops=16
+ifeq ($(strip $(solaris)),true)
+	CFLAGS += -xO5 -xchar=u
 else
-OPTIMIZE = -O2
+	# Always turn OFF strict aliasing, even when optimizing. Otherwise, this
+	#  is just an accident waiting to happen...  --ryan.
+	CFLAGS += -fno-strict-aliasing
+	CFLAGS += -W -Wall -Wno-unused -funsigned-char
+	ifeq ($(strip $(macosx)),true)
+		OPTIMIZE = -O3 -mdynamic-no-pic -falign-loops=16
+	else
+		OPTIMIZE = -O2
+	endif
 endif
-
-# Always turn OFF strict aliasing, even when optimizing. Otherwise, this is
-#  just an accident waiting to happen...  --ryan.
-CFLAGS += -fno-strict-aliasing
 
 # Uncomment this to compile with the Intel compiler (v6.0)
 #CC = icc

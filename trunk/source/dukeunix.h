@@ -10,7 +10,11 @@ typedef long long __int64;
 #endif
 
 //#define STUBBED(x)
+#ifdef __SUNPRO_C
+#define STUBBED(x) fprintf(stderr,"STUB: %s (??? %s:%d)\n",x,__FILE__,__LINE__)
+#else
 #define STUBBED(x) fprintf(stderr,"STUB: %s (%s, %s:%d)\n",x,__FUNCTION__,__FILE__,__LINE__)
+#endif
 
 #define PATH_SEP_CHAR '/'
 #define PATH_SEP_STR  "/"
