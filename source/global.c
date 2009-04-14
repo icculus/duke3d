@@ -34,10 +34,6 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #include <endian.h>
 #endif
 
-#ifdef __sun
-#include <sys/byteorder.h>
-#endif
-
 #include "duke3d.h"
 
 char *mymembuf;
