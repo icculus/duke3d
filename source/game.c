@@ -67,7 +67,6 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 
 /* this should be a proper prototype included from a header file */
 extern int stricmp(const char *x, const char *y);
-extern int sgn(int);
 
 long cameradist = 0, cameraclock = 0;
 char eightytwofifty = 0;
