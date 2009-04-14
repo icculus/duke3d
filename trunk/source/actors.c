@@ -29,7 +29,6 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 extern char numenvsnds,actor_tog;
 
 // this should be a proper prototype included from a header file
-extern int sgn(int);
 
 void updateinterpolations()  //Stick at beginning of domovethings
 {
