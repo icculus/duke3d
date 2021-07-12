@@ -1,11 +1,19 @@
-===================================================================
-Duke Nukem 3D (v1.5 CD Version) Source Code Release - April 1, 2003
-===================================================================
 
-LEGAL STUFF
------------
+# duke3d
+
+This is the icculus.org port of 3DRealms' Duke Nukem 3D. The first Linux/Mac/Windows port!
+
+Below is the original 3DRealms README, unchanged beyond some Markdown formatting cleanup.
+
+--ryan. (icculus@icculus.org)
+
+
+# Duke Nukem 3D (v1.5 CD Version) Source Code Release - April 1, 2003
+
+## LEGAL STUFF
 
 "Duke Nukem" is a registered trademark of Apogee Software, Ltd. (a.k.a. 3D Realms).
+
 "Duke Nukem 3D" copyright 1996 - 2003 3D Realms.  All trademarks and copyrights reserved.
 
 This is the complete source code for Duke Nukem 3D version 1.5, buildable as detailed in the next section.
@@ -18,8 +26,7 @@ Please do not contact us for possible commercial exploitation of Duke Nukem 3D -
 
 Please note that this is being released without any kind of support from Apogee Software, Ltd / 3D Realms Entertainment.  We cannot help in getting this running and we do not guarantee that you will be able to get it to work, nor do we guarantee that it won't blow up your computer if you do try and use it.  Use at your own risk.
 
-SPECIAL THANKS
---------------
+## SPECIAL THANKS
 
 First, we'd like to thank all the fans of 3D Realms and Duke Nukem.  We wouldn't be where we are without you and without your support.
 
@@ -34,9 +41,7 @@ Enjoy the source code.  We can't wait to see what people do with it.  And we rea
 George Broussard & Scott Miller
 3D Realms
 
-======================================================
-HOW TO COMPILE THE SOURCE CODE (by Charlie Wiederhold)
-======================================================
+# HOW TO COMPILE THE SOURCE CODE (by Charlie Wiederhold)
 
 This source code release was compiled on March 20th, 2003 using the materials in this archive.
 
@@ -52,23 +57,20 @@ Step 3) Choose a place you want to work from and unzip the contents of this .ZIP
 
 From here you have two choices on how to work. You can use the command line compiler that comes with Watcom, or you can use the IDE (basically the development studio that manages your files, options for compiling, editing files, debugger, etc). Whichever one you choose depends on what you are comfortable with.
 
-IF YOU USE THE COMMAND LINE COMPILER
-------------------------------------
+## IF YOU USE THE COMMAND LINE COMPILER
 
 - In a Command Prompt, go into the Source directory where you should find a MAKEFILE. and a MAKEFILE.LNK file.
 - At the Command Prompt type "wmake" or "wmake makefile" without the quotes.
 - This should compile and create a DUKE3D.EXE file which you can then copy into the directory with your Duke 3D data and run.
 
-IF YOU USE THE IDE
-------------------
+## IF YOU USE THE IDE
 
 - Start up the Watcom IDE and go to File -> Open Project.
 - Find the directory where you've unzipped the Source files into, and you should see a DUKE3D.WPJ, select this and hit "OK".
 - Click the "Make Current Target" button, or press "F4" or go to the menu Targets -> Make. You'll see lots of Warnings as it compiles, that's normal.
 - This will create a DUKE3D.EXE file in the same directory where the DUKE3D.WPJ was located, which can then be copied in the directory with your Duke 3D data and run.
 
-ONCE YOU HAVE DUKE3D.EXE COMPILED
----------------------------------
+## ONCE YOU HAVE DUKE3D.EXE COMPILED
 
 - If you own Duke 3D version 1.5, you are set... simply copy your new .EXE into the directory and run it.
 - If you own Duke 3D version 1.4 or 1.3d, follow the same steps below except don't download the shareware data.
@@ -77,8 +79,7 @@ ONCE YOU HAVE DUKE3D.EXE COMPILED
 
 This should be enough to get you started. Unfortunately nobody at 3D Realms will be able to devote the time to answer any support questions if you do encounter problems. However, go to http://www.3drealms.com/forums.html and you will find people discussing the source code in the Duke 3D Source category and able to answer questions. I will try to answer extremely common questions there shortly after the release, but I promise, within a very short time the community will outgrow my knowledge/understanding of this source and be better suited to answer any questions itself.
 
-MISC NOTES ABOUT THIS RELEASE
------------------------------
+## MISC NOTES ABOUT THIS RELEASE
 
 - All changes I made from the original are indicated by a "// CTW" style comment. In all but one case I commented out the original code so that it would still be there. I made as few changes as possible since the fun for people is working on the Duke 3D original code, not my personal rewrite/interpretation.
 
@@ -111,4 +112,6 @@ MISC NOTES ABOUT THIS RELEASE
 - The first things I think everyone would like to see done is an update to the sound engine and an update to the networking to allow play over the internet. But there is no end to the changes people can make, so everyone at 3D Realms looks forward to what people will do now that the source code is finally out there. It's been a long time coming (too long probably), but here you go, have fun!
 
 Charlie Wiederhold
+
 3D Realms
+
